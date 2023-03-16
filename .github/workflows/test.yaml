@@ -1,0 +1,16 @@
+name: tests
+on: [pull_request]
+
+jobs:
+  deployment-demo-plan:
+    name: "Deployment"
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: subosito/flutter-action@v2
+      with:
+        channel: 'stable'
+    - name: build
+      run: flutter pub get
+    - name: test
+      run: flutter test --platform chrome
