@@ -1,4 +1,4 @@
-import 'package:dhali/wallet/xrpl_bindings.dart';
+import 'package:xrpl/xrpl.dart';
 import 'package:flutter/material.dart';
 
 import 'xrpl_wallet.dart';

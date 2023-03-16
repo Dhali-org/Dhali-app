@@ -47,6 +47,7 @@ dependencies:
     flutter_markdown: ^0.6.14
     fake_cloud_firestore: ^2.4.0
     node_interop: ^2.1.0
+    xrpl: ^0.0.2
 
 dev_dependencies:
     flutter_oss_licenses: ^2.0.1
