@@ -3,7 +3,7 @@ import 'dart:html';
 import 'package:node_interop/util.dart';
 import 'package:logger/logger.dart';
 
-import 'xrpl_bindings.dart';
+import 'package:xrpl/xrpl.dart';
 import 'xrpl_types.dart';
 
 // Functionality to support:
