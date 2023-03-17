@@ -44,7 +44,8 @@ class InvalidPaymentChannelException implements Exception {
 
 class XRPLWallet {
   static String uninitialisedUrl = 'NOT INITIALISED!';
-  static String testNetUrl = 'wss://s.altnet.rippletest.net:51233';
+  // Choose from https://xrpl.org/public-servers.html
+  static String testNetUrl = 'wss://s.altnet.rippletest.net/';
   // TODO: change once prod-ready:
   static String mainnetUrl = 'NOT IMPLEMENTED YET';
 
@@ -52,7 +53,7 @@ class XRPLWallet {
 
   Wallet? _wallet;
 
-  ValueNotifier<String> balance = ValueNotifier("Unavailable");
+  ValueNotifier<String?> balance = ValueNotifier(null);
 
   XRPLWallet(String seed, {bool testMode = false}) {
     _netUrl = testMode ? testNetUrl : mainnetUrl;
@@ -71,18 +72,20 @@ class XRPLWallet {
     }
 
     try {
-      client.connect().then((erg) {
-        client.fundWallet(_wallet); // TODO: Remove this in the future
-        String address = _wallet!.address;
-        client.getXrpBalance(address).then((balanceString) {
-          balance.value = balanceString.toString();
+      promiseToFuture(client.connect()).then((erg) {
+        // TODO: Remove this in the future
+        promiseToFuture(client.fundWallet(_wallet)).then((e) {
+          String address = _wallet!.address;
+          promiseToFuture(client.getXrpBalance(address)).then((balanceString) {
+            balance.value = balanceString.toString();
+          }).whenComplete(() {
+            client.disconnect();
+          });
         });
       });
     } catch (e, stacktrace) {
-      logger.e('Exception caught: {e}');
+      logger.e('Exception caught: ${e.toString()}');
       logger.e(stacktrace);
-    } finally {
-      client.disconnect();
     }
   }
 
