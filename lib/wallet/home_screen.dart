@@ -172,9 +172,18 @@ Widget getGeneratedWidget(XRPLWallet wallet) {
       Center(
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 25.0),
-          child: ValueListenableBuilder<String>(
+          child: ValueListenableBuilder<String?>(
               valueListenable: wallet.balance,
-              builder: (BuildContext context, String balance, Widget? _) {
+              builder: (BuildContext context, String? balance, Widget? _) {
+                if (balance == null) {
+                  return Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text("Loading balance: ",
+                            style: TextStyle(fontSize: 25)),
+                        CircularProgressIndicator()
+                      ]);
+                }
                 return SelectableText('Your balance: $balance',
                     style: const TextStyle(fontSize: 25));
               }),

@@ -52,7 +52,7 @@ class XRPLWallet {
 
   Wallet? _wallet;
 
-  ValueNotifier<String> balance = ValueNotifier("Unavailable");
+  ValueNotifier<String?> balance = ValueNotifier(null);
 
   XRPLWallet(String seed, {bool testMode = false}) {
     _netUrl = testMode ? testNetUrl : mainnetUrl;
