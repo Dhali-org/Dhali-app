@@ -175,7 +175,9 @@ void imageDeploymentDemo(
           20,
       Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]["ASSET_CREATOR_ACCOUNT"]:
           "some_test_address",
-      Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]["CATEGORY"]: "some_category",
+      Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]["CATEGORY"]: [
+        "some_category"
+      ],
       Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]["ASSET_NAME"]: theAssetName,
       Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]["ENDPOINT_URL"]:
           "some_asset_url",

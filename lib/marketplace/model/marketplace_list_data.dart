@@ -3,7 +3,7 @@ class MarketplaceListData {
     required this.assetID,
     this.imagePath = '',
     this.assetName = '',
-    this.assetCategories = "",
+    this.assetCategories = const [],
     this.averageRuntime = 1.8,
     this.reviews = 80,
     this.rating = 4.5,
@@ -13,7 +13,7 @@ class MarketplaceListData {
   String assetID;
   String imagePath;
   String assetName;
-  String assetCategories;
+  List<dynamic> assetCategories;
   double averageRuntime;
   double rating;
   int reviews;
@@ -23,7 +23,7 @@ class MarketplaceListData {
     MarketplaceListData(
       assetID: "",
       assetName: 'bert-base-uncased',
-      assetCategories: 'Fill-Mask',
+      assetCategories: ['Fill-Mask'],
       averageRuntime: 0.12,
       reviews: 80,
       rating: 4.4,
@@ -32,7 +32,7 @@ class MarketplaceListData {
     MarketplaceListData(
       assetID: "",
       assetName: 'gpt2',
-      assetCategories: 'Text generation',
+      assetCategories: ['Text generation'],
       averageRuntime: 0.2,
       reviews: 74,
       rating: 4.5,
@@ -41,7 +41,7 @@ class MarketplaceListData {
     MarketplaceListData(
       assetID: "",
       assetName: 'gpt3',
-      assetCategories: 'Text generation',
+      assetCategories: ['Text generation'],
       averageRuntime: 0.31,
       reviews: 62,
       rating: 4.0,
@@ -50,7 +50,7 @@ class MarketplaceListData {
     MarketplaceListData(
       assetID: "",
       assetName: 'Mobilenet V2',
-      assetCategories: 'Object detector',
+      assetCategories: ['Object detector'],
       averageRuntime: 0.004,
       reviews: 90,
       rating: 4.4,
@@ -59,7 +59,7 @@ class MarketplaceListData {
     MarketplaceListData(
       assetID: "",
       assetName: 'VGG',
-      assetCategories: 'Face detector',
+      assetCategories: ['Face detector'],
       averageRuntime: 0.01,
       reviews: 240,
       rating: 4.5,

@@ -74,8 +74,11 @@ class MarketplaceListView extends StatelessWidget {
                                     MainAxisAlignment.spaceEvenly,
                                 children: <Widget>[
                                   Text(
-                                    marketplaceData!.assetCategories,
-                                    style: TextStyle(
+                                    marketplaceData!.assetCategories.isNotEmpty
+                                        ? marketplaceData!.assetCategories
+                                            .toString()
+                                        : "",
+                                    style: const TextStyle(
                                       fontSize: 14,
                                     ),
                                   ),
