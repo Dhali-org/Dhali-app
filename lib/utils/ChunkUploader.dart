@@ -70,6 +70,7 @@ class UploadRequest {
           "assetName": model.modelName,
           "chainID": "xrpl", // TODO : Add user input for this
           "walletID": getWallet()!.address,
+          "labels": ""
         };
 
         if (request.runtimeType == http.MultipartRequest) {
