@@ -401,18 +401,6 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                 const EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 4),
             child: Row(
               children: <Widget>[
-                const Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Text(
-                      '530 models found',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w100,
-                        fontSize: 16,
-                      ),
-                    ),
-                  ),
-                ),
                 Material(
                   color: Colors.transparent,
                   child: InkWell(
