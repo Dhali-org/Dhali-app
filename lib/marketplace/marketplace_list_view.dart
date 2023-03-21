@@ -84,43 +84,6 @@ class MarketplaceListView extends StatelessWidget {
                                     ),
                                   ),
                                   const Spacer(),
-                                  // RatingBar(
-                                  //   initialRating: marketplaceData!.rating,
-                                  //   direction: Axis.horizontal,
-                                  //   allowHalfRating: true,
-                                  //   itemCount: 5,
-                                  //   itemSize: 24,
-                                  //   ratingWidget: RatingWidget(
-                                  //     full: Icon(
-                                  //       Icons.star_rate_rounded,
-                                  //       color: MarketplaceAppTheme
-                                  //               .buildLightTheme()
-                                  //           .primaryColor,
-                                  //     ),
-                                  //     half: Icon(
-                                  //       Icons.star_half_rounded,
-                                  //       color: MarketplaceAppTheme
-                                  //               .buildLightTheme()
-                                  //           .primaryColor,
-                                  //     ),
-                                  //     empty: Icon(
-                                  //       Icons.star_border_rounded,
-                                  //       color: MarketplaceAppTheme
-                                  //               .buildLightTheme()
-                                  //           .primaryColor,
-                                  //     ),
-                                  //   ),
-                                  //   itemPadding: EdgeInsets.zero,
-                                  //   onRatingUpdate: (rating) {
-                                  //     print(rating);
-                                  //   },
-                                  // ),
-                                  // Text(
-                                  //   ' ${marketplaceData!.reviews} Score',
-                                  //   style: TextStyle(
-                                  //       fontSize: 14,
-                                  //       color: Colors.grey.withOpacity(0.8)),
-                                  // ),
                                 ],
                               ),
                               Row(
