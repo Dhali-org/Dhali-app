@@ -193,7 +193,7 @@ Widget getGeneratedWidget(XRPLWallet wallet) {
         child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 25.0),
             child: SelectableText(
-              'Your public key: ${wallet.address}',
+              'Your classic address: ${wallet.address}',
               style: const TextStyle(fontSize: 25),
             )),
       )
