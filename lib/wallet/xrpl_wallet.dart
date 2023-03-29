@@ -101,6 +101,41 @@ class XRPLWallet {
     return authorizeChannel(_wallet!, channelId, amount);
   }
 
+  Future<dynamic> submitRequest(BaseRequest request, Client client) async {
+    return promiseToFuture(client.connect()).then((_) {
+      return promiseToFuture(client.request(request)).then((response) {
+        dynamic dartResponse = dartify(response);
+        return dartResponse;
+      }).catchError((e, stacktrace) {
+        var logger = Logger();
+        logger.e("Exception caught from future: $e");
+        logger.e("Stack trace: $stacktrace");
+        return Future<dynamic>.error(e);
+      });
+    });
+  }
+
+  Future<dynamic> getAvailableNFTs() async {
+    Client client = Client(_netUrl);
+    try {
+      var accountNFTsRequest = AccountNFTsRequest(
+        account: _wallet!.address,
+        command: "account_nfts",
+      );
+      return submitRequest(accountNFTsRequest, client);
+    } catch (e, stacktrace) {
+      var logger = Logger();
+      logger.e('Exception caught: $e');
+      logger.e(stacktrace);
+      return Future<List<PaymentChannelDescriptor>>.error(e);
+    } finally {
+      // TODO: This looks like the source of race conditions with the asyncronous function calls above - maybe an RAII-style wrapped class would be appropriate to use instead of doing this.
+      client.disconnect();
+    }
+    return Future.error(ImplementationErrorException(
+        "This code should never be reached, and indicates an implementation error."));
+  }
+
   Future<bool> acceptOffer(String offerIndex) async {
     Client client = Client(_netUrl);
 
