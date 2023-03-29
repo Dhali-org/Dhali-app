@@ -96,40 +96,44 @@ class MarketplaceListView extends StatelessWidget {
                                   ),
                                   Icon(
                                     FontAwesomeIcons.moneyBill1Wave,
-                                    size: 16,
+                                    size: 14,
                                     color: MarketplaceAppTheme.buildLightTheme()
                                         .primaryColor,
                                   ),
                                   const SizedBox(
                                     width: 4,
                                   ),
-                                  Text(
-                                    ' ${marketplaceData!.pricePerRun} drops',
-                                    textAlign: TextAlign.left,
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 22,
+                                  Expanded(
+                                    child: Text(
+                                      ' ${marketplaceData!.pricePerRun} drops',
+                                      textAlign: TextAlign.left,
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 16,
+                                      ),
                                     ),
+                                    flex: 1,
                                   ),
-                                  const Spacer(),
+                                  const Spacer(
+                                    flex: 1,
+                                  ),
                                   Icon(
                                     FontAwesomeIcons.clock,
-                                    size: 16,
+                                    size: 14,
                                     color: MarketplaceAppTheme.buildLightTheme()
                                         .primaryColor,
                                   ),
-                                  Text(
-                                    ' ${marketplaceData!.averageRuntime.toStringAsFixed(1)} seconds',
-                                    overflow: TextOverflow.ellipsis,
-                                    textAlign: TextAlign.left,
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 22,
+                                  Expanded(
+                                    child: Text(
+                                      ' ${marketplaceData!.averageRuntime.toStringAsFixed(1)} seconds / run',
+                                      overflow: TextOverflow.ellipsis,
+                                      textAlign: TextAlign.left,
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 16,
+                                      ),
                                     ),
-                                  ),
-                                  Text(
-                                    '/per run',
-                                    style: TextStyle(fontSize: 14),
+                                    flex: 2,
                                   )
                                 ],
                               ),
