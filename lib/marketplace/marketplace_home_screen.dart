@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_dropzone/flutter_dropzone.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:http/http.dart';
+import 'package:logger/logger.dart';
 import 'package:dhali/app_theme.dart';
 import 'package:dhali/marketplace/marketplace_dialogs.dart';
 import 'package:dhali/marketplace/marketplace_list_view.dart';
@@ -168,6 +169,7 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
     return widget.getWallet() != null
         ? FutureBuilder(
             builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+              var logger = Logger();
               if (!snapshot.hasData) {
                 return Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -185,22 +187,35 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                         .map((x) => x["NFTokenID"])
                         .toList();
 
-                if (nfTokenIDs.isNotEmpty) {
-                  return getAssetStreamBuilder(
-                      assetStream: widget
-                          .getFirestore()!
-                          .collection(
-                              Config.config!["MINTED_NFTS_COLLECTION_NAME"])
-                          .where(
-                              Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]
-                                  ["NFTOKEN_ID"],
-                              whereIn: nfTokenIDs)
-                          .limit(20)
-                          .snapshots());
-                } else {
+                try {
+                  if (nfTokenIDs.isNotEmpty) {
+                    return getAssetStreamBuilder(
+                        assetStream: widget
+                            .getFirestore()!
+                            .collection(
+                                Config.config!["MINTED_NFTS_COLLECTION_NAME"])
+                            .where(
+                                Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]
+                                    ["NFTOKEN_ID"],
+                                whereIn: nfTokenIDs)
+                            .limit(20)
+                            .snapshots());
+                  } else {
+                    return const Text(
+                      key: Key("my_asset_not_found"),
+                      "Your wallet has no assets",
+                      textAlign: TextAlign.center,
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
+                    );
+                  }
+                } catch (e, stacktrace) {
+                  logger
+                      .e("Error loading NFTs: '$e'. Assets are not available.");
+                  logger.e("stacktrace: $stacktrace");
                   return const Text(
                     key: Key("my_asset_not_found"),
-                    "Your wallet has no assets",
+                    "Unable to load assets, please try again later.",
                     textAlign: TextAlign.center,
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
                   );
