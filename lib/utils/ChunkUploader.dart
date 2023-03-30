@@ -92,7 +92,8 @@ class UploadRequest {
         logger.d("Response: $responseString");
         if (finalResponse.statusCode != 200 &&
             finalResponse.statusCode != 308) {
-          return StreamedResponse(Stream.empty(), finalResponse.statusCode);
+          return StreamedResponse(Stream.empty(), finalResponse.statusCode,
+              reasonPhrase: finalResponse.reasonPhrase);
         }
         // TODO : Deal with response appropriately
 

@@ -139,68 +139,16 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                         body: Container(
                             color: MarketplaceAppTheme.buildLightTheme()
                                 .backgroundColor,
-                            child: StreamBuilder(
-                                stream: stream,
-                                builder: (BuildContext context,
-                                    AsyncSnapshot<QuerySnapshot> snapshot) {
-                                  if (snapshot.hasData) {
-                                    return GridView.builder(
-                                      itemCount: snapshot.data!.size,
-                                      padding: const EdgeInsets.only(top: 8),
-                                      scrollDirection: Axis.vertical,
-                                      gridDelegate:
-                                          SliverGridDelegateWithMaxCrossAxisExtent(
-                                              maxCrossAxisExtent: 600,
-                                              childAspectRatio: 3),
-                                      itemBuilder:
-                                          (BuildContext context, int index) {
-                                        final int count =
-                                            snapshot.data!.size > 10
-                                                ? 10
-                                                : snapshot.data!.size;
-                                        final Animation<double> animation =
-                                            Tween<double>(begin: 0.0, end: 1.0)
-                                                .animate(CurvedAnimation(
-                                                    parent:
-                                                        animationController!,
-                                                    curve: Interval(
-                                                        (1 / count) * index,
-                                                        1.0,
-                                                        curve: Curves
-                                                            .fastOutSlowIn)));
-                                        animationController?.forward();
-                                        Map<String, dynamic> elementData =
-                                            snapshot.data!.docs[index].data()
-                                                as Map<String, dynamic>;
-                                        MarketplaceListData element = MarketplaceListData(
-                                            assetID:
-                                                snapshot.data!.docs[index].id,
-                                            assetName: elementData[
-                                                Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]
-                                                    ["ASSET_NAME"]],
-                                            assetCategories: elementData[
-                                                Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]
-                                                    ["CATEGORY"]],
-                                            averageRuntime: elementData[Config
-                                                    .config!["MINTED_NFTS_DOCUMENT_KEYS"]
-                                                ["AVERAGE_INFERENCE_TIME_MS"]],
-                                            rating: elementData[
-                                                Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]
-                                                    ["NUMBER_OF_SUCCESSFUL_REQUESTS"]],
-                                            pricePerRun: elementData[Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]["EXPECTED_INFERENCE_COST_PER_MS"]]);
-                                        return MarketplaceListView(
-                                          callback: displayAsset,
-                                          marketplaceData: element,
-                                          animation: animation,
-                                          animationController:
-                                              animationController!,
-                                        );
-                                      },
-                                    );
-                                  } else {
-                                    return const SizedBox();
-                                  }
-                                })),
+                            child: widget.assetScreenType ==
+                                    AssetScreenType.MyAssets
+                                ? getFilteredAssetStreamBuilder()
+                                : getAssetStreamBuilder(
+                                    assetStream: widget
+                                        .getFirestore()!
+                                        .collection(Config.config![
+                                            "MINTED_NFTS_COLLECTION_NAME"])
+                                        .limit(20)
+                                        .snapshots())),
                       ),
                     )
                   ],
@@ -211,6 +159,106 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
         ),
       ),
     );
+  }
+
+  Widget getFilteredAssetStreamBuilder() {
+    return widget.getWallet() != null
+        ? FutureBuilder(
+            builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+              if (!snapshot.hasData) {
+                return Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                          key: Key("loading_asset_key"),
+                          "Loading assets: ",
+                          style: TextStyle(fontSize: 25)),
+                      CircularProgressIndicator()
+                    ]);
+              } else {
+                print(snapshot.data);
+                var nfTokenIDs =
+                    (snapshot.data["result"]["account_nfts"] as List<dynamic>)
+                        .map((x) => x["NFTokenID"])
+                        .toList();
+
+                if (nfTokenIDs.isNotEmpty) {
+                  return getAssetStreamBuilder(
+                      assetStream: widget
+                          .getFirestore()!
+                          .collection(
+                              Config.config!["MINTED_NFTS_COLLECTION_NAME"])
+                          .where(
+                              Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]
+                                  ["NFTOKEN_ID"],
+                              whereIn: nfTokenIDs)
+                          .limit(20)
+                          .snapshots());
+                } else {
+                  return const Text(
+                    key: Key("my_asset_not_found"),
+                    "Your wallet has no assets",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
+                  );
+                }
+              }
+            },
+            future: widget.getWallet()!.getAvailableNFTs(),
+          )
+        : Container();
+  }
+
+  Widget getAssetStreamBuilder(
+      {Stream<QuerySnapshot<Map<String, dynamic>>>? assetStream}) {
+    return StreamBuilder(
+        stream: assetStream,
+        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if (snapshot.hasData) {
+            return GridView.builder(
+              itemCount: snapshot.data!.size,
+              padding: const EdgeInsets.only(top: 8),
+              scrollDirection: Axis.vertical,
+              gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                  maxCrossAxisExtent: 600, childAspectRatio: 3),
+              itemBuilder: (BuildContext context, int index) {
+                final int count =
+                    snapshot.data!.size > 10 ? 10 : snapshot.data!.size;
+                final Animation<double> animation =
+                    Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
+                        parent: animationController!,
+                        curve: Interval((1 / count) * index, 1.0,
+                            curve: Curves.fastOutSlowIn)));
+                animationController?.forward();
+                Map<String, dynamic> elementData =
+                    snapshot.data!.docs[index].data() as Map<String, dynamic>;
+                MarketplaceListData element = MarketplaceListData(
+                    assetID: snapshot.data!.docs[index].id,
+                    assetName: elementData[Config
+                        .config!["MINTED_NFTS_DOCUMENT_KEYS"]["ASSET_NAME"]],
+                    assetCategories: elementData[Config
+                        .config!["MINTED_NFTS_DOCUMENT_KEYS"]["CATEGORY"]],
+                    averageRuntime: elementData[
+                        Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]
+                            ["AVERAGE_INFERENCE_TIME_MS"]],
+                    rating: elementData[
+                        Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]
+                            ["NUMBER_OF_SUCCESSFUL_REQUESTS"]],
+                    pricePerRun: elementData[
+                        Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]
+                            ["EXPECTED_INFERENCE_COST_PER_MS"]]);
+                return MarketplaceListView(
+                  callback: displayAsset,
+                  marketplaceData: element,
+                  animation: animation,
+                  animationController: animationController!,
+                );
+              },
+            );
+          } else {
+            return const SizedBox();
+          }
+        });
   }
 
   Widget getListUI() {
