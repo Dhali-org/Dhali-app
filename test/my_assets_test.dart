@@ -195,5 +195,67 @@ void main() async {
       expect(find.text(theAssetName), findsNothing);
       expect(find.byKey(const Key("my_asset_not_found")), findsOneWidget);
     });
+
+    testWidgets('Assets in ledger, but not firebase',
+        (WidgetTester tester) async {
+      const w = 1480;
+      const h = 1080;
+
+      final someOtherNFTkokenID = "this_is_not_in_firebase";
+
+      when(mockWallet.address).thenReturn(creatorAccount);
+      when(mockWallet.getAvailableNFTs()).thenAnswer((_) async {
+        return Future.value({
+          "id": 0,
+          "result": {
+            "account": creatorAccount,
+            "account_nfts": [
+              {
+                "Flags": 8,
+                "Issuer": dhaliAccount,
+                "NFTokenID": someOtherNFTkokenID,
+                "NFTokenTaxon": 0,
+                "TransferFee": 500,
+                "URI": "A random uri string",
+                "nft_serial": 93
+              }
+            ],
+            "ledger_current_index": 36554056,
+            "validated": false
+          },
+          "type": "response"
+        });
+      });
+
+      final dpi = tester.binding.window.devicePixelRatio;
+      tester.binding.window.physicalSizeTestValue = Size(w * dpi, h * dpi);
+
+      await tester.pumpWidget(MaterialApp(
+        title: "Dhali",
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+          textTheme: AppTheme.textTheme,
+          platform: TargetPlatform.iOS,
+        ),
+        home: NavigationHomeScreen(
+            firestore: firebaseMockInstance,
+            wallet: mockWallet,
+            getMintingRequest: (String path) => mockRequester),
+      ));
+
+      await tester.pumpAndSettle();
+
+      await utils.dragOutDrawer(tester);
+      await tester.tap(find.text("My assets"));
+      await tester.pump();
+      expect(find.byKey(const Key("loading_asset_key")), findsOneWidget);
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key("loading_asset_key")), findsNothing);
+      expect(find.text(theOtherAssetName), findsNothing);
+      expect(find.text(theAssetName), findsNothing);
+      // Do not test for 'my_asset_not_found' key here, since we can't determine
+      // this from the stream in the implementation.
+    });
   });
 }
