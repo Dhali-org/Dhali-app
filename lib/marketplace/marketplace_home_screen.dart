@@ -1,4 +1,7 @@
 import 'dart:async';
+import 'dart:math';
+
+import 'package:async/async.dart';
 
 import 'package:dhali/marketplace/model/asset_model.dart';
 import 'package:dhali/utils/Uploaders.dart';
@@ -8,13 +11,13 @@ import 'package:flutter/services.dart';
 import 'package:flutter_dropzone/flutter_dropzone.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:http/http.dart';
-import 'package:logger/logger.dart';
 import 'package:dhali/app_theme.dart';
 import 'package:dhali/marketplace/marketplace_dialogs.dart';
 import 'package:dhali/marketplace/marketplace_list_view.dart';
 import 'package:dhali/marketplace/model/marketplace_list_data.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:rxdart/rxdart.dart';
 import '../wallet/xrpl_wallet.dart';
 import 'asset_page.dart';
 import 'filters_screen.dart';
@@ -169,7 +172,6 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
     return widget.getWallet() != null
         ? FutureBuilder(
             builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-              var logger = Logger();
               if (!snapshot.hasData) {
                 return Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -181,41 +183,64 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                       CircularProgressIndicator()
                     ]);
               } else {
-                print(snapshot.data);
                 var nfTokenIDs =
                     (snapshot.data["result"]["account_nfts"] as List<dynamic>)
                         .map((x) => x["NFTokenID"])
                         .toList();
 
-                try {
-                  if (nfTokenIDs.isNotEmpty) {
+                final collection = widget
+                    .getFirestore()!
+                    .collection(Config.config!["MINTED_NFTS_COLLECTION_NAME"]);
+
+                if (nfTokenIDs.isNotEmpty) {
+                  // Firestore doesn't support 'in' clauses with more than 10
+                  // arguments, so we need to create multiple queries and merge
+                  // the streams to handle this case:
+                  const maxChunkSize = 9;
+                  if (nfTokenIDs.length > maxChunkSize) {
+                    List<Stream<QuerySnapshot<Map<String, dynamic>>>> streams =
+                        [];
+                    for (int i = 0; i < nfTokenIDs.length; i += maxChunkSize) {
+                      List<dynamic> chunk = nfTokenIDs.sublist(
+                          i,
+                          i + maxChunkSize > nfTokenIDs.length
+                              ? nfTokenIDs.length
+                              : i + maxChunkSize);
+
+                      // TODO: This limits to 20 - needs to handle cases with more than 20:
+                      final stream = collection
+                          .where(
+                              Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]
+                                  ["NFTOKEN_ID"],
+                              whereIn: chunk)
+                          .limit(20)
+                          .snapshots();
+
+                      // Add the documents from the current chunk query to the result list
+                      streams.add(stream);
+                    }
+
+                    Stream<List<QuerySnapshot<Map<String, dynamic>>>> stream =
+                        CombineLatestStream(
+                            streams,
+                            (values) => values
+                                as List<QuerySnapshot<Map<String, dynamic>>>);
+
+                    return getAssetStreamBuilderFromList(assetStream: stream);
+                  } else {
                     return getAssetStreamBuilder(
-                        assetStream: widget
-                            .getFirestore()!
-                            .collection(
-                                Config.config!["MINTED_NFTS_COLLECTION_NAME"])
+                        assetStream: collection
                             .where(
                                 Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]
                                     ["NFTOKEN_ID"],
                                 whereIn: nfTokenIDs)
                             .limit(20)
                             .snapshots());
-                  } else {
-                    return const Text(
-                      key: Key("my_asset_not_found"),
-                      "Your wallet has no assets",
-                      textAlign: TextAlign.center,
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
-                    );
                   }
-                } catch (e, stacktrace) {
-                  logger
-                      .e("Error loading NFTs: '$e'. Assets are not available.");
-                  logger.e("stacktrace: $stacktrace");
+                } else {
                   return const Text(
                     key: Key("my_asset_not_found"),
-                    "Unable to load assets, please try again later.",
+                    "Your wallet has no assets",
                     textAlign: TextAlign.center,
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
                   );
@@ -227,56 +252,78 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
         : Container();
   }
 
+  Widget getAssetStreamBuilderFromList(
+      {Stream<List<QuerySnapshot<Map<String, dynamic>>>>? assetStream}) {
+    return StreamBuilder(
+        stream: assetStream,
+        builder: (BuildContext context,
+            AsyncSnapshot<List<QuerySnapshot>> snapshot) {
+          if (snapshot.hasData) {
+            List<QueryDocumentSnapshot<Object?>> docs = [];
+            for (var docsFromStream in snapshot.data!) {
+              docs.addAll(docsFromStream.docs);
+            }
+            return getAssetGridView(docs);
+          } else {
+            return Center(
+                child: Container(
+                    child: Text("An error occured loading your assets")));
+          }
+        });
+  }
+
   Widget getAssetStreamBuilder(
       {Stream<QuerySnapshot<Map<String, dynamic>>>? assetStream}) {
     return StreamBuilder(
         stream: assetStream,
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-          if (snapshot.hasData) {
-            return GridView.builder(
-              itemCount: snapshot.data!.size,
-              padding: const EdgeInsets.only(top: 8),
-              scrollDirection: Axis.vertical,
-              gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                  maxCrossAxisExtent: 600, childAspectRatio: 3),
-              itemBuilder: (BuildContext context, int index) {
-                final int count =
-                    snapshot.data!.size > 10 ? 10 : snapshot.data!.size;
-                final Animation<double> animation =
-                    Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
-                        parent: animationController!,
-                        curve: Interval((1 / count) * index, 1.0,
-                            curve: Curves.fastOutSlowIn)));
-                animationController?.forward();
-                Map<String, dynamic> elementData =
-                    snapshot.data!.docs[index].data() as Map<String, dynamic>;
-                MarketplaceListData element = MarketplaceListData(
-                    assetID: snapshot.data!.docs[index].id,
-                    assetName: elementData[Config
-                        .config!["MINTED_NFTS_DOCUMENT_KEYS"]["ASSET_NAME"]],
-                    assetCategories: elementData[Config
-                        .config!["MINTED_NFTS_DOCUMENT_KEYS"]["CATEGORY"]],
-                    averageRuntime: elementData[
-                        Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]
-                            ["AVERAGE_INFERENCE_TIME_MS"]],
-                    rating: elementData[
-                        Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]
-                            ["NUMBER_OF_SUCCESSFUL_REQUESTS"]],
-                    pricePerRun: elementData[
-                        Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]
-                            ["EXPECTED_INFERENCE_COST_PER_MS"]]);
-                return MarketplaceListView(
-                  callback: displayAsset,
-                  marketplaceData: element,
-                  animation: animation,
-                  animationController: animationController!,
-                );
-              },
-            );
+          if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
+            return getAssetGridView(snapshot.data!.docs);
           } else {
             return const SizedBox();
           }
         });
+  }
+
+  Widget getAssetGridView(List<QueryDocumentSnapshot<Object?>> docs) {
+    return GridView.builder(
+      key: Key("asset_grid_view"),
+      itemCount: docs.length,
+      padding: const EdgeInsets.only(top: 8),
+      scrollDirection: Axis.vertical,
+      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+          maxCrossAxisExtent: 600, childAspectRatio: 3),
+      itemBuilder: (BuildContext context, int index) {
+        final int count = docs.length > 10 ? 10 : docs.length;
+        final Animation<double> animation = Tween<double>(begin: 0.0, end: 1.0)
+            .animate(CurvedAnimation(
+                parent: animationController!,
+                curve: Interval(min((1 / count) * index, 1.0), 1.0,
+                    curve: Curves.fastOutSlowIn)));
+        animationController?.forward();
+        Map<String, dynamic> elementData =
+            docs[index].data() as Map<String, dynamic>;
+        MarketplaceListData element = MarketplaceListData(
+            assetID: docs[index].id,
+            assetName: elementData[Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]
+                ["ASSET_NAME"]],
+            assetCategories: elementData[
+                Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]["CATEGORY"]],
+            averageRuntime: elementData[
+                Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]
+                    ["AVERAGE_INFERENCE_TIME_MS"]],
+            rating: elementData[Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]
+                ["NUMBER_OF_SUCCESSFUL_REQUESTS"]],
+            pricePerRun: elementData[Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]
+                ["EXPECTED_INFERENCE_COST_PER_MS"]]);
+        return MarketplaceListView(
+          callback: displayAsset,
+          marketplaceData: element,
+          animation: animation,
+          animationController: animationController!,
+        );
+      },
+    );
   }
 
   Widget getListUI() {
