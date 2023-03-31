@@ -678,7 +678,7 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                                                                             }
                                                                             String
                                                                                 dest =
-                                                                                "rstbSTpPcyxMsiXwkBxS9tFTrg2JsDNxWk"; // TODO : This should be Dhali's address
+                                                                                Config.config!["DHALI_PUBLIC_ADDRESS"]; // TODO : This should be Dhali's address
                                                                             var openChannelsFut =
                                                                                 wallet.getOpenPaymentChannels(destination_address: dest);
                                                                             String
