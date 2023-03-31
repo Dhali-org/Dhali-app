@@ -18,24 +18,19 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   await Config.loadConfig();
-  var entryPointUrlRoot =
-      const String.fromEnvironment('ENTRY_POINT_URL_ROOT', defaultValue: '');
-  if (entryPointUrlRoot == '') {
-    entryPointUrlRoot = Config.config!["ROOT_DEPLOY_URL"];
-  }
+
   await SystemChrome.setPreferredOrientations(<DeviceOrientation>[
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown
-  ]).then((_) => runApp(MyApp(getMintingRequest: (String path) {
-        String url = "$entryPointUrlRoot/$path/";
-        return MultipartRequest("POST", Uri.parse(url));
+  ]).then((_) => runApp(MyApp(getRequest: (String method, String path) {
+        return MultipartRequest(method, Uri.parse(path));
       })));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key, required this.getMintingRequest});
+  const MyApp({super.key, required this.getRequest});
 
-  final BaseRequest Function(String path) getMintingRequest;
+  final BaseRequest Function(String method, String path) getRequest;
 
   @override
   Widget build(BuildContext context) {
@@ -59,7 +54,7 @@ class MyApp extends StatelessWidget {
       ),
       home: NavigationHomeScreen(
         firestore: FirebaseFirestore.instance,
-        getMintingRequest: getMintingRequest,
+        getRequest: getRequest,
       ),
     );
   }

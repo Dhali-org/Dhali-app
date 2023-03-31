@@ -1,4 +1,5 @@
 import 'package:dhali/app_theme.dart';
+import 'package:dhali/wallet/xrpl_wallet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:http/http.dart';
@@ -7,8 +8,14 @@ import 'model/marketplace_list_data.dart';
 import 'package:dhali/config.dart' show Config;
 
 class AssetPage extends StatefulWidget {
-  const AssetPage({super.key, required this.asset});
+  const AssetPage(
+      {super.key,
+      required this.asset,
+      required this.getWallet,
+      required this.getRequest});
   final MarketplaceListData asset;
+  final XRPLWallet? Function() getWallet;
+  final BaseRequest Function(String method, String path) getRequest;
 
   @override
   State<AssetPage> createState() => _AssetPageState();

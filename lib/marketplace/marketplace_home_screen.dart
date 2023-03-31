@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:dhali/marketplace/model/asset_model.dart';
+import 'package:dhali/utils/Uploaders.dart';
 import 'package:dhali/wallet/home_screen.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/services.dart';
@@ -18,12 +20,13 @@ import 'filters_screen.dart';
 import 'marketplace_app_theme.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dhali/config.dart' show Config;
+import 'package:http/http.dart' as http;
 
 class MarketplaceHomeScreen extends StatefulWidget {
   const MarketplaceHomeScreen(
       {Key? key,
       required this.assetScreenType,
-      required this.getMintingRequest,
+      required this.getRequest,
       required this.getWallet,
       required this.setWallet,
       required this.getFirestore})
@@ -33,7 +36,7 @@ class MarketplaceHomeScreen extends StatefulWidget {
   final XRPLWallet? Function() getWallet;
   final FirebaseFirestore? Function() getFirestore;
 
-  final BaseRequest Function(String path) getMintingRequest;
+  final BaseRequest Function(String method, String path) getRequest;
   final assetScreenType;
   @override
   _AssetScreenState createState() => _AssetScreenState();
@@ -315,8 +318,14 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
   }
 
   void displayAsset(MarketplaceListData asset) {
-    Navigator.push(context,
-        MaterialPageRoute(builder: (context) => AssetPage(asset: asset)));
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => AssetPage(
+                  asset: asset,
+                  getRequest: widget.getRequest,
+                  getWallet: widget.getWallet,
+                )));
   }
 
   Widget getMarketplaceViewList() {
@@ -616,7 +625,7 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
 
                   return Dialog(
                     backgroundColor: Colors.transparent,
-                    child: DropzoneWidget(
+                    child: DropzoneDeployWidget(
                       onDroppedFile: ((file) {}),
                       onNextClicked: (asset, readme) {
                         Navigator.of(context).pop();
@@ -651,7 +660,7 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                                                                       Colors
                                                                           .transparent,
                                                                   child:
-                                                                      FinalCostWidget(
+                                                                      DeploymentCostWidget(
                                                                     file: asset,
                                                                     earningsInferenceCost:
                                                                         earningsInferenceCost,
@@ -721,6 +730,10 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                                                                                           channel = returnedChannel;
                                                                                         }
                                                                                       });
+                                                                                      var entryPointUrlRoot = const String.fromEnvironment('ENTRY_POINT_URL_ROOT', defaultValue: '');
+                                                                                      if (entryPointUrlRoot == '') {
+                                                                                        entryPointUrlRoot = Config.config!["ROOT_DEPLOY_URL"];
+                                                                                      }
                                                                                       if (channel != null) {
                                                                                         print(Config.config);
                                                                                         Map<String, String> payment = {
@@ -730,16 +743,20 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                                                                                           Config.config!["PAYMENT_CLAIM_KEYS"]["SIGNATURE"]: wallet.sendDrops(authAmount, channel.channelId),
                                                                                           Config.config!["PAYMENT_CLAIM_KEYS"]["CHANNEL_ID"]: channel.channelId
                                                                                         };
-
-                                                                                        return ImageDeployWidget(
+                                                                                        return DataTransmissionWidget(
+                                                                                          getUploader: ({required payment, required getRequest, required dynamic Function(double) progressStatus, required int maxChunkSize, required AssetModel model}) {
+                                                                                            return DeployUploader(payment: payment, getRequest: getRequest, progressStatus: progressStatus, model: model, maxChunkSize: maxChunkSize, getWallet: widget.getWallet);
+                                                                                          },
                                                                                           payment: payment,
-                                                                                          getMintingRequest: widget.getMintingRequest,
-                                                                                          asset: asset,
-                                                                                          readme: readme,
-                                                                                          onNextClicked: (asset, readme) {},
-                                                                                          onNFTOfferPoll: onNFTOfferPoll,
-                                                                                          nfTokenIdStream: nfTokenIdStream,
-                                                                                          getWallet: widget.getWallet,
+                                                                                          getRequest: widget.getRequest,
+                                                                                          data: [
+                                                                                            DataEndpointPair(data: asset, endPoint: "$entryPointUrlRoot/${Config.config!["POST_DEPLOY_ASSET_ROUTE"]}/"),
+                                                                                            DataEndpointPair(data: readme, endPoint: "$entryPointUrlRoot/${Config.config!["POST_DEPLOY_README_ROUTE"]}/"),
+                                                                                          ],
+                                                                                          onNextClicked: (data) {},
+                                                                                          getOnSuccessWidget: (BuildContext context, BaseResponse? _) {
+                                                                                            return NFTUploadingWidget(context, nfTokenIdStream, onNFTOfferPoll);
+                                                                                          },
                                                                                         );
                                                                                       }
                                                                                       var newChannelsFut = wallet.openPaymentChannel(dest, amount);
@@ -754,16 +771,21 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                                                                                               Config.config!["PAYMENT_CLAIM_KEYS"]["SIGNATURE"]: wallet.sendDrops(authAmount, snapshot.data!.channelId),
                                                                                               Config.config!["PAYMENT_CLAIM_KEYS"]["CHANNEL_ID"]: snapshot.data!.channelId
                                                                                             };
-                                                                                            return ImageDeployWidget(
-                                                                                              payment: payment,
-                                                                                              getMintingRequest: widget.getMintingRequest,
-                                                                                              asset: asset,
-                                                                                              readme: readme,
-                                                                                              onNextClicked: (asset, readme) {},
-                                                                                              onNFTOfferPoll: onNFTOfferPoll,
-                                                                                              nfTokenIdStream: nfTokenIdStream,
-                                                                                              getWallet: widget.getWallet,
-                                                                                            );
+
+                                                                                            return DataTransmissionWidget(
+                                                                                                getUploader: ({required payment, required getRequest, required dynamic Function(double) progressStatus, required int maxChunkSize, required AssetModel model}) {
+                                                                                                  return DeployUploader(payment: payment, getRequest: getRequest, progressStatus: progressStatus, model: model, maxChunkSize: maxChunkSize, getWallet: widget.getWallet);
+                                                                                                },
+                                                                                                payment: payment,
+                                                                                                getRequest: widget.getRequest,
+                                                                                                data: [
+                                                                                                  DataEndpointPair(data: asset, endPoint: "$entryPointUrlRoot/${Config.config!["POST_DEPLOY_ASSET_ROUTE"]}/"),
+                                                                                                  DataEndpointPair(data: readme, endPoint: "$entryPointUrlRoot/${Config.config!["POST_DEPLOY_README_ROUTE"]}/"),
+                                                                                                ],
+                                                                                                onNextClicked: (data) {},
+                                                                                                getOnSuccessWidget: (BuildContext context, BaseResponse? _) {
+                                                                                                  return NFTUploadingWidget(context, nfTokenIdStream, onNFTOfferPoll);
+                                                                                                });
                                                                                           }
                                                                                           return Container();
                                                                                         },
