@@ -1,4 +1,5 @@
 import 'package:dhali/app_theme.dart';
+import 'package:dhali/consumer_workflow.dart';
 import 'package:dhali/wallet/xrpl_wallet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
@@ -93,7 +94,18 @@ class _AssetPageState extends State<AssetPage> {
                       backgroundColor: AppTheme.grey,
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(4))),
-                  onPressed: () => {},
+                  onPressed: () => {
+                    showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return consumerJourney(
+                              context: context,
+                              runURL:
+                                  "${Config.config!["ROOT_RUN_URL"]}/${widget.asset.assetID}/run",
+                              getWallet: widget.getWallet,
+                              getRequest: widget.getRequest);
+                        })
+                  },
                   icon: const Icon(
                     Icons.navigate_next_outlined,
                     size: 32,
