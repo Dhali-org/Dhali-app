@@ -78,7 +78,7 @@ class _DropzoneRunWidgetState extends State<DropzoneRunWidget> {
                       textAlign: TextAlign.center,
                       this.input != null
                           ? "Selected input file: ${this.input!.fileName}"
-                          : "No file selected",
+                          : "No input file selected",
                       style: TextStyle(
                           fontSize: 20,
                           color: isHighlighted
@@ -118,7 +118,7 @@ class _DropzoneRunWidgetState extends State<DropzoneRunWidget> {
                   children: [
                     Text(
                       textAlign: TextAlign.center,
-                      "Drag or select your files",
+                      "Drag or select your input file",
                       style: TextStyle(
                           fontSize: 30,
                           color: isHighlighted
@@ -149,7 +149,7 @@ class _DropzoneRunWidgetState extends State<DropzoneRunWidget> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     getFileUploadButton(const Key("choose_run_input"),
-                        "Choose file", [], AppTheme.dark_grey),
+                        "Choose input file", [], AppTheme.dark_grey),
                     const SizedBox(
                       width: 16,
                     ),
@@ -211,8 +211,15 @@ class _DropzoneRunWidgetState extends State<DropzoneRunWidget> {
             acceptFile(events.first);
           } else {
             // TODO : This should be injectable
-            acceptFile(html.File(
-                [1, 2, 3, 4, 5, 6, 7], "test.tar", {"type": mime[0]}));
+            if (mime.isNotEmpty) {
+              acceptFile(html.File(
+                  [1, 2, 3, 4, 5, 6, 7], "test.tar", {"type": mime[0]}));
+            } else {
+              acceptFile(html.File(
+                [1, 2, 3, 4, 5, 6, 7],
+                "test.tar",
+              ));
+            }
           }
         },
         icon: const Icon(

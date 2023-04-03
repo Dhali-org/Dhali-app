@@ -2,6 +2,7 @@ import 'package:dhali/app_theme.dart';
 import 'package:dhali/config.dart';
 import 'package:dhali/marketplace/marketplace_dialogs.dart';
 import 'package:dhali/marketplace/model/asset_model.dart';
+import 'package:dhali/marketplace/model/marketplace_list_data.dart';
 import 'package:dhali/utils/Uploaders.dart';
 import 'package:dhali/utils/payment.dart';
 import 'package:dhali/wallet/xrpl_wallet.dart';
@@ -14,6 +15,7 @@ import 'dart:convert';
 
 Widget consumerJourney(
     {required BuildContext context,
+    required MarketplaceListData assetDescriptor,
     required String runURL,
     required XRPLWallet? Function() getWallet,
     required BaseRequest Function(String method, String path) getRequest}) {
@@ -33,6 +35,7 @@ Widget consumerJourney(
             context: context,
             builder: (BuildContext context) => costDialog(
                 context: context,
+                assetDescriptor: assetDescriptor,
                 runURL: runURL,
                 input: asset,
                 getWallet: getWallet,
@@ -44,6 +47,7 @@ Widget consumerJourney(
 
 Dialog costDialog(
     {required BuildContext context,
+    required MarketplaceListData assetDescriptor,
     required String runURL,
     required AssetModel input,
     required XRPLWallet? Function() getWallet,
@@ -52,7 +56,8 @@ Dialog costDialog(
       backgroundColor: Colors.transparent,
       child: InferenceCostWidget(
         file: input,
-        inferenceCost: 10, // TODO : Get this number dynamically
+        inferenceCost:
+            assetDescriptor.pricePerRun, // TODO : Get this number dynamically
         yesClicked: ((asset, earningsInferenceCost) {
           showDialog(
               context: context,
