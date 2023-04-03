@@ -1042,15 +1042,28 @@ class _DataTransmissionWidgetState extends State<DataTransmissionWidget> {
   BaseResponse? response;
   double progressBarPercentage = 0;
   late BaseUploader uploadRequest;
+  String? sessionID;
 
   @override
   void initState() {
     currentFileUploading = widget.data[0].data.fileName;
     super.initState();
+
+    var logger = Logger();
+
     Future.forEach(widget.data, (element) async {
       var castedElement = element as DataEndpointPair;
-      await uploader(
-          castedElement.data, widget.payment, castedElement.endPoint);
+      final response = await uploader(
+          castedElement.data, widget.payment, castedElement.endPoint,
+          sessionID: sessionID);
+      try {
+        sessionID = json.decode(response)["sessionID"];
+      } on FormatException catch (_) {
+        return;
+      } catch (e, stacktrace) {
+        logger.e("Unexpected response from asset deployment, with error: ${e} "
+            "and stacktrace: ${stacktrace}");
+      }
     });
   }
 
@@ -1144,8 +1157,8 @@ class _DataTransmissionWidgetState extends State<DataTransmissionWidget> {
                 : uploadFailed(context, responseCode!));
   }
 
-  Future uploader(
-      AssetModel file, Map<String, String> payment, String path) async {
+  Future uploader(AssetModel file, Map<String, String> payment, String path,
+      {String? sessionID}) async {
     uploadRequest = widget.getUploader(
         payment: const JsonEncoder().convert(payment),
         getRequest: widget.getRequest,
@@ -1165,7 +1178,8 @@ class _DataTransmissionWidgetState extends State<DataTransmissionWidget> {
         model: file,
         maxChunkSize: 1024 * 1024 * 10);
 
-    response = await uploadRequest.upload(path);
+    final response =
+        await uploadRequest.upload(path, sessionID: sessionID) as Response;
 
     setState(() {
       if (response != null) {
@@ -1179,6 +1193,7 @@ class _DataTransmissionWidgetState extends State<DataTransmissionWidget> {
         uploadWasSuccessful = false;
       }
     });
+    return response.body;
   }
 }
 
@@ -1235,8 +1250,14 @@ Widget uploadFailed(BuildContext context, int responseCode) {
 
 Widget NFTUploadingWidget(
     BuildContext context,
-    Stream<DocumentSnapshot<Map<String, dynamic>>> nfTokenIdStream,
-    void onNFTOfferPoll(String nfTokenId)) {
+    FirebaseFirestore? Function() getFirestore,
+    void onNFTOfferPoll(String nfTokenId),
+    String? Function() getSessionID) {
+  var nfTokenIdStream = getFirestore()!
+      .collection(Config.config!["MINTED_NFTS_COLLECTION_NAME"])
+      .doc(getSessionID())
+      .snapshots();
+
   return StreamBuilder(
       stream: nfTokenIdStream,
       builder: (BuildContext _,

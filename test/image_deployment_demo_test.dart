@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:developer';
 import 'dart:convert';
 
@@ -141,7 +142,6 @@ void imageDeploymentDemo(
       Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]["NFTOKEN_ID"]:
           "some_NFToken_id",
     });
-    await tester.pump();
 
     expect(find.byKey(const Key("minting_nft_spinner")), findsNothing);
     expect(find.byKey(const Key("upload_success_info")), findsOneWidget);
@@ -243,8 +243,12 @@ void main() async {
       var mockRequester = MockMultipartRequest();
       int responseCode = 200;
 
-      when(mockRequester.send()).thenAnswer(
-          (_) async => StreamedResponse(Stream.empty(), responseCode));
+      final responseStreamController = StreamController<List<int>>();
+      final theResponseJson = utf8.encode("{'sessionID': 'some_session_id'}");
+      responseStreamController.add(theResponseJson);
+
+      when(mockRequester.send()).thenAnswer((_) async =>
+          StreamedResponse(responseStreamController.stream, responseCode));
       when(mockRequester.headers).thenAnswer((_) => {});
       final dpi = tester.binding.window.devicePixelRatio;
       tester.binding.window.physicalSizeTestValue = Size(w * dpi, h * dpi);

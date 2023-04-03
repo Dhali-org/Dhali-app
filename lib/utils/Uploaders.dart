@@ -58,7 +58,7 @@ int chunksCount(AssetModel model, int maxChunkSize) {
 abstract class BaseUploader {
   bool _cancel = false;
   bool _complete = false;
-  Future<BaseResponse?> upload(String path);
+  Future<BaseResponse?> upload(String path, {String? sessionID});
   void cancelUpload() => _cancel = true;
 }
 
@@ -86,13 +86,16 @@ class RunUploader extends BaseUploader {
   }
 
   @override
-  Future<BaseResponse?> upload(String path) async {
+  Future<BaseResponse?> upload(String path, {String? sessionID}) async {
     Wakelock.enable();
     var logger = Logger();
     StreamedResponse? finalResponse;
     int i = 0;
     int maxNumberOfRetries = 10;
     int retries = 0;
+
+    String? responseJson;
+    int statusCode = HttpStatus.internalServerError;
     while (i < chunksCount(model, _maxChunkSize)) {
       try {
         if (_cancel) {
@@ -124,11 +127,19 @@ class RunUploader extends BaseUploader {
         finalResponse = await request.send();
         logger.d("Sent request");
 
+        var responseString = await finalResponse.stream.bytesToString();
+        logger.d("Response: $responseString");
+
         if (finalResponse.statusCode != 200 &&
             finalResponse.statusCode != 308) {
-          return StreamedResponse(Stream.empty(), finalResponse.statusCode);
+          final message = finalResponse.reasonPhrase == null
+              ? "no 'reasonPhrase' provided"
+              : finalResponse.reasonPhrase!;
+          return Response('{info: $message}', finalResponse.statusCode);
         }
-        // TODO : Deal with response appropriately
+
+        responseJson = responseString;
+        statusCode = finalResponse.statusCode;
 
         _updateProgress(model, progressStatus, _maxChunkSize, i + 1, _complete);
         i = i + 1;
@@ -141,10 +152,12 @@ class RunUploader extends BaseUploader {
         logger.d("Chunk $i was interupted: ${e.toString()}. Retry $retries.");
       }
     }
+    assert(responseJson != null);
+    final uploadResponse = Response(responseJson!, statusCode);
     _complete = true;
     _updateProgress(model, progressStatus, _maxChunkSize, i + 1, _complete);
     Wakelock.disable();
-    return finalResponse;
+    return uploadResponse;
   }
 }
 
@@ -172,19 +185,24 @@ class DeployUploader extends BaseUploader {
   }
 
   @override
-  Future<BaseResponse?> upload(String path) async {
+  Future<BaseResponse?> upload(String path, {String? sessionID}) async {
     Wakelock.enable();
     var logger = Logger();
     StreamedResponse? finalResponse;
     int i = 0;
     int maxNumberOfRetries = 10;
     int retries = 0;
+    String? responseJson;
+    int statusCode = HttpStatus.internalServerError;
+
     while (i < chunksCount(model, _maxChunkSize)) {
       try {
         if (_cancel) {
           _cancel = false;
-          return Response("{'info': 'Client request cancelled'}", 400);
+          return Response("{'info': 'Client request cancelled'}",
+              HttpStatus.connectionClosedWithoutResponse);
         }
+
         final start = _getChunkStart(_maxChunkSize, i);
         final end = _getChunkEnd(model, _maxChunkSize, i);
         final chunkStream = _getChunkStream(model, start, end);
@@ -208,6 +226,10 @@ class DeployUploader extends BaseUploader {
           "labels": ""
         };
 
+        if (sessionID != null) {
+          fields["sessionID"] = sessionID;
+        }
+
         if (request.runtimeType == http.MultipartRequest) {
           (request as http.MultipartRequest).fields.addAll(fields);
           logger.d("Preparing file in body");
@@ -220,15 +242,21 @@ class DeployUploader extends BaseUploader {
         }
 
         logger.d("Sending request");
-        finalResponse = await request.send();
+        final finalResponse = await request.send();
         logger.d("Sent request");
 
+        var responseString = await finalResponse.stream.bytesToString();
+        logger.d("Response: $responseString");
         if (finalResponse.statusCode != 200 &&
             finalResponse.statusCode != 308) {
-          return StreamedResponse(Stream.empty(), finalResponse.statusCode,
-              reasonPhrase: finalResponse.reasonPhrase);
+          final message = finalResponse.reasonPhrase == null
+              ? "no 'reasonPhrase' provided"
+              : finalResponse.reasonPhrase!;
+          return Response('{info: $message}', finalResponse.statusCode);
         }
-        // TODO : Deal with response appropriately
+
+        responseJson = responseString;
+        statusCode = finalResponse.statusCode;
 
         _updateProgress(model, progressStatus, _maxChunkSize, i + 1, _complete);
         i = i + 1;
@@ -241,9 +269,12 @@ class DeployUploader extends BaseUploader {
         logger.d("Chunk $i was interupted: ${e.toString()}. Retry $retries.");
       }
     }
+
+    assert(responseJson != null);
+    final uploadResponse = Response(responseJson!, statusCode);
     _complete = true;
     _updateProgress(model, progressStatus, _maxChunkSize, i + 1, _complete);
     Wakelock.disable();
-    return finalResponse;
+    return uploadResponse;
   }
 }
