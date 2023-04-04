@@ -154,7 +154,7 @@ void imageDeploymentDemo(
   }
   await tester.tap(find.byKey(const Key("exit_deployment_dialogs")));
   await tester.pump();
-  expect(find.byType(ImageDeployWidget), findsNothing);
+  expect(find.byType(DataTransmissionWidget), findsNothing);
   expect(find.byType(MarketplaceHomeScreen), findsOneWidget);
 }
 
@@ -229,7 +229,7 @@ void main() async {
         home: NavigationHomeScreen(
             firestore: firebaseMockInstance,
             wallet: mockWallet,
-            getMintingRequest: (String path) => mockRequester),
+            getRequest: (String method, String path) => mockRequester),
       ));
 
       await tester.pumpAndSettle();
@@ -260,7 +260,7 @@ void main() async {
         home: NavigationHomeScreen(
             firestore: firebaseMockInstance,
             wallet: mockWallet,
-            getMintingRequest: (String path) => mockRequester),
+            getRequest: (String method, String path) => mockRequester),
       ));
 
       await tester.pumpAndSettle();

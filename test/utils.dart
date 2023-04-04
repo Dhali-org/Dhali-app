@@ -31,7 +31,8 @@ const publicConfig = '''
     "POST_RUN_INFERENCE_ROUTE": "run",
     "POST_DEPLOY_ASSET_ROUTE": "asset",
     "ROOT_DEPLOY_URL": "https://kernml-3mmgxhct.uc.gateway.dev",
-    "ROOT_CONSUMER_URL": "https://kernml-consumer-3mmgxhct.uc.gateway.dev"
+    "ROOT_CONSUMER_URL": "https://kernml-consumer-3mmgxhct.uc.gateway.dev",
+    "DHALI_PUBLIC_ADDRESS": "rstbSTpPcyxMsiXwkBxS9tFTrg2JsDNxWk"
 }
 ''';
 

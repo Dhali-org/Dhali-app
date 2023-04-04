@@ -133,7 +133,7 @@ void main() async {
         home: NavigationHomeScreen(
             firestore: firebaseMockInstance,
             wallet: mockWallet,
-            getMintingRequest: (String path) => mockRequester),
+            getRequest: (String method, String path) => mockRequester),
       ));
 
       await tester.pumpAndSettle();
@@ -180,7 +180,7 @@ void main() async {
         home: NavigationHomeScreen(
             firestore: firebaseMockInstance,
             wallet: mockWallet,
-            getMintingRequest: (String path) => mockRequester),
+            getRequest: (String method, String path) => mockRequester),
       ));
 
       await tester.pumpAndSettle();

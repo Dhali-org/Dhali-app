@@ -18,10 +18,10 @@ class NavigationHomeScreen extends StatefulWidget {
   const NavigationHomeScreen(
       {this.drawerIndex,
       this.wallet,
-      required this.getMintingRequest,
+      required this.getRequest,
       required this.firestore});
 
-  final BaseRequest Function(String path) getMintingRequest;
+  final BaseRequest Function(String method, String path) getRequest;
   final FirebaseFirestore firestore;
 
   final DrawerIndex? drawerIndex;
@@ -135,7 +135,7 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
   Widget? getScreenView(drawerIndex) {
     screenView = MarketplaceHomeScreen(
         key: const Key("Marketplace"), // Key used to force State rebuild
-        getMintingRequest: widget.getMintingRequest,
+        getRequest: widget.getRequest,
         assetScreenType: AssetScreenType.Marketplace,
         getWallet: getWallet,
         setWallet: setWallet,
@@ -154,7 +154,7 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
         setState(() {
           screenView = MarketplaceHomeScreen(
             key: const Key("My Assets"), // Key used to force State rebuild
-            getMintingRequest: widget.getMintingRequest,
+            getRequest: widget.getRequest,
             assetScreenType: AssetScreenType.MyAssets,
             getWallet: getWallet,
             setWallet: setWallet,
@@ -166,7 +166,7 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
         setState(() {
           screenView = MarketplaceHomeScreen(
               key: const Key("Marketplace"), // Key used to force State rebuild
-              getMintingRequest: widget.getMintingRequest,
+              getRequest: widget.getRequest,
               assetScreenType: AssetScreenType.Marketplace,
               getWallet: getWallet,
               setWallet: setWallet,

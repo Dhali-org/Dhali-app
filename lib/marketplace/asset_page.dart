@@ -1,4 +1,6 @@
 import 'package:dhali/app_theme.dart';
+import 'package:dhali/consumer_workflow.dart';
+import 'package:dhali/wallet/xrpl_wallet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:http/http.dart';
@@ -7,8 +9,16 @@ import 'model/marketplace_list_data.dart';
 import 'package:dhali/config.dart' show Config;
 
 class AssetPage extends StatefulWidget {
-  const AssetPage({super.key, required this.asset});
+  const AssetPage(
+      {super.key,
+      required this.asset,
+      required this.getWallet,
+      required this.getRequest,
+      this.getReadme});
   final MarketplaceListData asset;
+  final XRPLWallet? Function() getWallet;
+  final BaseRequest Function(String method, String path) getRequest;
+  final Future<Response> Function(Uri path)? getReadme;
 
   @override
   State<AssetPage> createState() => _AssetPageState();
@@ -17,10 +27,17 @@ class AssetPage extends StatefulWidget {
 class _AssetPageState extends State<AssetPage> {
   @override
   Widget build(BuildContext context) {
-    var future = get(
-      Uri.parse(
-          "${Config.config!["ROOT_CONSUMER_URL"]}/${widget.asset.assetID}/${Config.config!['POST_DEPLOY_README_ROUTE']}"),
-    );
+    var future;
+    var uri = Uri.parse(
+        "${Config.config!["ROOT_CONSUMER_URL"]}/${widget.asset.assetID}/${Config.config!['GET_READMES_ROUTE']}");
+    if (widget.getReadme == null) {
+      future = get(
+        uri,
+      );
+    } else {
+      // typically executed when mocking
+      future = widget.getReadme!(uri);
+    }
     return Scaffold(
         appBar: AppBar(
           centerTitle: false,
@@ -32,7 +49,10 @@ class _AssetPageState extends State<AssetPage> {
                 style: TextStyle(color: Colors.black, fontSize: 28),
               ),
               Text(
-                "Categories: ${widget.asset.assetName}",
+                widget.asset.assetCategories.isNotEmpty
+                    ? "Categories: ${widget.asset.assetCategories}"
+                    : "Categories: NONE",
+                key: Key("categories_in_asset_page"),
                 style: TextStyle(color: Colors.black, fontSize: 20),
               ),
             ],
@@ -51,9 +71,14 @@ class _AssetPageState extends State<AssetPage> {
                 builder:
                     (BuildContext context, AsyncSnapshot<Response> snapshot) {
                   if (snapshot.hasData) {
-                    return Markdown(data: snapshot.data!.body);
+                    return Markdown(
+                        key: const Key("asset_page_readme"),
+                        data: snapshot.data!.body);
                   } else {
-                    return const Center(child: CircularProgressIndicator());
+                    return const Center(
+                        child: CircularProgressIndicator(
+                      key: Key("asset_circular_spinner"),
+                    ));
                   }
                 },
                 future: future)),
@@ -86,7 +111,19 @@ class _AssetPageState extends State<AssetPage> {
                       backgroundColor: AppTheme.grey,
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(4))),
-                  onPressed: () => {},
+                  onPressed: () => {
+                    showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return consumerJourney(
+                              assetDescriptor: widget.asset,
+                              context: context,
+                              runURL:
+                                  "${Config.config!["ROOT_RUN_URL"]}/${widget.asset.assetID}/run",
+                              getWallet: widget.getWallet,
+                              getRequest: widget.getRequest);
+                        })
+                  },
                   icon: const Icon(
                     Icons.navigate_next_outlined,
                     size: 32,

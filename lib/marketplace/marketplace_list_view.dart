@@ -33,6 +33,7 @@ class MarketplaceListView extends StatelessWidget {
               padding: const EdgeInsets.only(
                   left: 24, right: 24, top: 8, bottom: 16),
               child: InkWell(
+                key: Key(marketplaceData!.assetID),
                 splashColor: Colors.transparent,
                 onTap: () => callback(marketplaceData!),
                 child: Container(
@@ -61,7 +62,7 @@ class MarketplaceListView extends StatelessWidget {
                               const Spacer(),
                               FittedBox(
                                   fit: BoxFit.fitWidth,
-                                  child: SelectableText(
+                                  child: Text(
                                     marketplaceData!.assetName,
                                     style: const TextStyle(
                                       fontWeight: FontWeight.w600,
