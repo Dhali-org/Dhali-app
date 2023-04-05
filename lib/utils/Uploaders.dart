@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
+import 'package:dhali/config.dart';
 import 'package:dhali/wallet/xrpl_wallet.dart';
 import 'package:flutter/widgets.dart';
 import "package:universal_html/html.dart";
@@ -93,9 +95,6 @@ class RunUploader extends BaseUploader {
     int i = 0;
     int maxNumberOfRetries = 10;
     int retries = 0;
-
-    String? responseJson;
-    int statusCode = HttpStatus.internalServerError;
     while (i < chunksCount(model, _maxChunkSize)) {
       try {
         if (_cancel) {
@@ -127,19 +126,11 @@ class RunUploader extends BaseUploader {
         finalResponse = await request.send();
         logger.d("Sent request");
 
-        var responseString = await finalResponse.stream.bytesToString();
-        logger.d("Response: $responseString");
-
         if (finalResponse.statusCode != 200 &&
             finalResponse.statusCode != 308) {
-          final message = finalResponse.reasonPhrase == null
-              ? "no 'reasonPhrase' provided"
-              : finalResponse.reasonPhrase!;
-          return Response('{info: $message}', finalResponse.statusCode);
+          return StreamedResponse(Stream.empty(), finalResponse.statusCode);
         }
-
-        responseJson = responseString;
-        statusCode = finalResponse.statusCode;
+        // TODO : Deal with response appropriately
 
         _updateProgress(model, progressStatus, _maxChunkSize, i + 1, _complete);
         i = i + 1;
@@ -152,12 +143,10 @@ class RunUploader extends BaseUploader {
         logger.d("Chunk $i was interupted: ${e.toString()}. Retry $retries.");
       }
     }
-    assert(responseJson != null);
-    final uploadResponse = Response(responseJson!, statusCode);
     _complete = true;
     _updateProgress(model, progressStatus, _maxChunkSize, i + 1, _complete);
     Wakelock.disable();
-    return uploadResponse;
+    return finalResponse;
   }
 }
 
@@ -192,17 +181,12 @@ class DeployUploader extends BaseUploader {
     int i = 0;
     int maxNumberOfRetries = 10;
     int retries = 0;
-    String? responseJson;
-    int statusCode = HttpStatus.internalServerError;
-
     while (i < chunksCount(model, _maxChunkSize)) {
       try {
         if (_cancel) {
           _cancel = false;
-          return Response("{'info': 'Client request cancelled'}",
-              HttpStatus.connectionClosedWithoutResponse);
+          return Response("{'info': 'Client request cancelled'}", 400);
         }
-
         final start = _getChunkStart(_maxChunkSize, i);
         final end = _getChunkEnd(model, _maxChunkSize, i);
         final chunkStream = _getChunkStream(model, start, end);
@@ -216,6 +200,9 @@ class DeployUploader extends BaseUploader {
           "Payment-Claim": payment // TODO : This header argument will
           // likely be derived from the client wallet
         };
+        if (sessionID != null) {
+          header[Config.config!["DHALI_ID"]] = sessionID;
+        }
         request.headers.addAll(header);
 
         logger.d("Preparing fields in body");
@@ -225,10 +212,6 @@ class DeployUploader extends BaseUploader {
           "walletID": getWallet()!.address,
           "labels": ""
         };
-
-        if (sessionID != null) {
-          fields["sessionID"] = sessionID;
-        }
 
         if (request.runtimeType == http.MultipartRequest) {
           (request as http.MultipartRequest).fields.addAll(fields);
@@ -242,21 +225,23 @@ class DeployUploader extends BaseUploader {
         }
 
         logger.d("Sending request");
-        final finalResponse = await request.send();
+        finalResponse = await request.send();
         logger.d("Sent request");
 
-        var responseString = await finalResponse.stream.bytesToString();
-        logger.d("Response: $responseString");
         if (finalResponse.statusCode != 200 &&
             finalResponse.statusCode != 308) {
-          final message = finalResponse.reasonPhrase == null
-              ? "no 'reasonPhrase' provided"
-              : finalResponse.reasonPhrase!;
-          return Response('{info: $message}', finalResponse.statusCode);
+          return StreamedResponse(Stream.empty(), finalResponse.statusCode,
+              reasonPhrase: finalResponse.reasonPhrase);
         }
-
-        responseJson = responseString;
-        statusCode = finalResponse.statusCode;
+        try {
+          sessionID = finalResponse!
+              .headers[Config.config!["DHALI_ID"].toString().toLowerCase()];
+        } catch (e, stacktrace) {
+          throw FormatException(
+              "Unexpected response from asset deployment, with error: ${e} "
+              "and stacktrace: ${stacktrace}");
+        }
+        // TODO : Deal with response appropriately
 
         _updateProgress(model, progressStatus, _maxChunkSize, i + 1, _complete);
         i = i + 1;
@@ -269,12 +254,9 @@ class DeployUploader extends BaseUploader {
         logger.d("Chunk $i was interupted: ${e.toString()}. Retry $retries.");
       }
     }
-
-    assert(responseJson != null);
-    final uploadResponse = Response(responseJson!, statusCode);
     _complete = true;
     _updateProgress(model, progressStatus, _maxChunkSize, i + 1, _complete);
     Wakelock.disable();
-    return uploadResponse;
+    return finalResponse;
   }
 }

@@ -1053,11 +1053,12 @@ class _DataTransmissionWidgetState extends State<DataTransmissionWidget> {
 
     Future.forEach(widget.data, (element) async {
       var castedElement = element as DataEndpointPair;
-      final response = await uploader(
+      response = await uploader(
           castedElement.data, widget.payment, castedElement.endPoint,
           sessionID: sessionID);
       try {
-        sessionID = json.decode(response)["sessionID"];
+        sessionID = response!
+            .headers[Config.config!["DHALI_ID"].toString().toLowerCase()];
       } on FormatException catch (_) {
         return;
       } catch (e, stacktrace) {
@@ -1157,7 +1158,8 @@ class _DataTransmissionWidgetState extends State<DataTransmissionWidget> {
                 : uploadFailed(context, responseCode!));
   }
 
-  Future uploader(AssetModel file, Map<String, String> payment, String path,
+  Future<BaseResponse> uploader(
+      AssetModel file, Map<String, String> payment, String path,
       {String? sessionID}) async {
     uploadRequest = widget.getUploader(
         payment: const JsonEncoder().convert(payment),
@@ -1168,32 +1170,29 @@ class _DataTransmissionWidgetState extends State<DataTransmissionWidget> {
             progressBarPercentage = progressPercentage;
             if (progressPercentage >= 1) {
               currentFileIndexUploading += 1;
-              if (currentFileIndexUploading > widget.data.length) {
-                deploying = false;
-                uploadWasSuccessful = true;
-              }
             }
           });
         },
         model: file,
         maxChunkSize: 1024 * 1024 * 10);
 
-    final response =
-        await uploadRequest.upload(path, sessionID: sessionID) as Response;
+    final response = await uploadRequest.upload(path, sessionID: sessionID)
+        as StreamedResponse;
 
     setState(() {
       if (response != null) {
         responseCode = response!.statusCode;
+        if (currentFileIndexUploading > widget.data.length) {
+          deploying = false;
+          uploadWasSuccessful = true;
+        }
         if (responseCode != 200) {
           deploying = false;
           uploadWasSuccessful = false;
         }
-      } else {
-        deploying = false;
-        uploadWasSuccessful = false;
       }
     });
-    return response.body;
+    return response;
   }
 }
 

@@ -100,7 +100,6 @@ Dialog run(
               }
             });
             if (channel != null) {
-              print("\n\n\n\n\nDataTransmissionWidget 1\n\n\n\n\n");
               return DataTransmissionWidget(
                 getUploader: (
                     {required payment,
@@ -134,7 +133,6 @@ Dialog run(
             return FutureBuilder<PaymentChannelDescriptor>(
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
-                  print("\n\n\n\n\nDataTransmissionWidget 2\n\n\n\n\n");
                   return DataTransmissionWidget(
                     getUploader: (
                         {required payment,

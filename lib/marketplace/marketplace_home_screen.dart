@@ -722,6 +722,7 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                                                                                 backgroundColor: Colors.transparent,
                                                                                 child: FutureBuilder<List<PaymentChannelDescriptor>>(
                                                                                   builder: (context, snapshot) {
+                                                                                    final exceptionString = "The NFTUploadingWidget must have access to ${Config.config!["DHALI_ID"]}";
                                                                                     if (snapshot.hasData) {
                                                                                       dynamic channel = null;
 
@@ -754,8 +755,12 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                                                                                             DataEndpointPair(data: readme, endPoint: "$entryPointUrlRoot/${Config.config!["POST_DEPLOY_README_ROUTE"]}/"),
                                                                                           ],
                                                                                           onNextClicked: (data) {},
-                                                                                          getOnSuccessWidget: (BuildContext context, BaseResponse? _) {
-                                                                                            return NFTUploadingWidget(context, nfTokenIdStream, onNFTOfferPoll);
+                                                                                          getOnSuccessWidget: (BuildContext context, BaseResponse? response) {
+                                                                                            if (response == null || !response.headers.containsKey(Config.config!["DHALI_ID"].toString().toLowerCase())) {
+                                                                                              throw Exception(exceptionString);
+                                                                                            }
+
+                                                                                            return NFTUploadingWidget(context, widget.getFirestore, onNFTOfferPoll, () => response.headers[Config.config!["DHALI_ID"].toString().toLowerCase()]);
                                                                                           },
                                                                                         );
                                                                                       }
@@ -783,8 +788,12 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                                                                                                   DataEndpointPair(data: readme, endPoint: "$entryPointUrlRoot/${Config.config!["POST_DEPLOY_README_ROUTE"]}/"),
                                                                                                 ],
                                                                                                 onNextClicked: (data) {},
-                                                                                                getOnSuccessWidget: (BuildContext context, BaseResponse? _) {
-                                                                                                  return NFTUploadingWidget(context, nfTokenIdStream, onNFTOfferPoll);
+                                                                                                getOnSuccessWidget: (BuildContext context, BaseResponse? response) {
+                                                                                                  if (response == null || !response.headers.containsKey(Config.config!["DHALI_ID"].toString().toLowerCase())) {
+                                                                                                    throw Exception(exceptionString);
+                                                                                                  }
+
+                                                                                                  return NFTUploadingWidget(context, widget.getFirestore, onNFTOfferPoll, () => response.headers[Config.config!["DHALI_ID"].toString().toLowerCase()]);
                                                                                                 });
                                                                                           }
                                                                                           return Container();
