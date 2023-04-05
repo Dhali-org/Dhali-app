@@ -568,6 +568,7 @@ class ImageScanningWidget extends StatefulWidget {
 class _ImageScanningWidgetState extends State<ImageScanningWidget> {
   bool scanning = true;
   bool scanSuccess = false;
+  String failureReason = "";
 
   @override
   Widget build(BuildContext context) {
@@ -649,14 +650,24 @@ class _ImageScanningWidgetState extends State<ImageScanningWidget> {
 
   Future scanImage(AssetModel file) async {
     // TODO : Add some form of client side scannng (consider adding a signature)
-    Timer(const Duration(seconds: 3), () {
+    Timer(const Duration(seconds: 1), () {
       setState(() {
         scanning = false;
 
-        if (widget.file.mime == "application/x-tar") {
+        String correctFileType = "application/x-tar";
+        double correctFileSize = 7e9;
+
+        final isCorrectFileType = widget.file.mime == correctFileType;
+        final isCorrectFileSize = widget.file.size < correctFileSize;
+
+        if (widget.file.mime == "application/x-tar" &&
+            widget.file.size < correctFileSize) {
           scanSuccess = true;
         } else {
           scanSuccess = false;
+          failureReason =
+              "\nFile type == $correctFileType: $isCorrectFileType;\n"
+              "File size == $correctFileSize: $isCorrectFileSize\n";
         }
       });
     });
