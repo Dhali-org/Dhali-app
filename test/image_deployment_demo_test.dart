@@ -22,6 +22,10 @@ import 'image_deployment_demo_test.mocks.dart';
 import 'package:dhali/config.dart' show Config;
 import 'utils.dart' as utils;
 
+const String theInputAssetName = "a_badl3y_n@med-model";
+const String theAssetName = "abadl3ynmed-model";
+const String theDhaliAssetID = "a-session-id";
+
 void imageDeploymentDemo(
     WidgetTester tester,
     MockMultipartRequest mockRequester,
@@ -54,9 +58,6 @@ void imageDeploymentDemo(
       find.text("Enter the name you'd like for your model "
           "(a-z, 0-9, -, .)"),
       findsOneWidget);
-
-  const String theInputAssetName = "a_badl3y_n@med-model";
-  const String theAssetName = "abadl3ynmed-model";
 
   await tester.enterText(
       find.byKey(const Key("model_name_input_field")), theInputAssetName);
@@ -122,7 +123,7 @@ void imageDeploymentDemo(
     expect(find.byKey(const Key("minting_nft_spinner")), findsOneWidget);
     await mockFirebaseFirestore
         .collection(Config.config!["MINTED_NFTS_COLLECTION_NAME"])
-        .doc(theAssetName)
+        .doc(theDhaliAssetID)
         .set({
       Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]
           ["NUMBER_OF_SUCCESSFUL_REQUESTS"]: 0,
@@ -212,8 +213,10 @@ void main() async {
       const h = 1080;
       int responseCode = 402;
 
-      when(mockRequester.send()).thenAnswer(
-          (_) async => StreamedResponse(Stream.empty(), responseCode));
+      when(mockRequester.send()).thenAnswer((_) async => StreamedResponse(
+              Stream.empty(), responseCode, headers: {
+            Config.config!["DHALI_ID"].toString().toLowerCase(): theDhaliAssetID
+          }));
       when(mockRequester.headers).thenAnswer((_) => {});
       final dpi = tester.binding.window.devicePixelRatio;
       tester.binding.window.physicalSizeTestValue = Size(w * dpi, h * dpi);
@@ -243,8 +246,10 @@ void main() async {
       var mockRequester = MockMultipartRequest();
       int responseCode = 200;
 
-      when(mockRequester.send()).thenAnswer(
-          (_) async => StreamedResponse(Stream.empty(), responseCode));
+      when(mockRequester.send()).thenAnswer((_) async => StreamedResponse(
+              Stream.empty(), responseCode, headers: {
+            Config.config!["DHALI_ID"].toString().toLowerCase(): theDhaliAssetID
+          }));
       when(mockRequester.headers).thenAnswer((_) => {});
       final dpi = tester.binding.window.devicePixelRatio;
       tester.binding.window.physicalSizeTestValue = Size(w * dpi, h * dpi);

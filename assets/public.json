@@ -17,6 +17,7 @@
         "SIGNATURE": "signature",
         "CHANNEL_ID": "channel_id"
     },
+    "DHALI_ID": "Dhali-ID",
     "PAYMENT_CLAIM_HEADER_KEY": "Payment-Claim",
     "CURRENCY_KEYS": {
         "CODE": "code", 

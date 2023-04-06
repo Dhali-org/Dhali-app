@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
+import 'package:dhali/config.dart';
 import 'package:dhali/wallet/xrpl_wallet.dart';
 import 'package:flutter/widgets.dart';
 import "package:universal_html/html.dart";
@@ -58,7 +60,7 @@ int chunksCount(AssetModel model, int maxChunkSize) {
 abstract class BaseUploader {
   bool _cancel = false;
   bool _complete = false;
-  Future<BaseResponse?> upload(String path);
+  Future<BaseResponse?> upload(String path, {String? sessionID});
   void cancelUpload() => _cancel = true;
 }
 
@@ -86,7 +88,7 @@ class RunUploader extends BaseUploader {
   }
 
   @override
-  Future<BaseResponse?> upload(String path) async {
+  Future<BaseResponse?> upload(String path, {String? sessionID}) async {
     Wakelock.enable();
     var logger = Logger();
     StreamedResponse? finalResponse;
@@ -172,7 +174,7 @@ class DeployUploader extends BaseUploader {
   }
 
   @override
-  Future<BaseResponse?> upload(String path) async {
+  Future<BaseResponse?> upload(String path, {String? sessionID}) async {
     Wakelock.enable();
     var logger = Logger();
     StreamedResponse? finalResponse;
@@ -198,6 +200,9 @@ class DeployUploader extends BaseUploader {
           "Payment-Claim": payment // TODO : This header argument will
           // likely be derived from the client wallet
         };
+        if (sessionID != null) {
+          header[Config.config!["DHALI_ID"]] = sessionID;
+        }
         request.headers.addAll(header);
 
         logger.d("Preparing fields in body");
@@ -227,6 +232,14 @@ class DeployUploader extends BaseUploader {
             finalResponse.statusCode != 308) {
           return StreamedResponse(Stream.empty(), finalResponse.statusCode,
               reasonPhrase: finalResponse.reasonPhrase);
+        }
+        try {
+          sessionID = finalResponse!
+              .headers[Config.config!["DHALI_ID"].toString().toLowerCase()];
+        } catch (e, stacktrace) {
+          throw FormatException(
+              "Unexpected response from asset deployment, with error: ${e} "
+              "and stacktrace: ${stacktrace}");
         }
         // TODO : Deal with response appropriately
 
