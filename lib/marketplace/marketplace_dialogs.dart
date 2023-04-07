@@ -1344,9 +1344,9 @@ class InferenceCostWidget extends StatelessWidget {
       required this.yesClicked})
       : super(key: key);
 
-  final Function(AssetModel, int) yesClicked;
+  final Function(AssetModel, double) yesClicked;
   final AssetModel file;
-  final int inferenceCost;
+  final double inferenceCost;
 
   @override
   Widget build(BuildContext context) {
@@ -1358,7 +1358,7 @@ class InferenceCostWidget extends StatelessWidget {
             height: 16,
           ),
           Text(
-            "Running this model will cost $inferenceCost",
+            "Running this model typically costs $inferenceCost drops",
             style: TextStyle(fontSize: 25, color: AppTheme.nearlyBlack),
           ),
           const Text(

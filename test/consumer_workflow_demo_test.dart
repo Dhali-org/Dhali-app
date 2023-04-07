@@ -34,7 +34,7 @@ const String creatorAccount = "A random classic address";
 const String dhaliAccount = creatorAccount + "diff";
 const double inferenceTime = 1.0;
 const List<String> categories = ["A category"];
-const int cost = 1;
+const double cost = 1;
 const numSuccessfulRequests = 10.0;
 const endpointUrl = "a random url";
 
@@ -52,11 +52,11 @@ Future<void> imageConsumptionDemo(WidgetTester tester) async {
   expect(find.text(theOtherAssetName), findsNothing);
   expect(find.byKey(const Key("asset_circular_spinner")), findsOneWidget);
   expect(find.byKey(const Key("categories_in_asset_page")), findsOneWidget);
-  expect(find.text("Run ($cost XRP/request)"), findsOneWidget);
+  expect(find.text("Run (~$cost drops/run)"), findsOneWidget);
   await tester.pump();
   expect(find.byKey(const Key("asset_page_readme")), findsOneWidget);
   expect(find.byKey(const Key("asset_circular_spinner")), findsNothing);
-  await tester.tap(find.text("Run ($cost XRP/request)"));
+  await tester.tap(find.text("Run (~$cost drops/run)"));
   await tester.pump();
   expect(find.text("Unable to proceed"), findsNothing);
   expect(find.text("Your wallet has not been activated"), findsNothing);
@@ -71,7 +71,8 @@ Future<void> imageConsumptionDemo(WidgetTester tester) async {
   expect(find.text("Selected input file: test.tar"), findsOneWidget);
   await tester.tap(find.text("Next"));
   await tester.pumpAndSettle();
-  expect(find.text("Running this model will cost $cost"), findsOneWidget);
+  expect(find.text("Running this model typically costs $cost drops"),
+      findsOneWidget);
   expect(find.text("Are you sure you want to continue?"), findsOneWidget);
   expect(find.text("Yes"), findsOneWidget);
   expect(find.text("No"), findsOneWidget);
@@ -135,7 +136,7 @@ void main() async {
               assetName: theAssetName,
               assetCategories: categories,
               averageRuntime: inferenceTime,
-              rating: numSuccessfulRequests,
+              numberOfSuccessfullRequests: numSuccessfulRequests,
               pricePerRun: cost),
           getRequest: getMockMultipartRequest,
           getWallet: () => mockWallet,
@@ -191,7 +192,7 @@ void main() async {
               assetName: theAssetName,
               assetCategories: categories,
               averageRuntime: inferenceTime,
-              rating: numSuccessfulRequests,
+              numberOfSuccessfullRequests: numSuccessfulRequests,
               pricePerRun: cost),
           getRequest: getMockMultipartRequest,
           getWallet: () => mockWallet,
@@ -249,14 +250,14 @@ void main() async {
               assetName: theAssetName,
               assetCategories: categories,
               averageRuntime: inferenceTime,
-              rating: numSuccessfulRequests,
+              numberOfSuccessfullRequests: numSuccessfulRequests,
               pricePerRun: cost),
           getRequest: getMockMultipartRequest,
           getWallet: () => null,
         ),
       ));
 
-      await tester.tap(find.text("Run ($cost XRP/request)"));
+      await tester.tap(find.text("Run (~$cost drops/run)"));
       await tester.pump();
       expect(find.text("Unable to proceed"), findsOneWidget);
       expect(find.text("Your wallet has not been activated"), findsOneWidget);
