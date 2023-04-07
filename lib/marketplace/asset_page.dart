@@ -95,7 +95,7 @@ class _AssetPageState extends State<AssetPage> {
                       style: TextStyle(color: Colors.black, fontSize: 20),
                     ),
                     Text(
-                      "Rating: ${widget.asset.rating}",
+                      "Successful requests: ${widget.asset.numberOfSuccessfullRequests}",
                       style: TextStyle(color: Colors.black, fontSize: 20),
                     ),
                     SelectableText(

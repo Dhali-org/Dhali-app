@@ -312,8 +312,9 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
             averageRuntime: elementData[
                 Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]
                     ["AVERAGE_INFERENCE_TIME_MS"]],
-            rating: elementData[Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]
-                ["NUMBER_OF_SUCCESSFUL_REQUESTS"]],
+            numberOfSuccessfullRequests: elementData[
+                Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]
+                    ["NUMBER_OF_SUCCESSFUL_REQUESTS"]],
             pricePerRun: elementData[Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]
                 ["EXPECTED_INFERENCE_COST_PER_MS"]]);
         return MarketplaceListView(

@@ -6,7 +6,7 @@ class MarketplaceListData {
     this.assetCategories = const [],
     this.averageRuntime = 1.8,
     this.reviews = 80,
-    this.rating = 4.5,
+    this.numberOfSuccessfullRequests = 4.5,
     this.pricePerRun = 180,
   });
 
@@ -15,7 +15,7 @@ class MarketplaceListData {
   String assetName;
   List<dynamic> assetCategories;
   double averageRuntime;
-  double rating;
+  double numberOfSuccessfullRequests;
   int reviews;
   int pricePerRun;
 
@@ -26,7 +26,7 @@ class MarketplaceListData {
       assetCategories: ['Fill-Mask'],
       averageRuntime: 0.12,
       reviews: 80,
-      rating: 4.4,
+      numberOfSuccessfullRequests: 4.4,
       pricePerRun: 180,
     ),
     MarketplaceListData(
@@ -35,7 +35,7 @@ class MarketplaceListData {
       assetCategories: ['Text generation'],
       averageRuntime: 0.2,
       reviews: 74,
-      rating: 4.5,
+      numberOfSuccessfullRequests: 4.5,
       pricePerRun: 200,
     ),
     MarketplaceListData(
@@ -44,7 +44,7 @@ class MarketplaceListData {
       assetCategories: ['Text generation'],
       averageRuntime: 0.31,
       reviews: 62,
-      rating: 4.0,
+      numberOfSuccessfullRequests: 4.0,
       pricePerRun: 60,
     ),
     MarketplaceListData(
@@ -53,7 +53,7 @@ class MarketplaceListData {
       assetCategories: ['Object detector'],
       averageRuntime: 0.004,
       reviews: 90,
-      rating: 4.4,
+      numberOfSuccessfullRequests: 4.4,
       pricePerRun: 170,
     ),
     MarketplaceListData(
@@ -62,7 +62,7 @@ class MarketplaceListData {
       assetCategories: ['Face detector'],
       averageRuntime: 0.01,
       reviews: 240,
-      rating: 4.5,
+      numberOfSuccessfullRequests: 4.5,
       pricePerRun: 200,
     ),
   ];
