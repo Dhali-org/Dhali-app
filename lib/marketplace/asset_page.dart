@@ -91,7 +91,7 @@ class _AssetPageState extends State<AssetPage> {
                   shrinkWrap: true,
                   children: [
                     Text(
-                      "Average runtime: ${widget.asset.averageRuntime}ms",
+                      "Average runtime: ${widget.asset.averageRuntime.ceil()}ms",
                       style: TextStyle(color: Colors.black, fontSize: 20),
                     ),
                     Text(
@@ -129,7 +129,7 @@ class _AssetPageState extends State<AssetPage> {
                     size: 32,
                   ),
                   label: Text(
-                    "Run (${widget.asset.pricePerRun} XRP/request)",
+                    "Run (~${widget.asset.pricePerRun.ceil()} drops/run)",
                     style: TextStyle(fontSize: 30),
                   ),
                 )

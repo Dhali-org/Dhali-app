@@ -106,14 +106,14 @@ class MarketplaceListView extends StatelessWidget {
                                   ),
                                   Expanded(
                                     child: Text(
-                                      ' ${marketplaceData!.pricePerRun} drops',
+                                      ' ${marketplaceData!.pricePerRun.ceil()} drops/run',
                                       textAlign: TextAlign.left,
                                       style: TextStyle(
                                         fontWeight: FontWeight.w600,
                                         fontSize: 16,
                                       ),
                                     ),
-                                    flex: 1,
+                                    flex: 2,
                                   ),
                                   const Spacer(
                                     flex: 1,
@@ -126,7 +126,7 @@ class MarketplaceListView extends StatelessWidget {
                                   ),
                                   Expanded(
                                     child: Text(
-                                      ' ${marketplaceData!.averageRuntime.toStringAsFixed(1)} seconds / run',
+                                      ' ${(marketplaceData!.averageRuntime / 1000).toStringAsFixed(2)} secs/run',
                                       overflow: TextOverflow.ellipsis,
                                       textAlign: TextAlign.left,
                                       style: TextStyle(

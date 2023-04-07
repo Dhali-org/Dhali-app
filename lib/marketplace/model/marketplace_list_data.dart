@@ -17,7 +17,7 @@ class MarketplaceListData {
   double averageRuntime;
   double numberOfSuccessfullRequests;
   int reviews;
-  int pricePerRun;
+  double pricePerRun;
 
   static List<MarketplaceListData> marketplaceList = <MarketplaceListData>[
     MarketplaceListData(
