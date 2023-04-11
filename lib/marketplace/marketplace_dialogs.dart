@@ -1158,7 +1158,7 @@ class _DataTransmissionWidgetState extends State<DataTransmissionWidget> {
                 : uploadFailed(context, responseCode!));
   }
 
-  Future<BaseResponse> uploader(
+  Future<BaseResponse?> uploader(
       AssetModel file, Map<String, String> payment, String path,
       {String? sessionID}) async {
     uploadRequest = widget.getUploader(
@@ -1177,18 +1177,26 @@ class _DataTransmissionWidgetState extends State<DataTransmissionWidget> {
         maxChunkSize: 1024 * 1024 * 10);
 
     final response = await uploadRequest.upload(path, sessionID: sessionID)
-        as StreamedResponse;
+        as StreamedResponse?;
 
     setState(() {
-      if (response != null) {
-        responseCode = response!.statusCode;
+      if (response == null) {
+        return;
+      }
+      responseCode = response.statusCode;
+      if (responseCode != 200) {
+        deploying = false;
+        uploadWasSuccessful = false;
+        return;
+      } else {
         if (currentFileIndexUploading > widget.data.length) {
           deploying = false;
           uploadWasSuccessful = true;
-        }
-        if (responseCode != 200) {
-          deploying = false;
-          uploadWasSuccessful = false;
+          return;
+        } else {
+          deploying = true;
+          uploadWasSuccessful = true;
+          return;
         }
       }
     });
