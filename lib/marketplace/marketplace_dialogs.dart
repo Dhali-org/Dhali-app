@@ -13,6 +13,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_dropzone/flutter_dropzone.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:dhali/app_theme.dart';
+import 'package:dhali/utils/not_implemented_dialog.dart';
 
 import 'model/asset_model.dart';
 import 'package:dhali/config.dart' show Config;
@@ -90,6 +91,9 @@ class _DropzoneRunWidgetState extends State<DropzoneRunWidget> {
                     ),
                     IconButton(
                       onPressed: () async {
+                        showNotImplentedWidget(
+                            context: context,
+                            feature: "Helper: Selected input file");
                         // TODO : Add link to documentation for docker prep
                       },
                       icon: const Icon(
@@ -130,6 +134,9 @@ class _DropzoneRunWidgetState extends State<DropzoneRunWidget> {
                     ),
                     IconButton(
                       onPressed: () async {
+                        showNotImplentedWidget(
+                            context: context,
+                            feature: "Helper: Drag or select your input file");
                         // TODO : Add link to documentation for docker prep
                       },
                       icon: const Icon(
@@ -316,6 +323,9 @@ class _DropzoneDeployWidgetState extends State<DropzoneDeployWidget> {
                     ),
                     IconButton(
                       onPressed: () async {
+                        showNotImplentedWidget(
+                            context: context,
+                            feature: "Helper: Select asset file");
                         // TODO : Add link to documentation for docker prep
                       },
                       icon: const Icon(
@@ -354,6 +364,9 @@ class _DropzoneDeployWidgetState extends State<DropzoneDeployWidget> {
                     ),
                     IconButton(
                       onPressed: () async {
+                        showNotImplentedWidget(
+                            context: context,
+                            feature: "Helper: Select markdown  file");
                         // TODO : Add link to documentation for docker prep
                       },
                       icon: const Icon(
@@ -394,6 +407,9 @@ class _DropzoneDeployWidgetState extends State<DropzoneDeployWidget> {
                     ),
                     IconButton(
                       onPressed: () async {
+                        showNotImplentedWidget(
+                            context: context,
+                            feature: "Helper: Drag or select your files");
                         // TODO : Add link to documentation for docker prep
                       },
                       icon: const Icon(
