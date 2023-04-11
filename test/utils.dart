@@ -10,7 +10,7 @@ const publicConfig = '''
         "AVERAGE_INFERENCE_TIME_MS": "average_inference_time_ms", 
         "CATEGORY": "category", 
         "ENDPOINT_URL": "endpoint_url",
-        "EXPECTED_INFERENCE_COST_PER_MS": "expected_inference_cost",
+        "EXPECTED_INFERENCE_COST_PER_MS": "cost_per_ms",
         "ASSET_NAME": "name",
         "NFTOKEN_ID": "NFTokenId"
     },
@@ -22,6 +22,8 @@ const publicConfig = '''
         "SIGNATURE": "signature",
         "CHANNEL_ID": "channel_id"
     },
+    "DHALI_ID": "Dhali-ID",
+    "PAYMENT_CLAIM_HEADER_KEY": "Payment-Claim",
     "CURRENCY_KEYS": {
         "CODE": "code", 
         "SCALE": "scale"
@@ -32,8 +34,11 @@ const publicConfig = '''
     "POST_DEPLOY_ASSET_ROUTE": "asset",
     "ROOT_DEPLOY_URL": "https://kernml-3mmgxhct.uc.gateway.dev",
     "ROOT_CONSUMER_URL": "https://kernml-consumer-3mmgxhct.uc.gateway.dev",
+    "ROOT_RUN_URL": "https://kernml-run-3mmgxhct.uc.gateway.dev",
     "DHALI_PUBLIC_ADDRESS": "rstbSTpPcyxMsiXwkBxS9tFTrg2JsDNxWk",
-    "DHALI_ID": "DHALI_ID"
+    "DHALI_DEPLOYMENT_COST_PER_CHUNK_DROPS": 5000,
+    "DHALI_EARNINGS_PERCENTAGE_PER_INFERENCE": 20,
+    "MAX_NUMBER_OF_BYTES_PER_DEPLOY_CHUNK": 10485760 
 }
 ''';
 

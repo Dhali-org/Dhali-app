@@ -709,15 +709,31 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                                                       Colors.transparent,
                                                   child: ImageCostWidget(
                                                       defaultEarningsPerInference:
-                                                          100,
+                                                          20,
                                                       file: asset,
                                                       onNextClicked: (asset,
-                                                          earningsInferenceCost) {
+                                                          assetEarnings) {
                                                         showDialog(
                                                             context: context,
                                                             builder:
                                                                 (BuildContext
                                                                     _) {
+                                                              final assetDeploymentCost = Config
+                                                                          .config![
+                                                                      "DHALI_DEPLOYMENT_COST_PER_CHUNK_DROPS"] *
+                                                                  asset.size /
+                                                                  Config.config![
+                                                                      "MAX_NUMBER_OF_BYTES_PER_DEPLOY_CHUNK"];
+                                                              final readmeDeploymentCost = Config
+                                                                          .config![
+                                                                      "DHALI_DEPLOYMENT_COST_PER_CHUNK_DROPS"] *
+                                                                  readme.size /
+                                                                  Config.config![
+                                                                      "MAX_NUMBER_OF_BYTES_PER_DEPLOY_CHUNK"];
+                                                              final dhaliEarnings =
+                                                                  Config.config![
+                                                                      "DHALI_EARNINGS_PERCENTAGE_PER_INFERENCE"];
+
                                                               return Dialog(
                                                                   backgroundColor:
                                                                       Colors
@@ -725,8 +741,13 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                                                                   child:
                                                                       DeploymentCostWidget(
                                                                     file: asset,
-                                                                    earningsInferenceCost:
-                                                                        earningsInferenceCost,
+                                                                    deploymentCost:
+                                                                        assetDeploymentCost +
+                                                                            readmeDeploymentCost,
+                                                                    assetEarnings:
+                                                                        assetEarnings,
+                                                                    dhaliEarnings:
+                                                                        dhaliEarnings,
                                                                     yesClicked:
                                                                         ((asset,
                                                                             earningsInferenceCost) {
@@ -809,7 +830,7 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                                                                                         };
                                                                                         return DataTransmissionWidget(
                                                                                           getUploader: ({required payment, required getRequest, required dynamic Function(double) progressStatus, required int maxChunkSize, required AssetModel model}) {
-                                                                                            return DeployUploader(payment: payment, getRequest: getRequest, progressStatus: progressStatus, model: model, maxChunkSize: maxChunkSize, getWallet: widget.getWallet);
+                                                                                            return DeployUploader(payment: payment, getRequest: getRequest, progressStatus: progressStatus, model: model, maxChunkSize: Config.config!["MAX_NUMBER_OF_BYTES_PER_DEPLOY_CHUNK"], getWallet: widget.getWallet, assetEarningRate: assetEarnings);
                                                                                           },
                                                                                           payment: payment,
                                                                                           getRequest: widget.getRequest,
@@ -831,7 +852,6 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                                                                                       return FutureBuilder<PaymentChannelDescriptor>(
                                                                                         builder: (context, snapshot) {
                                                                                           if (snapshot.hasData) {
-                                                                                            print(Config.config);
                                                                                             Map<String, String> payment = {
                                                                                               Config.config!["PAYMENT_CLAIM_KEYS"]["ACCOUNT"]: wallet.address,
                                                                                               Config.config!["PAYMENT_CLAIM_KEYS"]["DESTINATION_ACCOUNT"]: dest,
@@ -842,7 +862,7 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
 
                                                                                             return DataTransmissionWidget(
                                                                                                 getUploader: ({required payment, required getRequest, required dynamic Function(double) progressStatus, required int maxChunkSize, required AssetModel model}) {
-                                                                                                  return DeployUploader(payment: payment, getRequest: getRequest, progressStatus: progressStatus, model: model, maxChunkSize: maxChunkSize, getWallet: widget.getWallet);
+                                                                                                  return DeployUploader(payment: payment, getRequest: getRequest, progressStatus: progressStatus, model: model, maxChunkSize: Config.config!["MAX_NUMBER_OF_BYTES_PER_DEPLOY_CHUNK"], getWallet: widget.getWallet, assetEarningRate: assetEarnings);
                                                                                                 },
                                                                                                 payment: payment,
                                                                                                 getRequest: widget.getRequest,
