@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:dhali/wallet/xrpl_wallet.dart';
 import 'package:http/http.dart';
 import 'package:dhali/app_theme.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +12,9 @@ import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:dhali/config.dart' show Config;
 import 'package:flutter/services.dart' show rootBundle;
+
+import 'marketplace/asset_page.dart';
+import 'marketplace/model/marketplace_list_data.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,10 +31,17 @@ void main() async {
       })));
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key, required this.getRequest});
 
   final BaseRequest Function(String method, String path) getRequest;
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  XRPLWallet? _wallet;
 
   @override
   Widget build(BuildContext context) {
@@ -44,16 +55,57 @@ class MyApp extends StatelessWidget {
       systemNavigationBarDividerColor: Colors.transparent,
       systemNavigationBarIconBrightness: Brightness.dark,
     ));
+
     return MaterialApp(
       onGenerateRoute: (settings) {
         if (settings.name == null) {
           return null;
         }
-        if (settings.name!.contains("assets")) {
+        List<String> pathList = settings.name!.split("/");
+        if (pathList.length == 3 && pathList[1] == "assets") {
+          Widget asset;
+          if (settings.arguments != null &&
+              settings.arguments.runtimeType == AssetPage) {
+            asset = settings.arguments as AssetPage;
+          } else {
+            Future<DocumentSnapshot<Map<String, dynamic>>> futureElement =
+                FirebaseFirestore.instance
+                    .collection(Config.config!["MINTED_NFTS_COLLECTION_NAME"])
+                    .doc(pathList[2])
+                    .get();
+            asset = FutureBuilder(
+              builder: (BuildContext context,
+                  AsyncSnapshot<DocumentSnapshot<Map<String, dynamic>>>
+                      snapshot) {
+                if (!snapshot.hasData) {
+                  return const Text("Asset not found");
+                }
+                MarketplaceListData element = MarketplaceListData(
+                    assetID: pathList[2],
+                    assetName: snapshot.data![Config
+                        .config!["MINTED_NFTS_DOCUMENT_KEYS"]["ASSET_NAME"]],
+                    assetCategories: snapshot.data![Config
+                        .config!["MINTED_NFTS_DOCUMENT_KEYS"]["CATEGORY"]],
+                    averageRuntime: snapshot.data![
+                        Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]
+                            ["AVERAGE_INFERENCE_TIME_MS"]],
+                    numberOfSuccessfullRequests: snapshot.data![
+                        Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]
+                            ["NUMBER_OF_SUCCESSFUL_REQUESTS"]],
+                    pricePerRun: snapshot.data![Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]["EXPECTED_INFERENCE_COST_PER_MS"]]);
+                return AssetPage(
+                  asset: element,
+                  getRequest: widget.getRequest,
+                  getWallet: getWallet,
+                );
+              },
+              future: futureElement,
+            );
+          }
+
           return MaterialPageRoute(
-              builder: (context) => settings.arguments as Widget,
+              builder: (context) => asset,
               settings: RouteSettings(name: settings.name));
-          ;
         }
       },
       title: title,
@@ -64,10 +116,22 @@ class MyApp extends StatelessWidget {
         platform: TargetPlatform.iOS,
       ),
       home: NavigationHomeScreen(
+        getWallet: getWallet,
+        setWallet: setWallet,
         firestore: FirebaseFirestore.instance,
-        getRequest: getRequest,
+        getRequest: widget.getRequest,
       ),
     );
+  }
+
+  XRPLWallet? getWallet() {
+    return _wallet;
+  }
+
+  void setWallet(XRPLWallet wallet) {
+    setState(() {
+      _wallet = wallet;
+    });
   }
 }
 
