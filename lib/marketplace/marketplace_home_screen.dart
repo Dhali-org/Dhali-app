@@ -5,6 +5,7 @@ import 'package:async/async.dart';
 
 import 'package:dhali/marketplace/model/asset_model.dart';
 import 'package:dhali/utils/Uploaders.dart';
+import 'package:dhali/utils/not_implemented_dialog.dart';
 import 'package:dhali/wallet/home_screen.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/services.dart';
@@ -477,6 +478,8 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                   Radius.circular(32.0),
                 ),
                 onTap: () {
+                  showNotImplentedWidget(
+                      context: context, feature: "Helper: Search for models");
                   FocusScope.of(context).requestFocus(FocusNode());
                 },
                 child: Padding(
@@ -532,6 +535,9 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                       Radius.circular(4.0),
                     ),
                     onTap: () {
+                      showNotImplentedWidget(
+                          context: context, feature: "Helper: Filter models");
+                      return;
                       FocusScope.of(context).requestFocus(FocusNode());
                       Navigator.push<dynamic>(
                         context,
