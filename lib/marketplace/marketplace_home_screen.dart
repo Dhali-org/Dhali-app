@@ -382,14 +382,12 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
   }
 
   void displayAsset(MarketplaceListData asset) {
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => AssetPage(
-                  asset: asset,
-                  getRequest: widget.getRequest,
-                  getWallet: widget.getWallet,
-                )));
+    Navigator.pushNamed(context, '/assets/${asset.assetID}',
+        arguments: AssetPage(
+          asset: asset,
+          getRequest: widget.getRequest,
+          getWallet: widget.getWallet,
+        ));
   }
 
   Widget getMarketplaceViewList() {

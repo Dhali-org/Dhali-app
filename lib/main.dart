@@ -45,6 +45,17 @@ class MyApp extends StatelessWidget {
       systemNavigationBarIconBrightness: Brightness.dark,
     ));
     return MaterialApp(
+      onGenerateRoute: (settings) {
+        if (settings.name == null) {
+          return null;
+        }
+        if (settings.name!.contains("assets")) {
+          return MaterialPageRoute(
+              builder: (context) => settings.arguments as Widget,
+              settings: RouteSettings(name: settings.name));
+          ;
+        }
+      },
       title: title,
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
