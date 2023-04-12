@@ -783,7 +783,7 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                                                                                 "10000000"; // TODO : Make sure that these are appropriate 10 XRP
                                                                             String
                                                                                 authAmount =
-                                                                                "3000000"; // TODO : Make sure that these are appropriate 3 XRP
+                                                                                "9000000"; // TODO : Make sure that these are appropriate 3 XRP
 
                                                                             void
                                                                                 onNFTOfferPoll(String nfTokenId) {
