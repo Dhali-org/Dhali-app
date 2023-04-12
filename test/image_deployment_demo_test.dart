@@ -257,7 +257,8 @@ void main() async {
         ),
         home: NavigationHomeScreen(
             firestore: firebaseMockInstance,
-            wallet: mockWallet,
+            getWallet: () => mockWallet,
+            setWallet: (wallet) => {},
             getRequest: (String method, String path) => mockRequester),
       ));
 
@@ -290,7 +291,8 @@ void main() async {
         ),
         home: NavigationHomeScreen(
             firestore: firebaseMockInstance,
-            wallet: mockWallet,
+            getWallet: () => mockWallet,
+            setWallet: (wallet) => {},
             getRequest: (String method, String path) => mockRequester),
       ));
 
@@ -324,7 +326,8 @@ void main() async {
         ),
         home: NavigationHomeScreen(
             firestore: firebaseMockInstance,
-            wallet: mockWallet,
+            getWallet: () => mockWallet,
+            setWallet: (wallet) => {},
             getRequest: (String method, String path) => mockRequester),
       ));
 
