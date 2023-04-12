@@ -82,13 +82,15 @@ void imageDeploymentDemo(
   await tester.tap(find.text("Next"));
   await tester.pumpAndSettle();
 
+  expect(find.text("Set your earning rate per inference."), findsOneWidget);
+  expect(find.text("\nKeep this small to encourage usage.\n"), findsOneWidget);
   expect(
-      find.text("Set earning rate per inference. "
-          "\nKeep this small to encourage usage."),
+      find.text(
+          "Example: If running your asset costs Dhali \$1 in compute costs per inference, by setting 20 below you will earn \$0.20 per inference."),
       findsOneWidget);
 
-  await tester.enterText(
-      find.byKey(const Key("xrp_drops_input")), "a_badl3y_f0rmatted_Str1ng");
+  await tester.enterText(find.byKey(const Key("percentage_earnings_input")),
+      "a_badl3y_f0rmatted_Str1ng");
   await tester.pumpAndSettle();
   expect(find.text("301"), findsOneWidget);
 
@@ -97,19 +99,21 @@ void imageDeploymentDemo(
 
   expect(
       find.text("Here is a break down of the model's costs:"), findsOneWidget);
-  expect(find.text("Your costs:"), findsOneWidget);
-  expect(find.text("The model user's costs:"), findsOneWidget);
+  expect(find.text("Paid by you:"), findsOneWidget);
+  expect(find.text("Paid by the user of your model:"), findsOneWidget);
 
   expect(find.text("What?"), findsNWidgets(2));
   expect(find.text("When?"), findsNWidgets(2));
-  expect(find.text("Cost: drops (XRP)"), findsNWidgets(2));
-  expect(
-      find.text("If you continue, the above costs will be applied now. "
-          "You can cancel your model's hosting at any point."),
+  expect(find.text("Cost: XRP"), findsNWidgets(1));
+  expect(find.text("Cost: percentage of compute costs"), findsNWidgets(1));
+  expect(find.text("If you continue, the above costs will be applied."),
       findsOneWidget);
+  expect(find.text("301%"), findsOneWidget);
+  expect(find.text("20%"), findsOneWidget);
+  expect(find.text("421%"), findsOneWidget); // 100 + 301 + 20
   expect(find.text("Are you sure you want to deploy?"), findsOneWidget);
   expect(find.text("Yes"), findsOneWidget);
-  expect(find.text("No"), findsOneWidget);
+  expect(find.text("Back"), findsOneWidget);
   await tester.tap(find.text("Yes"));
 
   await tester

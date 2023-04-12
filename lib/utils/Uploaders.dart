@@ -161,6 +161,7 @@ class DeployUploader extends BaseUploader {
   late final int _maxChunkSize;
   late DropzoneViewController controller;
   final XRPLWallet? Function() getWallet;
+  final double assetEarningRate;
 
   DeployUploader({
     required this.payment,
@@ -168,6 +169,7 @@ class DeployUploader extends BaseUploader {
     required this.model,
     required this.progressStatus,
     required this.getWallet,
+    required this.assetEarningRate,
     int maxChunkSize = 1024 * 1024 * 10,
   }) {
     _maxChunkSize = min(model.size, maxChunkSize);
@@ -210,7 +212,8 @@ class DeployUploader extends BaseUploader {
           "assetName": model.modelName,
           "chainID": "xrpl", // TODO : Add user input for this
           "walletID": getWallet()!.address,
-          "labels": ""
+          "labels": "",
+          "assetEarningRate": "$assetEarningRate"
         };
 
         if (request.runtimeType == http.MultipartRequest) {

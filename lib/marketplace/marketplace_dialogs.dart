@@ -666,7 +666,7 @@ class _ImageScanningWidgetState extends State<ImageScanningWidget> {
 class ImageCostWidget extends StatefulWidget {
   final AssetModel file;
 
-  final Function(AssetModel, int) onNextClicked;
+  final Function(AssetModel, double) onNextClicked;
   final int? defaultEarningsPerInference;
 
   const ImageCostWidget(
@@ -699,26 +699,34 @@ class _ImageCostWidgetState extends State<ImageCostWidget> {
       children: [
         const Text(
           textAlign: TextAlign.center,
-          "Set earning rate per inference. "
-          "\nKeep this small to encourage usage.",
+          "Set your earning rate per inference.",
           style: TextStyle(fontSize: 30, color: AppTheme.nearlyBlack),
+        ),
+        const Text(
+          textAlign: TextAlign.center,
+          "\nKeep this small to encourage usage.\n",
+          style: TextStyle(fontSize: 20, color: AppTheme.nearlyBlack),
+        ),
+        const Text(
+          textAlign: TextAlign.center,
+          "Example: If running your asset costs Dhali \$1 in compute costs per inference, by setting 20 below you will earn \$0.20 per inference.",
+          style: TextStyle(fontSize: 20, color: AppTheme.nearlyBlack),
         ),
         const SizedBox(
           height: 16,
         ),
         TextField(
-          key: const Key("xrp_drops_input"),
+          key: const Key("percentage_earnings_input"),
           onChanged: (value) => setState(() {}),
           controller: controller,
-          maxLength: 20,
+          maxLength: 5,
           // ignore: prefer_const_constructors
           decoration: InputDecoration(
             labelStyle: const TextStyle(fontSize: 20),
             helperStyle: const TextStyle(
                 color: Colors.black, fontWeight: FontWeight.bold),
-            helperText: "What your model pays you when it is used",
-            labelText: "Drops (XRP)",
-            hintText: "Enter an amount of XRP drops",
+            helperText: "Percentage you earn above Dhali compute costs",
+            hintText: "Enter a percentage (e.g., '20')",
           ),
           keyboardType: TextInputType.number,
           inputFormatters: <TextInputFormatter>[
@@ -737,7 +745,7 @@ class _ImageCostWidgetState extends State<ImageCostWidget> {
           onPressed: controller.text.isNotEmpty
               ? () => widget.onNextClicked(
                   widget.file,
-                  int.tryParse(
+                  double.tryParse(
                       controller.text)!) // != null because input "digitsOnly"
               : null,
           icon: const Icon(
@@ -758,20 +766,20 @@ class DeploymentCostWidget extends StatelessWidget {
   const DeploymentCostWidget(
       {Key? key,
       required this.file,
-      required this.earningsInferenceCost,
+      required this.assetEarnings,
+      required this.dhaliEarnings,
+      required this.deploymentCost,
       required this.yesClicked})
       : super(key: key);
 
-  final Function(AssetModel, int) yesClicked;
+  final Function(AssetModel, double) yesClicked;
   final AssetModel file;
-  final int deploymentCost = 10000;
-  final int hostingCost = 100;
-  final int earningsInferenceCost;
-  final int computeInferenceCost = 100;
+  final double deploymentCost;
+  final double assetEarnings;
+  final double dhaliEarnings;
 
   @override
   Widget build(BuildContext context) {
-    int totalInferenceCost = earningsInferenceCost + computeInferenceCost;
     return getDialogTemplate(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -787,7 +795,7 @@ class DeploymentCostWidget extends StatelessWidget {
             height: 16,
           ),
           const Text(
-            "Your costs:",
+            "Paid by you:",
             style: TextStyle(
                 fontSize: 30,
                 color: AppTheme.nearlyBlack,
@@ -819,7 +827,7 @@ class DeploymentCostWidget extends StatelessWidget {
                   Container(
                       padding: const EdgeInsets.all(10),
                       child: const Text(
-                        "Cost: drops (XRP)",
+                        "Cost: XRP",
                         style: TextStyle(fontWeight: FontWeight.bold),
                       )),
                 ],
@@ -834,20 +842,8 @@ class DeploymentCostWidget extends StatelessWidget {
                       child: const Text("Now")),
                   Container(
                       padding: const EdgeInsets.all(10),
-                      child: Text("$deploymentCost")),
-                ],
-              ),
-              TableRow(
-                children: <Widget>[
-                  Container(
-                      padding: const EdgeInsets.all(10),
-                      child: const Text("Hosting cost")),
-                  Container(
-                      padding: const EdgeInsets.all(10),
-                      child: const Text("Monthly (starting next month)")),
-                  Container(
-                      padding: const EdgeInsets.all(10),
-                      child: Text("$hostingCost")),
+                      child:
+                          Text((deploymentCost / 1000000).toStringAsFixed(4))),
                 ],
               ),
             ],
@@ -856,7 +852,7 @@ class DeploymentCostWidget extends StatelessWidget {
             height: 16,
           ),
           const Text(
-            "The model user's costs:",
+            "Paid by the user of your model:",
             textAlign: TextAlign.left,
             style: TextStyle(
                 fontSize: 30,
@@ -889,7 +885,7 @@ class DeploymentCostWidget extends StatelessWidget {
                   Container(
                       padding: const EdgeInsets.all(10),
                       child: const Text(
-                        "Cost: drops (XRP)",
+                        "Cost: percentage of compute costs",
                         style: TextStyle(fontWeight: FontWeight.bold),
                       )),
                 ],
@@ -898,26 +894,26 @@ class DeploymentCostWidget extends StatelessWidget {
                 children: <Widget>[
                   Container(
                       padding: const EdgeInsets.all(10),
-                      child: const Text("Our charge")),
+                      child: const Text("Dhali's earnings")),
                   Container(
                       padding: const EdgeInsets.all(10),
-                      child: const Text("Each time the model is used")),
+                      child: const Text("When model is used")),
                   Container(
                       padding: const EdgeInsets.all(10),
-                      child: Text("$computeInferenceCost")),
+                      child: Text("$dhaliEarnings%")),
                 ],
               ),
               TableRow(
                 children: <Widget>[
                   Container(
                       padding: const EdgeInsets.all(10),
-                      child: const Text("Your charge")),
+                      child: const Text("Your earnings")),
                   Container(
                       padding: const EdgeInsets.all(10),
-                      child: const Text("Each time the model is used")),
+                      child: const Text("When model is used")),
                   Container(
                       padding: const EdgeInsets.all(10),
-                      child: Text("$earningsInferenceCost")),
+                      child: Text("$assetEarnings%")),
                 ],
               ),
               TableRow(
@@ -927,10 +923,10 @@ class DeploymentCostWidget extends StatelessWidget {
                       child: const Text("Total cost per inference")),
                   Container(
                       padding: const EdgeInsets.all(10),
-                      child: const Text("Each time the model is used")),
+                      child: const Text("When model is used")),
                   Container(
                       padding: const EdgeInsets.all(10),
-                      child: Text("$totalInferenceCost")),
+                      child: Text("${100 + dhaliEarnings + assetEarnings}%")),
                 ],
               ),
             ],
@@ -939,8 +935,7 @@ class DeploymentCostWidget extends StatelessWidget {
             height: 16,
           ),
           const Text(
-            "If you continue, the above costs will be applied now. "
-            "You can cancel your model's hosting at any point.",
+            "If you continue, the above costs will be applied.",
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 25, color: AppTheme.nearlyBlack),
           ),
@@ -967,7 +962,7 @@ class DeploymentCostWidget extends StatelessWidget {
                       backgroundColor: AppTheme.grey,
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(4))),
-                  onPressed: () => yesClicked(file, earningsInferenceCost),
+                  onPressed: () => yesClicked(file, assetEarnings),
                   icon: const Icon(
                     Icons.done_outline_rounded,
                     size: 32,
@@ -990,11 +985,11 @@ class DeploymentCostWidget extends StatelessWidget {
                     Navigator.of(context).pop();
                   },
                   icon: const Icon(
-                    Icons.close_outlined,
+                    Icons.arrow_back,
                     size: 32,
                   ),
                   label: const Text(
-                    "No",
+                    "Back",
                     style: TextStyle(fontSize: 30),
                   )),
               const SizedBox(
