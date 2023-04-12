@@ -26,19 +26,10 @@ const String theInputAssetName = "a_badl3y_n@med-model";
 const String theAssetName = "abadl3ynmed-model";
 const String theDhaliAssetID = "a-session-id";
 
-void imageDeploymentDemo(
+Future<void> selectAssets(
     WidgetTester tester,
     MockMultipartRequest mockRequester,
-    FakeFirebaseFirestore mockFirebaseFirestore,
-    int responseCode) async {
-  await utils.dragOutDrawer(tester);
-
-  await tester.tap(find.text("My assets"));
-  await tester.pumpAndSettle();
-
-  await tester.tap(find.text('Add new asset', skipOffstage: false));
-  await tester.pumpAndSettle();
-
+    FakeFirebaseFirestore mockFirebaseFirestore) async {
   expect(find.text("Choose .tar file"), findsOneWidget);
   expect(find.text("Choose .md file"), findsOneWidget);
   expect(find.text("Next"), findsOneWidget);
@@ -73,30 +64,12 @@ void imageDeploymentDemo(
   await tester.tap(find.byKey(const Key("choose_readme_button")));
 
   await tester.pumpAndSettle();
+}
 
-  await tester.tap(find.text("Next"));
-  await tester.pumpAndSettle(const Duration(seconds: 4));
-
-  expect(find.text("Your image was successfully scanned."), findsOneWidget);
-
-  await tester.tap(find.text("Next"));
-  await tester.pumpAndSettle();
-
-  expect(find.text("Set your earning rate per inference."), findsOneWidget);
-  expect(find.text("\nKeep this small to encourage usage.\n"), findsOneWidget);
-  expect(
-      find.text(
-          "Example: If running your asset costs Dhali \$1 in compute costs per inference, by setting 20 below you will earn \$0.20 per inference."),
-      findsOneWidget);
-
-  await tester.enterText(find.byKey(const Key("percentage_earnings_input")),
-      "a_badl3y_f0rmatted_Str1ng");
-  await tester.pumpAndSettle();
-  expect(find.text("301"), findsOneWidget);
-
-  await tester.tap(find.text("Next"));
-  await tester.pumpAndSettle();
-
+Future<void> displayCosts(
+    WidgetTester tester,
+    MockMultipartRequest mockRequester,
+    FakeFirebaseFirestore mockFirebaseFirestore) async {
   expect(
       find.text("Here is a break down of the model's costs:"), findsOneWidget);
   expect(find.text("Paid by you:"), findsOneWidget);
@@ -114,6 +87,55 @@ void imageDeploymentDemo(
   expect(find.text("Are you sure you want to deploy?"), findsOneWidget);
   expect(find.text("Yes"), findsOneWidget);
   expect(find.text("Back"), findsOneWidget);
+}
+
+Future<void> setEarnings(
+    WidgetTester tester,
+    MockMultipartRequest mockRequester,
+    FakeFirebaseFirestore mockFirebaseFirestore) async {
+  expect(find.text("Set your earning rate per inference."), findsOneWidget);
+  expect(find.text("\nKeep this small to encourage usage.\n"), findsOneWidget);
+  expect(
+      find.text(
+          "Example: If running your asset costs Dhali \$1 in compute costs per inference, by setting 20 below you will earn \$0.20 per inference."),
+      findsOneWidget);
+
+  await tester.enterText(find.byKey(const Key("percentage_earnings_input")),
+      "a_badl3y_f0rmatted_Str1ng");
+  await tester.pumpAndSettle();
+  expect(find.text("301"), findsOneWidget);
+}
+
+void imageDeploymentDemo(
+    WidgetTester tester,
+    MockMultipartRequest mockRequester,
+    FakeFirebaseFirestore mockFirebaseFirestore,
+    int responseCode) async {
+  await utils.dragOutDrawer(tester);
+
+  await tester.tap(find.text("My assets"));
+  await tester.pumpAndSettle();
+
+  await tester.tap(find.text('Add new asset', skipOffstage: false));
+  await tester.pumpAndSettle();
+
+  await selectAssets(tester, mockRequester, mockFirebaseFirestore);
+
+  await tester.tap(find.text("Next"));
+  await tester.pumpAndSettle(const Duration(seconds: 4));
+
+  expect(find.text("Your image was successfully scanned."), findsOneWidget);
+
+  await tester.tap(find.text("Next"));
+  await tester.pumpAndSettle();
+
+  await setEarnings(tester, mockRequester, mockFirebaseFirestore);
+
+  await tester.tap(find.text("Next"));
+  await tester.pumpAndSettle();
+
+  await displayCosts(tester, mockRequester, mockFirebaseFirestore);
+
   await tester.tap(find.text("Yes"));
 
   await tester
@@ -276,6 +298,73 @@ void main() async {
 
       imageDeploymentDemo(
           tester, mockRequester, firebaseMockInstance, responseCode);
+    });
+
+    testWidgets('Cancel image deployment', (WidgetTester tester) async {
+      const w = 1920;
+      const h = 1080;
+      var mockRequester = MockMultipartRequest();
+      int responseCode = 200;
+
+      when(mockRequester.send()).thenAnswer((_) async => StreamedResponse(
+              Stream.empty(), responseCode, headers: {
+            Config.config!["DHALI_ID"].toString().toLowerCase(): theDhaliAssetID
+          }));
+      when(mockRequester.headers).thenAnswer((_) => {});
+      final dpi = tester.binding.window.devicePixelRatio;
+      tester.binding.window.physicalSizeTestValue = Size(w * dpi, h * dpi);
+
+      await tester.pumpWidget(MaterialApp(
+        title: "Dhali",
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+          textTheme: AppTheme.textTheme,
+          platform: TargetPlatform.iOS,
+        ),
+        home: NavigationHomeScreen(
+            firestore: firebaseMockInstance,
+            wallet: mockWallet,
+            getRequest: (String method, String path) => mockRequester),
+      ));
+
+      await utils.dragOutDrawer(tester);
+
+      await tester.tap(find.text("My assets"));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Add new asset', skipOffstage: false));
+      await tester.pumpAndSettle();
+
+      await selectAssets(tester, mockRequester, firebaseMockInstance);
+
+      await tester.tap(find.text("Next"));
+      await tester.pumpAndSettle(const Duration(seconds: 4));
+
+      expect(find.text("Your image was successfully scanned."), findsOneWidget);
+
+      await tester.tap(find.text("Next"));
+      await tester.pumpAndSettle();
+
+      await setEarnings(tester, mockRequester, firebaseMockInstance);
+
+      await tester.tap(find.text("Next"));
+      await tester.pumpAndSettle();
+
+      await displayCosts(tester, mockRequester, firebaseMockInstance);
+
+      await tester.tap(find.text("Yes"));
+
+      await tester
+          .pump(); // First pump releases the Future from `mockWallet.getOpenPaymentChannels`
+      await tester
+          .pump(); // Second pump releases the Future.value to FutureBuilder
+      expect(find.byKey(const Key("deploying_in_progress_dialog")),
+          findsOneWidget);
+      expect(find.text("Cancel"), findsOneWidget);
+      await tester.tap(find.text("Cancel"));
+      await tester.pump();
+      expect(find.byKey(const Key("minting_nft_spinner")), findsNothing);
     });
   });
 }

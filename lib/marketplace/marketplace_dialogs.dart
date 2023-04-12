@@ -1150,7 +1150,10 @@ class _DataTransmissionWidgetState extends State<DataTransmissionWidget> {
                           onPressed: () {
                             if (deploying) {
                               uploadRequest.cancelUpload();
-                              deploying = false;
+                              setState(() {
+                                deploying = false;
+                                uploadWasSuccessful = false;
+                              });
                             } else {
                               Navigator.of(context).pop();
                               Navigator.of(context).pop();
