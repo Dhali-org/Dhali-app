@@ -671,7 +671,7 @@ class _ImageScanningWidgetState extends State<ImageScanningWidget> {
         scanning = false;
 
         String correctFileType = "application/x-tar";
-        double correctFileSize = 7e9;
+        double correctFileSize = 7.5e9;
 
         final isCorrectFileType = widget.file.mime == correctFileType;
         final isCorrectFileSize = widget.file.size < correctFileSize;
