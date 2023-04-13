@@ -233,8 +233,8 @@ class DeployUploader extends BaseUploader {
 
         if (finalResponse.statusCode != 200 &&
             finalResponse.statusCode != 308) {
-          return StreamedResponse(Stream.empty(), finalResponse.statusCode,
-              reasonPhrase: finalResponse.reasonPhrase);
+          throw Exception(
+              "Chunk $i returned status code ${finalResponse.statusCode}: ${finalResponse.reasonPhrase}");
         }
         try {
           sessionID = finalResponse!
@@ -249,12 +249,30 @@ class DeployUploader extends BaseUploader {
         _updateProgress(model, progressStatus, _maxChunkSize, i + 1, _complete);
         i = i + 1;
       } catch (e) {
-        retries += 1;
-        if (retries >= maxNumberOfRetries) {
-          throw http.ClientException(
-              "Chunk $i failed to upload after $retries retries: ${e.toString()}");
+        // With this exception handling, the client will indefinitely retry
+        // to upload failed chunks, provided the failure was caused by a timeout
+        // upstream (i.e., a 504 error)
+        // This error handling also operates under the assumption that if the
+        // responseCode is 200, then the current attempt to send threw an
+        // exception and the previous chunk was successful. Thus the current
+        // chunk should be retried because the issue is upstream and Dhali
+        // independent
+        if (finalResponse != null &&
+            (finalResponse.statusCode == 504 ||
+                finalResponse.statusCode == 200)) {
+          // An upstream timeout occured.Wait a minute and try again
+          await Future.delayed(const Duration(seconds: 30));
+          logger.d("Chunk $i was interupted: ${e.toString()}. Retrying.");
+        } else {
+          retries += 1;
+          if (retries >= maxNumberOfRetries) {
+            // Something went wrong!
+            logger.d(finalResponse!.statusCode);
+            return StreamedResponse(
+                const Stream.empty(), finalResponse.statusCode,
+                reasonPhrase: finalResponse.reasonPhrase);
+          }
         }
-        logger.d("Chunk $i was interupted: ${e.toString()}. Retry $retries.");
       }
     }
     _complete = true;
