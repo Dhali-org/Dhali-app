@@ -4,6 +4,7 @@ import 'package:dhali/wallet/xrpl_wallet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:http/http.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'model/marketplace_list_data.dart';
 import 'package:dhali/config.dart' show Config;
@@ -72,6 +73,12 @@ class _AssetPageState extends State<AssetPage> {
                     (BuildContext context, AsyncSnapshot<Response> snapshot) {
                   if (snapshot.hasData) {
                     return Markdown(
+                        onTapLink: (text, url, title) {
+                          if (url != null) {
+                            launchUrl(Uri.parse(url));
+                          }
+                        },
+                        selectable: true,
                         key: const Key("asset_page_readme"),
                         data: snapshot.data!.body);
                   } else {
