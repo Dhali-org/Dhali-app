@@ -1110,14 +1110,21 @@ class _DataTransmissionWidgetState extends State<DataTransmissionWidget> {
                     height: 16,
                   ),
                   deploying
-                      ? Text(
-                          key: const Key("deploying_in_progress_dialog"),
-                          textAlign: TextAlign.center,
-                          "Uploading '${currentFileUploading.toString()}: "
-                          "file $currentFileIndexUploading of ${widget.data.length}'."
-                          "\nPlease wait.",
-                          style: const TextStyle(
-                              fontSize: 30, color: AppTheme.nearlyBlack),
+                      ? Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              key: const Key("deploying_in_progress_dialog"),
+                              textAlign: TextAlign.center,
+                              "Uploading '${currentFileUploading.toString()}: "
+                              "file $currentFileIndexUploading of ${widget.data.length}'."
+                              "\nPlease wait.",
+                              style: const TextStyle(
+                                  fontSize: 30, color: AppTheme.nearlyBlack),
+                            ),
+                            SizedBox(height: 20),
+                            CircularProgressIndicator(),
+                          ],
                         )
                       : responseCode == 200
                           ? Text(
