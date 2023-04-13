@@ -52,11 +52,11 @@ Future<void> imageConsumptionDemo(WidgetTester tester) async {
   expect(find.text(theOtherAssetName), findsNothing);
   expect(find.byKey(const Key("asset_circular_spinner")), findsOneWidget);
   expect(find.byKey(const Key("categories_in_asset_page")), findsOneWidget);
-  expect(find.text("Run (~$cost drops/run)"), findsOneWidget);
+  expect(find.text("Run"), findsOneWidget);
   await tester.pump();
   expect(find.byKey(const Key("asset_page_readme")), findsOneWidget);
   expect(find.byKey(const Key("asset_circular_spinner")), findsNothing);
-  await tester.tap(find.text("Run (~$cost drops/run)"));
+  await tester.tap(find.text("Run"));
   await tester.pump();
   expect(find.text("Unable to proceed"), findsNothing);
   expect(find.text("Your wallet has not been activated"), findsNothing);
@@ -257,7 +257,7 @@ void main() async {
         ),
       ));
 
-      await tester.tap(find.text("Run (~$cost drops/run)"));
+      await tester.tap(find.text("Run"));
       await tester.pump();
       expect(find.text("Unable to proceed"), findsOneWidget);
       expect(find.text("Your wallet has not been activated"), findsOneWidget);
