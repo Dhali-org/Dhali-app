@@ -85,54 +85,104 @@ class _AssetPageState extends State<AssetPage> {
         bottomNavigationBar: Container(
             margin: const EdgeInsets.all(20),
             child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Expanded(
+                    flex: 3,
                     child: ListView(
-                  shrinkWrap: true,
-                  children: [
-                    Text(
-                      "Average runtime: ${widget.asset.averageRuntime.ceil()}ms",
-                      style: TextStyle(color: Colors.black, fontSize: 20),
-                    ),
-                    Text(
-                      "Successful requests: ${widget.asset.numberOfSuccessfullRequests}",
-                      style: TextStyle(color: Colors.black, fontSize: 20),
-                    ),
-                    SelectableText(
-                      "Endpoint URL: ${Config.config!["ROOT_RUN_URL"]}/${widget.asset.assetID}/run",
-                      style: TextStyle(color: Colors.black, fontSize: 20),
-                    )
-                  ],
-                )),
-                ElevatedButton.icon(
-                  style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 20, horizontal: 20),
-                      backgroundColor: AppTheme.grey,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(4))),
-                  onPressed: () => {
-                    showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return consumerJourney(
-                              assetDescriptor: widget.asset,
-                              context: context,
-                              runURL:
-                                  "${Config.config!["ROOT_RUN_URL"]}/${widget.asset.assetID}/run",
-                              getWallet: widget.getWallet,
-                              getRequest: widget.getRequest);
-                        })
-                  },
-                  icon: const Icon(
-                    Icons.navigate_next_outlined,
-                    size: 32,
-                  ),
-                  label: Text(
-                    "Run (~${widget.asset.pricePerRun.ceil()} drops/run)",
-                    style: TextStyle(fontSize: 30),
-                  ),
-                )
+                      shrinkWrap: true,
+                      children: [
+                        RichText(
+                          text: TextSpan(
+                            style: const TextStyle(
+                                color: Colors.black, fontSize: 15),
+                            children: <TextSpan>[
+                              const TextSpan(
+                                  text: 'Runtime: ',
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.bold)),
+                              TextSpan(
+                                  text:
+                                      '~${widget.asset.averageRuntime.ceil()}ms'),
+                            ],
+                          ),
+                        ),
+                        RichText(
+                          text: TextSpan(
+                            style: const TextStyle(
+                                color: Colors.black, fontSize: 15),
+                            children: <TextSpan>[
+                              const TextSpan(
+                                  text: 'Cost: ',
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.bold)),
+                              TextSpan(
+                                  text:
+                                      '~${widget.asset.pricePerRun.ceil()} drops/run'),
+                            ],
+                          ),
+                        ),
+                        RichText(
+                          text: TextSpan(
+                            style: const TextStyle(
+                                color: Colors.black, fontSize: 15),
+                            children: <TextSpan>[
+                              const TextSpan(
+                                  text: 'Used: ',
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.bold)),
+                              TextSpan(
+                                  text:
+                                      '${widget.asset.numberOfSuccessfullRequests} times'),
+                            ],
+                          ),
+                        ),
+                        SelectableText.rich(
+                          TextSpan(
+                            style: TextStyle(color: Colors.black, fontSize: 15),
+                            children: <TextSpan>[
+                              const TextSpan(
+                                  text: 'Endpoint: ',
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.bold)),
+                              TextSpan(
+                                  text:
+                                      '${Config.config!["ROOT_RUN_URL"]}/${widget.asset.assetID}/run'),
+                            ],
+                          ),
+                        )
+                      ],
+                    )),
+                Expanded(
+                    flex: 1,
+                    child: ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
+                          backgroundColor: AppTheme.grey,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(4))),
+                      onPressed: () => {
+                        showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return consumerJourney(
+                                  assetDescriptor: widget.asset,
+                                  context: context,
+                                  runURL:
+                                      "${Config.config!["ROOT_RUN_URL"]}/${widget.asset.assetID}/run",
+                                  getWallet: widget.getWallet,
+                                  getRequest: widget.getRequest);
+                            })
+                      },
+                      icon: const Icon(
+                        Icons.navigate_next_outlined,
+                        size: 25,
+                      ),
+                      label: const Text(
+                        "Run",
+                        style: TextStyle(fontSize: 15),
+                      ),
+                    ))
               ],
             )));
   }
