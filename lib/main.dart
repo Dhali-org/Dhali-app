@@ -21,7 +21,8 @@ Future<void> initializeApp() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  await Config.loadConfig();
+
+  await Config.loadConfig('assets/public.json');
 
   await SystemChrome.setPreferredOrientations(<DeviceOrientation>[
     DeviceOrientation.portraitUp,

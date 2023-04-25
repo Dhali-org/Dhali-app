@@ -28,8 +28,8 @@ import 'package:flutter/services.dart';
 
 class Config {
   static Map<String, dynamic>? config;
-  static Future<void> loadConfig() async {
-    final jsonString = await rootBundle.loadString('assets/public.json');
+  static Future<void> loadConfig(String configPath) async {
+    final jsonString = await rootBundle.loadString(configPath);
     config = jsonDecode(jsonString);
   }
 }
