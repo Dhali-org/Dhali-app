@@ -16,7 +16,7 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'marketplace/asset_page.dart';
 import 'marketplace/model/marketplace_list_data.dart';
 
-void main() async {
+Future<void> initializeApp() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
@@ -25,10 +25,18 @@ void main() async {
 
   await SystemChrome.setPreferredOrientations(<DeviceOrientation>[
     DeviceOrientation.portraitUp,
-    DeviceOrientation.portraitDown
-  ]).then((_) => runApp(MyApp(getRequest: (String method, String path) {
-        return MultipartRequest(method, Uri.parse(path));
-      })));
+    DeviceOrientation.portraitDown,
+  ]);
+}
+
+MultipartRequest Function(String method, String path) getRequestFunction =
+    (String method, String path) {
+  return MultipartRequest(method, Uri.parse(path));
+};
+
+void main() async {
+  await initializeApp();
+  runApp(MyApp(getRequest: getRequestFunction));
 }
 
 class MyApp extends StatefulWidget {
