@@ -15,7 +15,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:dhali/app_theme.dart';
 import 'package:dhali/utils/not_implemented_dialog.dart';
 
-import 'model/asset_model.dart';
+import 'package:dhali/marketplace/model/asset_model.dart';
 import 'package:dhali/config.dart' show Config;
 
 class DataEndpointPair {

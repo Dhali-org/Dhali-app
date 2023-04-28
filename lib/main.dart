@@ -9,12 +9,12 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:dhali/navigation_home_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
+import 'package:dhali/firebase_options.dart';
 import 'package:dhali/config.dart' show Config;
 import 'package:flutter/services.dart' show rootBundle;
 
-import 'marketplace/asset_page.dart';
-import 'marketplace/model/marketplace_list_data.dart';
+import 'package:dhali/marketplace/asset_page.dart';
+import 'package:dhali/marketplace/model/marketplace_list_data.dart';
 
 Future<void> initializeApp() async {
   WidgetsFlutterBinding.ensureInitialized();

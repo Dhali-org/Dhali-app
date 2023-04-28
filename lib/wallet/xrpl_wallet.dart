@@ -4,7 +4,7 @@ import 'package:node_interop/util.dart';
 import 'package:logger/logger.dart';
 
 import 'package:xrpl/xrpl.dart';
-import 'xrpl_types.dart';
+import 'package:dhali/wallet/xrpl_types.dart';
 
 // Functionality to support:
 // 1. Get balance (total amount of XRP in the account) [DONE]
