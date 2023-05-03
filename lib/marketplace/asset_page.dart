@@ -6,7 +6,7 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:http/http.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import 'model/marketplace_list_data.dart';
+import 'package:dhali/marketplace/model/marketplace_list_data.dart';
 import 'package:dhali/config.dart' show Config;
 
 class AssetPage extends StatefulWidget {

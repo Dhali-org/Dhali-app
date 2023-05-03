@@ -1,7 +1,7 @@
 import 'package:xrpl/xrpl.dart';
 import 'package:flutter/material.dart';
 
-import 'xrpl_wallet.dart';
+import 'package:dhali/wallet/xrpl_wallet.dart';
 
 class WalletHomeScreen extends StatefulWidget {
   const WalletHomeScreen(

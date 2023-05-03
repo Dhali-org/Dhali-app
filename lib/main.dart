@@ -9,14 +9,14 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:dhali/navigation_home_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
+import 'package:dhali/firebase_options.dart';
 import 'package:dhali/config.dart' show Config;
 import 'package:flutter/services.dart' show rootBundle;
 
-import 'marketplace/asset_page.dart';
-import 'marketplace/model/marketplace_list_data.dart';
+import 'package:dhali/marketplace/asset_page.dart';
+import 'package:dhali/marketplace/model/marketplace_list_data.dart';
 
-void main() async {
+Future<void> initializeApp() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
@@ -25,10 +25,18 @@ void main() async {
 
   await SystemChrome.setPreferredOrientations(<DeviceOrientation>[
     DeviceOrientation.portraitUp,
-    DeviceOrientation.portraitDown
-  ]).then((_) => runApp(MyApp(getRequest: (String method, String path) {
-        return MultipartRequest(method, Uri.parse(path));
-      })));
+    DeviceOrientation.portraitDown,
+  ]);
+}
+
+MultipartRequest Function(String method, String path) getRequestFunction =
+    (String method, String path) {
+  return MultipartRequest(method, Uri.parse(path));
+};
+
+void main() async {
+  await initializeApp();
+  runApp(MyApp(getRequest: getRequestFunction));
 }
 
 class MyApp extends StatefulWidget {

@@ -5,7 +5,7 @@ import 'package:dhali/app_theme.dart';
 import 'package:dhali/marketplace/marketplace_home_screen.dart';
 import 'package:flutter/material.dart';
 
-import 'wallet/home_screen.dart';
+import 'package:dhali/wallet/home_screen.dart';
 
 enum DrawerIndex {
   Wallet,

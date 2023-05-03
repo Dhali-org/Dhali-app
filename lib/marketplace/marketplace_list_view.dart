@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-import 'model/marketplace_list_data.dart';
+import 'package:dhali/marketplace/model/marketplace_list_data.dart';
 
 class MarketplaceListView extends StatelessWidget {
   const MarketplaceListView({
