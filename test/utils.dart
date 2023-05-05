@@ -1,3 +1,8 @@
+// TODO : Work out how to load assets into unit tests
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+const publicConfig = '''
 {
     "MINTED_NFTS_DOCUMENT_KEYS": {
         "NUMBER_OF_SUCCESSFUL_REQUESTS": "num_successful_requests", 
@@ -7,8 +12,7 @@
         "ENDPOINT_URL": "endpoint_url",
         "EXPECTED_INFERENCE_COST_PER_MS": "cost_per_ms",
         "ASSET_NAME": "name",
-        "NFTOKEN_ID": "NFTokenId",
-        "EARNING_RATE": "asset_earning_rate"
+        "NFTOKEN_ID": "NFTokenId"
     },
     "MINTED_NFTS_COLLECTION_NAME": "public_minted_nfts",
     "PAYMENT_CLAIM_KEYS": {
@@ -28,11 +32,22 @@
     "POST_DEPLOY_README_ROUTE": "readme",
     "POST_RUN_INFERENCE_ROUTE": "run",
     "POST_DEPLOY_ASSET_ROUTE": "asset",
-    "ROOT_DEPLOY_URL": "https://staging-3mmgxhct.uc.gateway.dev",
+    "ROOT_DEPLOY_URL": "https://kernml-3mmgxhct.uc.gateway.dev",
     "ROOT_CONSUMER_URL": "https://kernml-consumer-3mmgxhct.uc.gateway.dev",
-    "ROOT_RUN_URL": "https://dhali-staging-run-3mmgxhct.uc.gateway.dev",
+    "ROOT_RUN_URL": "https://kernml-run-3mmgxhct.uc.gateway.dev",
     "DHALI_PUBLIC_ADDRESS": "rstbSTpPcyxMsiXwkBxS9tFTrg2JsDNxWk",
-    "DHALI_DEPLOYMENT_COST_PER_CHUNK_DROPS": 3000,
+    "DHALI_DEPLOYMENT_COST_PER_CHUNK_DROPS": 5000,
     "DHALI_EARNINGS_PERCENTAGE_PER_INFERENCE": 20,
     "MAX_NUMBER_OF_BYTES_PER_DEPLOY_CHUNK": 10485760 
+}
+''';
+
+Future<void> dragOutDrawer(WidgetTester tester) async {
+  final ScaffoldState state = tester.firstState(find.byType(Scaffold));
+  state.openDrawer();
+  await tester.pumpAndSettle();
+
+  expect(find.text("Marketplace"), findsOneWidget);
+  expect(find.text("My assets"), findsOneWidget);
+  expect(find.text("Wallet"), findsOneWidget);
 }

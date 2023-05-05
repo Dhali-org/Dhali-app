@@ -5,7 +5,7 @@ import 'package:dhali/app_theme.dart';
 import 'package:dhali/marketplace/marketplace_home_screen.dart';
 import 'package:flutter/material.dart';
 
-import 'wallet/home_screen.dart';
+import 'package:dhali/wallet/home_screen.dart';
 
 enum DrawerIndex {
   Wallet,
@@ -17,26 +17,27 @@ enum DrawerIndex {
 class NavigationHomeScreen extends StatefulWidget {
   const NavigationHomeScreen(
       {this.drawerIndex,
-      this.wallet,
-      required this.getMintingRequest,
+      required this.getWallet,
+      required this.setWallet,
+      required this.getRequest,
       required this.firestore});
 
-  final BaseRequest Function(String path) getMintingRequest;
+  final BaseRequest Function(String method, String path) getRequest;
   final FirebaseFirestore firestore;
 
   final DrawerIndex? drawerIndex;
-  final XRPLWallet? wallet;
+  final XRPLWallet? Function() getWallet;
+  final void Function(XRPLWallet) setWallet;
 
   @override
   _NavigationHomeScreenState createState() =>
-      _NavigationHomeScreenState(drawerIndex, wallet);
+      _NavigationHomeScreenState(drawerIndex);
 }
 
 class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
-  _NavigationHomeScreenState(this.drawerIndex, this._wallet);
+  _NavigationHomeScreenState(this.drawerIndex);
   Widget? screenView;
   DrawerIndex? drawerIndex;
-  XRPLWallet? _wallet;
 
   @override
   void initState() {
@@ -135,18 +136,18 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
   Widget? getScreenView(drawerIndex) {
     screenView = MarketplaceHomeScreen(
         key: const Key("Marketplace"), // Key used to force State rebuild
-        getMintingRequest: widget.getMintingRequest,
+        getRequest: widget.getRequest,
         assetScreenType: AssetScreenType.Marketplace,
-        getWallet: getWallet,
-        setWallet: setWallet,
+        getWallet: widget.getWallet,
+        setWallet: widget.setWallet,
         getFirestore: getFirestore);
     switch (drawerIndex) {
       case DrawerIndex.Wallet:
         setState(() {
           screenView = WalletHomeScreen(
             title: "wallet",
-            getWallet: getWallet,
-            setWallet: setWallet,
+            getWallet: widget.getWallet,
+            setWallet: widget.setWallet,
           );
         });
         break;
@@ -154,10 +155,10 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
         setState(() {
           screenView = MarketplaceHomeScreen(
             key: const Key("My Assets"), // Key used to force State rebuild
-            getMintingRequest: widget.getMintingRequest,
+            getRequest: widget.getRequest,
             assetScreenType: AssetScreenType.MyAssets,
-            getWallet: getWallet,
-            setWallet: setWallet,
+            getWallet: widget.getWallet,
+            setWallet: widget.setWallet,
             getFirestore: getFirestore,
           );
         });
@@ -166,10 +167,10 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
         setState(() {
           screenView = MarketplaceHomeScreen(
               key: const Key("Marketplace"), // Key used to force State rebuild
-              getMintingRequest: widget.getMintingRequest,
+              getRequest: widget.getRequest,
               assetScreenType: AssetScreenType.Marketplace,
-              getWallet: getWallet,
-              setWallet: setWallet,
+              getWallet: widget.getWallet,
+              setWallet: widget.setWallet,
               getFirestore: getFirestore);
         });
         break;
@@ -186,15 +187,5 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
 
   FirebaseFirestore? getFirestore() {
     return widget.firestore;
-  }
-
-  XRPLWallet? getWallet() {
-    return this._wallet;
-  }
-
-  void setWallet(XRPLWallet wallet) {
-    setState(() {
-      this._wallet = wallet;
-    });
   }
 }

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-import 'model/marketplace_list_data.dart';
+import 'package:dhali/marketplace/model/marketplace_list_data.dart';
 
 class MarketplaceListView extends StatelessWidget {
   const MarketplaceListView({
@@ -33,6 +33,7 @@ class MarketplaceListView extends StatelessWidget {
               padding: const EdgeInsets.only(
                   left: 24, right: 24, top: 8, bottom: 16),
               child: InkWell(
+                key: Key(marketplaceData!.assetID),
                 splashColor: Colors.transparent,
                 onTap: () => callback(marketplaceData!),
                 child: Container(
@@ -61,7 +62,7 @@ class MarketplaceListView extends StatelessWidget {
                               const Spacer(),
                               FittedBox(
                                   fit: BoxFit.fitWidth,
-                                  child: SelectableText(
+                                  child: Text(
                                     marketplaceData!.assetName,
                                     style: const TextStyle(
                                       fontWeight: FontWeight.w600,
@@ -96,40 +97,44 @@ class MarketplaceListView extends StatelessWidget {
                                   ),
                                   Icon(
                                     FontAwesomeIcons.moneyBill1Wave,
-                                    size: 16,
+                                    size: 14,
                                     color: MarketplaceAppTheme.buildLightTheme()
                                         .primaryColor,
                                   ),
                                   const SizedBox(
                                     width: 4,
                                   ),
-                                  Text(
-                                    ' ${marketplaceData!.pricePerRun} drops',
-                                    textAlign: TextAlign.left,
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 22,
+                                  Expanded(
+                                    child: Text(
+                                      ' ${marketplaceData!.pricePerRun.ceil()} drops/run',
+                                      textAlign: TextAlign.left,
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 16,
+                                      ),
                                     ),
+                                    flex: 2,
                                   ),
-                                  const Spacer(),
+                                  const Spacer(
+                                    flex: 1,
+                                  ),
                                   Icon(
                                     FontAwesomeIcons.clock,
-                                    size: 16,
+                                    size: 14,
                                     color: MarketplaceAppTheme.buildLightTheme()
                                         .primaryColor,
                                   ),
-                                  Text(
-                                    ' ${marketplaceData!.averageRuntime.toStringAsFixed(1)} seconds',
-                                    overflow: TextOverflow.ellipsis,
-                                    textAlign: TextAlign.left,
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 22,
+                                  Expanded(
+                                    child: Text(
+                                      ' ${(marketplaceData!.averageRuntime / 1000).toStringAsFixed(2)} secs/run',
+                                      overflow: TextOverflow.ellipsis,
+                                      textAlign: TextAlign.left,
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 16,
+                                      ),
                                     ),
-                                  ),
-                                  Text(
-                                    '/per run',
-                                    style: TextStyle(fontSize: 14),
+                                    flex: 2,
                                   )
                                 ],
                               ),

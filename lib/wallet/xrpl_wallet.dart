@@ -4,7 +4,7 @@ import 'package:node_interop/util.dart';
 import 'package:logger/logger.dart';
 
 import 'package:xrpl/xrpl.dart';
-import 'xrpl_types.dart';
+import 'package:dhali/wallet/xrpl_types.dart';
 
 // Functionality to support:
 // 1. Get balance (total amount of XRP in the account) [DONE]
@@ -74,7 +74,7 @@ class XRPLWallet {
     try {
       promiseToFuture(client.connect()).then((erg) {
         // TODO: Remove this in the future
-        promiseToFuture(client.fundWallet(_wallet)).then((e) {
+        promiseToFuture(client.fundWallet(_wallet, null)).then((e) {
           String address = _wallet!.address;
           promiseToFuture(client.getXrpBalance(address)).then((balanceString) {
             balance.value = balanceString.toString();
@@ -99,6 +99,41 @@ class XRPLWallet {
 
   String sendDrops(String amount, String channelId) {
     return authorizeChannel(_wallet!, channelId, amount);
+  }
+
+  Future<dynamic> submitRequest(BaseRequest request, Client client) async {
+    return promiseToFuture(client.connect()).then((_) {
+      return promiseToFuture(client.request(request)).then((response) {
+        dynamic dartResponse = dartify(response);
+        return dartResponse;
+      }).catchError((e, stacktrace) {
+        var logger = Logger();
+        logger.e("Exception caught from future: $e");
+        logger.e("Stack trace: $stacktrace");
+        return Future<dynamic>.error(e);
+      });
+    });
+  }
+
+  Future<dynamic> getAvailableNFTs() async {
+    Client client = Client(_netUrl);
+    try {
+      var accountNFTsRequest = AccountNFTsRequest(
+        account: _wallet!.address,
+        command: "account_nfts",
+      );
+      return submitRequest(accountNFTsRequest, client);
+    } catch (e, stacktrace) {
+      var logger = Logger();
+      logger.e('Exception caught: $e');
+      logger.e(stacktrace);
+      return Future<List<PaymentChannelDescriptor>>.error(e);
+    } finally {
+      // TODO: This looks like the source of race conditions with the asyncronous function calls above - maybe an RAII-style wrapped class would be appropriate to use instead of doing this.
+      client.disconnect();
+    }
+    return Future.error(ImplementationErrorException(
+        "This code should never be reached, and indicates an implementation error."));
   }
 
   Future<bool> acceptOffer(String offerIndex) async {

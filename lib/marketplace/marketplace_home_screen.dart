@@ -1,5 +1,11 @@
 import 'dart:async';
+import 'dart:math';
 
+import 'package:async/async.dart';
+
+import 'package:dhali/marketplace/model/asset_model.dart';
+import 'package:dhali/utils/Uploaders.dart';
+import 'package:dhali/utils/not_implemented_dialog.dart';
 import 'package:dhali/wallet/home_screen.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/services.dart';
@@ -12,18 +18,20 @@ import 'package:dhali/marketplace/marketplace_list_view.dart';
 import 'package:dhali/marketplace/model/marketplace_list_data.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import '../wallet/xrpl_wallet.dart';
-import 'asset_page.dart';
-import 'filters_screen.dart';
-import 'marketplace_app_theme.dart';
+import 'package:rxdart/rxdart.dart';
+import 'package:dhali/wallet/xrpl_wallet.dart';
+import 'package:dhali/marketplace/asset_page.dart';
+import 'package:dhali/marketplace/filters_screen.dart';
+import 'package:dhali/marketplace/marketplace_app_theme.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dhali/config.dart' show Config;
+import 'package:http/http.dart' as http;
 
 class MarketplaceHomeScreen extends StatefulWidget {
   const MarketplaceHomeScreen(
       {Key? key,
       required this.assetScreenType,
-      required this.getMintingRequest,
+      required this.getRequest,
       required this.getWallet,
       required this.setWallet,
       required this.getFirestore})
@@ -33,7 +41,7 @@ class MarketplaceHomeScreen extends StatefulWidget {
   final XRPLWallet? Function() getWallet;
   final FirebaseFirestore? Function() getFirestore;
 
-  final BaseRequest Function(String path) getMintingRequest;
+  final BaseRequest Function(String method, String path) getRequest;
   final assetScreenType;
   @override
   _AssetScreenState createState() => _AssetScreenState();
@@ -139,68 +147,16 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                         body: Container(
                             color: MarketplaceAppTheme.buildLightTheme()
                                 .backgroundColor,
-                            child: StreamBuilder(
-                                stream: stream,
-                                builder: (BuildContext context,
-                                    AsyncSnapshot<QuerySnapshot> snapshot) {
-                                  if (snapshot.hasData) {
-                                    return GridView.builder(
-                                      itemCount: snapshot.data!.size,
-                                      padding: const EdgeInsets.only(top: 8),
-                                      scrollDirection: Axis.vertical,
-                                      gridDelegate:
-                                          SliverGridDelegateWithMaxCrossAxisExtent(
-                                              maxCrossAxisExtent: 600,
-                                              childAspectRatio: 3),
-                                      itemBuilder:
-                                          (BuildContext context, int index) {
-                                        final int count =
-                                            snapshot.data!.size > 10
-                                                ? 10
-                                                : snapshot.data!.size;
-                                        final Animation<double> animation =
-                                            Tween<double>(begin: 0.0, end: 1.0)
-                                                .animate(CurvedAnimation(
-                                                    parent:
-                                                        animationController!,
-                                                    curve: Interval(
-                                                        (1 / count) * index,
-                                                        1.0,
-                                                        curve: Curves
-                                                            .fastOutSlowIn)));
-                                        animationController?.forward();
-                                        Map<String, dynamic> elementData =
-                                            snapshot.data!.docs[index].data()
-                                                as Map<String, dynamic>;
-                                        MarketplaceListData element = MarketplaceListData(
-                                            assetID:
-                                                snapshot.data!.docs[index].id,
-                                            assetName: elementData[
-                                                Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]
-                                                    ["ASSET_NAME"]],
-                                            assetCategories: elementData[
-                                                Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]
-                                                    ["CATEGORY"]],
-                                            averageRuntime: elementData[Config
-                                                    .config!["MINTED_NFTS_DOCUMENT_KEYS"]
-                                                ["AVERAGE_INFERENCE_TIME_MS"]],
-                                            rating: elementData[
-                                                Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]
-                                                    ["NUMBER_OF_SUCCESSFUL_REQUESTS"]],
-                                            pricePerRun: elementData[Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]["EXPECTED_INFERENCE_COST_PER_MS"]]);
-                                        return MarketplaceListView(
-                                          callback: displayAsset,
-                                          marketplaceData: element,
-                                          animation: animation,
-                                          animationController:
-                                              animationController!,
-                                        );
-                                      },
-                                    );
-                                  } else {
-                                    return const SizedBox();
-                                  }
-                                })),
+                            child: widget.assetScreenType ==
+                                    AssetScreenType.MyAssets
+                                ? getFilteredAssetStreamBuilder()
+                                : getAssetStreamBuilder(
+                                    assetStream: widget
+                                        .getFirestore()!
+                                        .collection(Config.config![
+                                            "MINTED_NFTS_COLLECTION_NAME"])
+                                        .limit(20)
+                                        .snapshots())),
                       ),
                     )
                   ],
@@ -210,6 +166,165 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
           ),
         ),
       ),
+    );
+  }
+
+  Widget getFilteredAssetStreamBuilder() {
+    return widget.getWallet() != null
+        ? FutureBuilder(
+            builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+              if (!snapshot.hasData) {
+                return Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                          key: Key("loading_asset_key"),
+                          "Loading assets: ",
+                          style: TextStyle(fontSize: 25)),
+                      CircularProgressIndicator()
+                    ]);
+              } else {
+                var nfTokenIDs =
+                    (snapshot.data["result"]["account_nfts"] as List<dynamic>)
+                        .map((x) => x["NFTokenID"])
+                        .toList();
+
+                final collection = widget
+                    .getFirestore()!
+                    .collection(Config.config!["MINTED_NFTS_COLLECTION_NAME"]);
+
+                if (nfTokenIDs.isNotEmpty) {
+                  // Firestore doesn't support 'in' clauses with more than 10
+                  // arguments, so we need to create multiple queries and merge
+                  // the streams to handle this case:
+                  const maxChunkSize = 9;
+                  if (nfTokenIDs.length > maxChunkSize) {
+                    List<Stream<QuerySnapshot<Map<String, dynamic>>>> streams =
+                        [];
+                    for (int i = 0; i < nfTokenIDs.length; i += maxChunkSize) {
+                      List<dynamic> chunk = nfTokenIDs.sublist(
+                          i,
+                          i + maxChunkSize > nfTokenIDs.length
+                              ? nfTokenIDs.length
+                              : i + maxChunkSize);
+
+                      // TODO: This limits to 20 - needs to handle cases with more than 20:
+                      final stream = collection
+                          .where(
+                              Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]
+                                  ["NFTOKEN_ID"],
+                              whereIn: chunk)
+                          .limit(20)
+                          .snapshots();
+
+                      // Add the documents from the current chunk query to the result list
+                      streams.add(stream);
+                    }
+
+                    Stream<List<QuerySnapshot<Map<String, dynamic>>>> stream =
+                        CombineLatestStream(
+                            streams,
+                            (values) => values
+                                as List<QuerySnapshot<Map<String, dynamic>>>);
+
+                    return getAssetStreamBuilderFromList(assetStream: stream);
+                  } else {
+                    return getAssetStreamBuilder(
+                        assetStream: collection
+                            .where(
+                                Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]
+                                    ["NFTOKEN_ID"],
+                                whereIn: nfTokenIDs)
+                            .limit(20)
+                            .snapshots());
+                  }
+                } else {
+                  return const Text(
+                    key: Key("my_asset_not_found"),
+                    "Your wallet has no assets",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
+                  );
+                }
+              }
+            },
+            future: widget.getWallet()!.getAvailableNFTs(),
+          )
+        : Container();
+  }
+
+  Widget getAssetStreamBuilderFromList(
+      {Stream<List<QuerySnapshot<Map<String, dynamic>>>>? assetStream}) {
+    return StreamBuilder(
+        stream: assetStream,
+        builder: (BuildContext context,
+            AsyncSnapshot<List<QuerySnapshot>> snapshot) {
+          if (snapshot.hasData) {
+            List<QueryDocumentSnapshot<Object?>> docs = [];
+            for (var docsFromStream in snapshot.data!) {
+              docs.addAll(docsFromStream.docs);
+            }
+            return getAssetGridView(docs);
+          } else {
+            return Center(
+                child: Container(
+                    child: Text("An error occured loading your assets")));
+          }
+        });
+  }
+
+  Widget getAssetStreamBuilder(
+      {Stream<QuerySnapshot<Map<String, dynamic>>>? assetStream}) {
+    return StreamBuilder(
+        stream: assetStream,
+        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
+            return getAssetGridView(snapshot.data!.docs);
+          } else {
+            return const SizedBox();
+          }
+        });
+  }
+
+  Widget getAssetGridView(List<QueryDocumentSnapshot<Object?>> docs) {
+    return GridView.builder(
+      key: Key("asset_grid_view"),
+      itemCount: docs.length,
+      padding: const EdgeInsets.only(top: 8),
+      scrollDirection: Axis.vertical,
+      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+          maxCrossAxisExtent: 600, childAspectRatio: 3),
+      itemBuilder: (BuildContext context, int index) {
+        final int count = docs.length > 10 ? 10 : docs.length;
+        final Animation<double> animation = Tween<double>(begin: 0.0, end: 1.0)
+            .animate(CurvedAnimation(
+                parent: animationController!,
+                curve: Interval(min((1 / count) * index, 1.0), 1.0,
+                    curve: Curves.fastOutSlowIn)));
+        animationController?.forward();
+        Map<String, dynamic> elementData =
+            docs[index].data() as Map<String, dynamic>;
+        MarketplaceListData element = MarketplaceListData(
+            assetID: docs[index].id,
+            assetName: elementData[Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]
+                ["ASSET_NAME"]],
+            assetCategories: elementData[
+                Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]["CATEGORY"]],
+            averageRuntime: elementData[
+                Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]
+                    ["AVERAGE_INFERENCE_TIME_MS"]],
+            numberOfSuccessfullRequests: elementData[
+                Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]
+                    ["NUMBER_OF_SUCCESSFUL_REQUESTS"]],
+            pricePerRun: elementData[Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]
+                ["EXPECTED_INFERENCE_COST_PER_MS"]]);
+        return MarketplaceListView(
+          callback: displayAsset,
+          marketplaceData: element,
+          animation: animation,
+          animationController: animationController!,
+        );
+      },
     );
   }
 
@@ -267,8 +382,12 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
   }
 
   void displayAsset(MarketplaceListData asset) {
-    Navigator.push(context,
-        MaterialPageRoute(builder: (context) => AssetPage(asset: asset)));
+    Navigator.pushNamed(context, '/assets/${asset.assetID}',
+        arguments: AssetPage(
+          asset: asset,
+          getRequest: widget.getRequest,
+          getWallet: widget.getWallet,
+        ));
   }
 
   Widget getMarketplaceViewList() {
@@ -357,6 +476,8 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                   Radius.circular(32.0),
                 ),
                 onTap: () {
+                  showNotImplentedWidget(
+                      context: context, feature: "Helper: Search for models");
                   FocusScope.of(context).requestFocus(FocusNode());
                 },
                 child: Padding(
@@ -412,6 +533,9 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                       Radius.circular(4.0),
                     ),
                     onTap: () {
+                      showNotImplentedWidget(
+                          context: context, feature: "Helper: Filter models");
+                      return;
                       FocusScope.of(context).requestFocus(FocusNode());
                       Navigator.push<dynamic>(
                         context,
@@ -568,7 +692,7 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
 
                   return Dialog(
                     backgroundColor: Colors.transparent,
-                    child: DropzoneWidget(
+                    child: DropzoneDeployWidget(
                       onDroppedFile: ((file) {}),
                       onNextClicked: (asset, readme) {
                         Navigator.of(context).pop();
@@ -589,24 +713,45 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                                                       Colors.transparent,
                                                   child: ImageCostWidget(
                                                       defaultEarningsPerInference:
-                                                          100,
+                                                          20,
                                                       file: asset,
                                                       onNextClicked: (asset,
-                                                          earningsInferenceCost) {
+                                                          assetEarnings) {
                                                         showDialog(
                                                             context: context,
                                                             builder:
                                                                 (BuildContext
                                                                     _) {
+                                                              final assetDeploymentCost = Config
+                                                                          .config![
+                                                                      "DHALI_DEPLOYMENT_COST_PER_CHUNK_DROPS"] *
+                                                                  asset.size /
+                                                                  Config.config![
+                                                                      "MAX_NUMBER_OF_BYTES_PER_DEPLOY_CHUNK"];
+                                                              final readmeDeploymentCost = Config
+                                                                          .config![
+                                                                      "DHALI_DEPLOYMENT_COST_PER_CHUNK_DROPS"] *
+                                                                  readme.size /
+                                                                  Config.config![
+                                                                      "MAX_NUMBER_OF_BYTES_PER_DEPLOY_CHUNK"];
+                                                              final dhaliEarnings =
+                                                                  Config.config![
+                                                                      "DHALI_EARNINGS_PERCENTAGE_PER_INFERENCE"];
+
                                                               return Dialog(
                                                                   backgroundColor:
                                                                       Colors
                                                                           .transparent,
                                                                   child:
-                                                                      FinalCostWidget(
+                                                                      DeploymentCostWidget(
                                                                     file: asset,
-                                                                    earningsInferenceCost:
-                                                                        earningsInferenceCost,
+                                                                    deploymentCost:
+                                                                        assetDeploymentCost +
+                                                                            readmeDeploymentCost,
+                                                                    assetEarnings:
+                                                                        assetEarnings,
+                                                                    dhaliEarnings:
+                                                                        dhaliEarnings,
                                                                     yesClicked:
                                                                         ((asset,
                                                                             earningsInferenceCost) {
@@ -630,7 +775,7 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                                                                             }
                                                                             String
                                                                                 dest =
-                                                                                "rstbSTpPcyxMsiXwkBxS9tFTrg2JsDNxWk"; // TODO : This should be Dhali's address
+                                                                                Config.config!["DHALI_PUBLIC_ADDRESS"]; // TODO : This should be Dhali's address
                                                                             var openChannelsFut =
                                                                                 wallet.getOpenPaymentChannels(destination_address: dest);
                                                                             String
@@ -638,7 +783,7 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                                                                                 "10000000"; // TODO : Make sure that these are appropriate 10 XRP
                                                                             String
                                                                                 authAmount =
-                                                                                "3000000"; // TODO : Make sure that these are appropriate 3 XRP
+                                                                                "9000000"; // TODO : Make sure that these are appropriate 3 XRP
 
                                                                             void
                                                                                 onNFTOfferPoll(String nfTokenId) {
@@ -665,6 +810,7 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                                                                                 backgroundColor: Colors.transparent,
                                                                                 child: FutureBuilder<List<PaymentChannelDescriptor>>(
                                                                                   builder: (context, snapshot) {
+                                                                                    final exceptionString = "The NFTUploadingWidget must have access to ${Config.config!["DHALI_ID"]}";
                                                                                     if (snapshot.hasData) {
                                                                                       dynamic channel = null;
 
@@ -673,6 +819,10 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                                                                                           channel = returnedChannel;
                                                                                         }
                                                                                       });
+                                                                                      var entryPointUrlRoot = const String.fromEnvironment('ENTRY_POINT_URL_ROOT', defaultValue: '');
+                                                                                      if (entryPointUrlRoot == '') {
+                                                                                        entryPointUrlRoot = Config.config!["ROOT_DEPLOY_URL"];
+                                                                                      }
                                                                                       if (channel != null) {
                                                                                         print(Config.config);
                                                                                         Map<String, String> payment = {
@@ -682,23 +832,30 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                                                                                           Config.config!["PAYMENT_CLAIM_KEYS"]["SIGNATURE"]: wallet.sendDrops(authAmount, channel.channelId),
                                                                                           Config.config!["PAYMENT_CLAIM_KEYS"]["CHANNEL_ID"]: channel.channelId
                                                                                         };
-
-                                                                                        return ImageDeployWidget(
+                                                                                        return DataTransmissionWidget(
+                                                                                          getUploader: ({required payment, required getRequest, required dynamic Function(double) progressStatus, required int maxChunkSize, required AssetModel model}) {
+                                                                                            return DeployUploader(payment: payment, getRequest: getRequest, progressStatus: progressStatus, model: model, maxChunkSize: Config.config!["MAX_NUMBER_OF_BYTES_PER_DEPLOY_CHUNK"], getWallet: widget.getWallet, assetEarningRate: assetEarnings);
+                                                                                          },
                                                                                           payment: payment,
-                                                                                          getMintingRequest: widget.getMintingRequest,
-                                                                                          asset: asset,
-                                                                                          readme: readme,
-                                                                                          onNextClicked: (asset, readme) {},
-                                                                                          onNFTOfferPoll: onNFTOfferPoll,
-                                                                                          nfTokenIdStream: nfTokenIdStream,
-                                                                                          getWallet: widget.getWallet,
+                                                                                          getRequest: widget.getRequest,
+                                                                                          data: [
+                                                                                            DataEndpointPair(data: asset, endPoint: "$entryPointUrlRoot/${Config.config!["POST_DEPLOY_ASSET_ROUTE"]}/"),
+                                                                                            DataEndpointPair(data: readme, endPoint: "$entryPointUrlRoot/${Config.config!["POST_DEPLOY_README_ROUTE"]}/"),
+                                                                                          ],
+                                                                                          onNextClicked: (data) {},
+                                                                                          getOnSuccessWidget: (BuildContext context, BaseResponse? response) {
+                                                                                            if (response == null || !response.headers.containsKey(Config.config!["DHALI_ID"].toString().toLowerCase())) {
+                                                                                              throw Exception(exceptionString);
+                                                                                            }
+
+                                                                                            return NFTUploadingWidget(context, widget.getFirestore, onNFTOfferPoll, () => response.headers[Config.config!["DHALI_ID"].toString().toLowerCase()]);
+                                                                                          },
                                                                                         );
                                                                                       }
                                                                                       var newChannelsFut = wallet.openPaymentChannel(dest, amount);
                                                                                       return FutureBuilder<PaymentChannelDescriptor>(
                                                                                         builder: (context, snapshot) {
                                                                                           if (snapshot.hasData) {
-                                                                                            print(Config.config);
                                                                                             Map<String, String> payment = {
                                                                                               Config.config!["PAYMENT_CLAIM_KEYS"]["ACCOUNT"]: wallet.address,
                                                                                               Config.config!["PAYMENT_CLAIM_KEYS"]["DESTINATION_ACCOUNT"]: dest,
@@ -706,16 +863,25 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                                                                                               Config.config!["PAYMENT_CLAIM_KEYS"]["SIGNATURE"]: wallet.sendDrops(authAmount, snapshot.data!.channelId),
                                                                                               Config.config!["PAYMENT_CLAIM_KEYS"]["CHANNEL_ID"]: snapshot.data!.channelId
                                                                                             };
-                                                                                            return ImageDeployWidget(
-                                                                                              payment: payment,
-                                                                                              getMintingRequest: widget.getMintingRequest,
-                                                                                              asset: asset,
-                                                                                              readme: readme,
-                                                                                              onNextClicked: (asset, readme) {},
-                                                                                              onNFTOfferPoll: onNFTOfferPoll,
-                                                                                              nfTokenIdStream: nfTokenIdStream,
-                                                                                              getWallet: widget.getWallet,
-                                                                                            );
+
+                                                                                            return DataTransmissionWidget(
+                                                                                                getUploader: ({required payment, required getRequest, required dynamic Function(double) progressStatus, required int maxChunkSize, required AssetModel model}) {
+                                                                                                  return DeployUploader(payment: payment, getRequest: getRequest, progressStatus: progressStatus, model: model, maxChunkSize: Config.config!["MAX_NUMBER_OF_BYTES_PER_DEPLOY_CHUNK"], getWallet: widget.getWallet, assetEarningRate: assetEarnings);
+                                                                                                },
+                                                                                                payment: payment,
+                                                                                                getRequest: widget.getRequest,
+                                                                                                data: [
+                                                                                                  DataEndpointPair(data: asset, endPoint: "$entryPointUrlRoot/${Config.config!["POST_DEPLOY_ASSET_ROUTE"]}/"),
+                                                                                                  DataEndpointPair(data: readme, endPoint: "$entryPointUrlRoot/${Config.config!["POST_DEPLOY_README_ROUTE"]}/"),
+                                                                                                ],
+                                                                                                onNextClicked: (data) {},
+                                                                                                getOnSuccessWidget: (BuildContext context, BaseResponse? response) {
+                                                                                                  if (response == null || !response.headers.containsKey(Config.config!["DHALI_ID"].toString().toLowerCase())) {
+                                                                                                    throw Exception(exceptionString);
+                                                                                                  }
+
+                                                                                                  return NFTUploadingWidget(context, widget.getFirestore, onNFTOfferPoll, () => response.headers[Config.config!["DHALI_ID"].toString().toLowerCase()]);
+                                                                                                });
                                                                                           }
                                                                                           return Container();
                                                                                         },

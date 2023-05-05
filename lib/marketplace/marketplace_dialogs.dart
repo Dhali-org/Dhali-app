@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'package:http/http.dart';
+import 'package:logger/logger.dart';
 import "package:universal_html/html.dart" as html;
-import 'package:dhali/utils/ChunkUploader.dart';
+import 'package:http/http.dart' as http;
+import 'package:dhali/utils/Uploaders.dart';
 import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -10,26 +12,262 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dropzone/flutter_dropzone.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:logger/logger.dart';
-
 import 'package:dhali/app_theme.dart';
-import 'package:dhali/wallet/xrpl_wallet.dart';
+import 'package:dhali/utils/not_implemented_dialog.dart';
 
-import 'model/asset_model.dart';
+import 'package:dhali/marketplace/model/asset_model.dart';
 import 'package:dhali/config.dart' show Config;
 
-class DropzoneWidget extends StatefulWidget {
-  final ValueChanged<AssetModel> onDroppedFile;
-  final Function(AssetModel, AssetModel) onNextClicked;
+class DataEndpointPair {
+  DataEndpointPair({required this.data, required this.endPoint});
 
-  const DropzoneWidget(
+  AssetModel data;
+  String endPoint;
+}
+
+class DropzoneRunWidget extends StatefulWidget {
+  final ValueChanged<AssetModel> onDroppedFile;
+  final Function(AssetModel) onNextClicked;
+
+  const DropzoneRunWidget(
       {Key? key, required this.onDroppedFile, required this.onNextClicked})
       : super(key: key);
   @override
-  _DropzoneWidgetState createState() => _DropzoneWidgetState();
+  _DropzoneRunWidgetState createState() => _DropzoneRunWidgetState();
 }
 
-class _DropzoneWidgetState extends State<DropzoneWidget> {
+class _DropzoneRunWidgetState extends State<DropzoneRunWidget> {
+  DropzoneViewController? controller;
+  bool isHighlighted = false;
+  AssetModel? input;
+  final textController = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return getDialogTemplate(
+      child: Stack(
+        children: [
+          Container(
+            decoration: isHighlighted
+                ? const BoxDecoration(
+                    gradient: RadialGradient(colors: [
+                      AppTheme.grey,
+                      Colors.transparent,
+                    ]),
+                    shape: BoxShape.circle,
+                  )
+                : const BoxDecoration(color: Colors.transparent),
+          ),
+          DropzoneView(
+            onHover: () => setState(() {
+              isHighlighted = true;
+            }),
+            onLeave: () => setState(() {
+              isHighlighted = false;
+            }),
+            onCreated: (controller) => this.controller = controller,
+            onDrop: acceptFile,
+          ),
+          Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      textAlign: TextAlign.center,
+                      this.input != null
+                          ? "Selected input file: ${this.input!.fileName}"
+                          : "No input file selected",
+                      style: TextStyle(
+                          fontSize: 20,
+                          color: isHighlighted
+                              ? AppTheme.nearlyWhite
+                              : AppTheme.nearlyBlack),
+                    ),
+                    const SizedBox(
+                      width: 16,
+                    ),
+                    IconButton(
+                      onPressed: () async {
+                        showNotImplentedWidget(
+                            context: context,
+                            feature: "Helper: Selected input file");
+                        // TODO : Add link to documentation for docker prep
+                      },
+                      icon: const Icon(
+                        Icons.help_outline_outlined,
+                        size: 32,
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 15,
+                    ),
+                    input != null
+                        ? const Icon(
+                            Icons.done_outline_rounded,
+                            color: Colors.green,
+                            size: 80,
+                          )
+                        : Container()
+                  ],
+                ),
+                const Icon(
+                  Icons.cloud_upload_rounded,
+                  size: 80,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      textAlign: TextAlign.center,
+                      "Drag or select your input file",
+                      style: TextStyle(
+                          fontSize: 30,
+                          color: isHighlighted
+                              ? AppTheme.nearlyWhite
+                              : AppTheme.nearlyBlack),
+                    ),
+                    const SizedBox(
+                      width: 16,
+                    ),
+                    IconButton(
+                      onPressed: () async {
+                        showNotImplentedWidget(
+                            context: context,
+                            feature: "Helper: Drag or select your input file");
+                        // TODO : Add link to documentation for docker prep
+                      },
+                      icon: const Icon(
+                        Icons.help_outline_outlined,
+                        size: 32,
+                      ),
+                    )
+                  ],
+                ),
+                const SizedBox(
+                  height: 16,
+                ),
+                const SizedBox(
+                  width: 16,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    getFileUploadButton(const Key("choose_run_input"),
+                        "Choose input file", [], AppTheme.dark_grey),
+                    const SizedBox(
+                      width: 16,
+                    ),
+                    const SizedBox(
+                      width: 16,
+                    ),
+                    ElevatedButton.icon(
+                        key: const Key("use_docker_image_button"),
+                        style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 20, horizontal: 20),
+                            backgroundColor: AppTheme.grey,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(4))),
+                        onPressed: input != null
+                            ? () async {
+                                widget.onNextClicked(input!);
+                              }
+                            : null,
+                        icon: const Icon(
+                          Icons.navigate_next_outlined,
+                          size: 32,
+                        ),
+                        label: const Text(
+                          "Next",
+                          style: TextStyle(fontSize: 30),
+                        )),
+                  ],
+                )
+              ],
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget getFileUploadButton(
+      Key key, String text, List<String> mime, Color color) {
+    return ElevatedButton.icon(
+        key: key,
+        style: ElevatedButton.styleFrom(
+            padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+            backgroundColor: color,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(4))),
+        onPressed: () async {
+          // When we run a unit test, `controller` is not
+          // correctly initialised. I don't know exactly why.
+          // It looks as though it should get init'd through
+          // the callback passed to `buildView`,
+          // (here)[https://github.com/deakjahn/flutter_dropzone/blob/master/flutter_dropzone/lib/src/dropzone_view.dart#L72]
+          // The callback is passed right through to
+          // `HtmlElementView` (here)[https://github.com/deakjahn/flutter_dropzone/blob/master/flutter_dropzone_web/lib/flutter_dropzone_plugin.dart#L117]
+          // which suggests that the platform view does not get created during the test.
+          if (controller != null) {
+            final events = await controller!.pickFiles(mime: mime);
+            if (events.isEmpty) return;
+            acceptFile(events.first);
+          } else {
+            // TODO : This should be injectable
+            if (mime.isNotEmpty) {
+              acceptFile(html.File(
+                  [1, 2, 3, 4, 5, 6, 7], "test.tar", {"type": mime[0]}));
+            } else {
+              acceptFile(html.File(
+                [1, 2, 3, 4, 5, 6, 7],
+                "test.tar",
+              ));
+            }
+          }
+        },
+        icon: const Icon(
+          Icons.search,
+          size: 32,
+        ),
+        label: Text(
+          text,
+          style: TextStyle(fontSize: 30),
+        ));
+  }
+
+  Future acceptFile(dynamic event) async {
+    final fileName = event.name;
+
+    String mime = event.type;
+    int bytes = event.size;
+    input = AssetModel(
+        imageFile: event,
+        fileName: fileName,
+        modelName: textController.text,
+        mime: mime,
+        size: bytes);
+    setState(() {
+      isHighlighted = false;
+    });
+  }
+}
+
+class DropzoneDeployWidget extends StatefulWidget {
+  final ValueChanged<AssetModel> onDroppedFile;
+  final Function(AssetModel, AssetModel) onNextClicked;
+
+  const DropzoneDeployWidget(
+      {Key? key, required this.onDroppedFile, required this.onNextClicked})
+      : super(key: key);
+  @override
+  _DropzoneDeployWidgetState createState() => _DropzoneDeployWidgetState();
+}
+
+class _DropzoneDeployWidgetState extends State<DropzoneDeployWidget> {
   DropzoneViewController? controller;
   bool isHighlighted = false;
   AssetModel? assetFile;
@@ -85,6 +323,9 @@ class _DropzoneWidgetState extends State<DropzoneWidget> {
                     ),
                     IconButton(
                       onPressed: () async {
+                        showNotImplentedWidget(
+                            context: context,
+                            feature: "Helper: Select asset file");
                         // TODO : Add link to documentation for docker prep
                       },
                       icon: const Icon(
@@ -123,6 +364,9 @@ class _DropzoneWidgetState extends State<DropzoneWidget> {
                     ),
                     IconButton(
                       onPressed: () async {
+                        showNotImplentedWidget(
+                            context: context,
+                            feature: "Helper: Select markdown  file");
                         // TODO : Add link to documentation for docker prep
                       },
                       icon: const Icon(
@@ -163,6 +407,9 @@ class _DropzoneWidgetState extends State<DropzoneWidget> {
                     ),
                     IconButton(
                       onPressed: () async {
+                        showNotImplentedWidget(
+                            context: context,
+                            feature: "Helper: Drag or select your files");
                         // TODO : Add link to documentation for docker prep
                       },
                       icon: const Icon(
@@ -337,6 +584,7 @@ class ImageScanningWidget extends StatefulWidget {
 class _ImageScanningWidgetState extends State<ImageScanningWidget> {
   bool scanning = true;
   bool scanSuccess = false;
+  String failureReason = "";
 
   @override
   Widget build(BuildContext context) {
@@ -418,14 +666,24 @@ class _ImageScanningWidgetState extends State<ImageScanningWidget> {
 
   Future scanImage(AssetModel file) async {
     // TODO : Add some form of client side scannng (consider adding a signature)
-    Timer(const Duration(seconds: 3), () {
+    Timer(const Duration(seconds: 1), () {
       setState(() {
         scanning = false;
 
-        if (widget.file.mime == "application/x-tar") {
+        String correctFileType = "application/x-tar";
+        double correctFileSize = 7.5e9;
+
+        final isCorrectFileType = widget.file.mime == correctFileType;
+        final isCorrectFileSize = widget.file.size < correctFileSize;
+
+        if (widget.file.mime == "application/x-tar" &&
+            widget.file.size < correctFileSize) {
           scanSuccess = true;
         } else {
           scanSuccess = false;
+          failureReason =
+              "\nFile type == $correctFileType: $isCorrectFileType;\n"
+              "File size == $correctFileSize: $isCorrectFileSize\n";
         }
       });
     });
@@ -435,7 +693,7 @@ class _ImageScanningWidgetState extends State<ImageScanningWidget> {
 class ImageCostWidget extends StatefulWidget {
   final AssetModel file;
 
-  final Function(AssetModel, int) onNextClicked;
+  final Function(AssetModel, double) onNextClicked;
   final int? defaultEarningsPerInference;
 
   const ImageCostWidget(
@@ -468,26 +726,34 @@ class _ImageCostWidgetState extends State<ImageCostWidget> {
       children: [
         const Text(
           textAlign: TextAlign.center,
-          "Set earning rate per inference. "
-          "\nKeep this small to encourage usage.",
+          "Set your earning rate per inference.",
           style: TextStyle(fontSize: 30, color: AppTheme.nearlyBlack),
+        ),
+        const Text(
+          textAlign: TextAlign.center,
+          "\nKeep this small to encourage usage.\n",
+          style: TextStyle(fontSize: 20, color: AppTheme.nearlyBlack),
+        ),
+        const Text(
+          textAlign: TextAlign.center,
+          "Example: If running your asset costs Dhali \$1 in compute costs per inference, by setting 20 below you will earn \$0.20 per inference.",
+          style: TextStyle(fontSize: 20, color: AppTheme.nearlyBlack),
         ),
         const SizedBox(
           height: 16,
         ),
         TextField(
-          key: const Key("xrp_drops_input"),
+          key: const Key("percentage_earnings_input"),
           onChanged: (value) => setState(() {}),
           controller: controller,
-          maxLength: 20,
+          maxLength: 5,
           // ignore: prefer_const_constructors
           decoration: InputDecoration(
             labelStyle: const TextStyle(fontSize: 20),
             helperStyle: const TextStyle(
                 color: Colors.black, fontWeight: FontWeight.bold),
-            helperText: "What your model pays you when it is used",
-            labelText: "Drops (XRP)",
-            hintText: "Enter an amount of XRP drops",
+            helperText: "Percentage you earn above Dhali compute costs",
+            hintText: "Enter a percentage (e.g., '20')",
           ),
           keyboardType: TextInputType.number,
           inputFormatters: <TextInputFormatter>[
@@ -506,7 +772,7 @@ class _ImageCostWidgetState extends State<ImageCostWidget> {
           onPressed: controller.text.isNotEmpty
               ? () => widget.onNextClicked(
                   widget.file,
-                  int.tryParse(
+                  double.tryParse(
                       controller.text)!) // != null because input "digitsOnly"
               : null,
           icon: const Icon(
@@ -523,24 +789,24 @@ class _ImageCostWidgetState extends State<ImageCostWidget> {
   }
 }
 
-class FinalCostWidget extends StatelessWidget {
-  const FinalCostWidget(
+class DeploymentCostWidget extends StatelessWidget {
+  const DeploymentCostWidget(
       {Key? key,
       required this.file,
-      required this.earningsInferenceCost,
+      required this.assetEarnings,
+      required this.dhaliEarnings,
+      required this.deploymentCost,
       required this.yesClicked})
       : super(key: key);
 
-  final Function(AssetModel, int) yesClicked;
+  final Function(AssetModel, double) yesClicked;
   final AssetModel file;
-  final int deploymentCost = 10000;
-  final int hostingCost = 100;
-  final int earningsInferenceCost;
-  final int computeInferenceCost = 100;
+  final double deploymentCost;
+  final double assetEarnings;
+  final double dhaliEarnings;
 
   @override
   Widget build(BuildContext context) {
-    int totalInferenceCost = earningsInferenceCost + computeInferenceCost;
     return getDialogTemplate(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -556,7 +822,7 @@ class FinalCostWidget extends StatelessWidget {
             height: 16,
           ),
           const Text(
-            "Your costs:",
+            "Paid by you:",
             style: TextStyle(
                 fontSize: 30,
                 color: AppTheme.nearlyBlack,
@@ -588,7 +854,7 @@ class FinalCostWidget extends StatelessWidget {
                   Container(
                       padding: const EdgeInsets.all(10),
                       child: const Text(
-                        "Cost: drops (XRP)",
+                        "Cost: XRP",
                         style: TextStyle(fontWeight: FontWeight.bold),
                       )),
                 ],
@@ -603,20 +869,8 @@ class FinalCostWidget extends StatelessWidget {
                       child: const Text("Now")),
                   Container(
                       padding: const EdgeInsets.all(10),
-                      child: Text("$deploymentCost")),
-                ],
-              ),
-              TableRow(
-                children: <Widget>[
-                  Container(
-                      padding: const EdgeInsets.all(10),
-                      child: const Text("Hosting cost")),
-                  Container(
-                      padding: const EdgeInsets.all(10),
-                      child: const Text("Monthly (starting next month)")),
-                  Container(
-                      padding: const EdgeInsets.all(10),
-                      child: Text("$hostingCost")),
+                      child:
+                          Text((deploymentCost / 1000000).toStringAsFixed(4))),
                 ],
               ),
             ],
@@ -625,7 +879,7 @@ class FinalCostWidget extends StatelessWidget {
             height: 16,
           ),
           const Text(
-            "The model user's costs:",
+            "Paid by the user of your model:",
             textAlign: TextAlign.left,
             style: TextStyle(
                 fontSize: 30,
@@ -658,7 +912,7 @@ class FinalCostWidget extends StatelessWidget {
                   Container(
                       padding: const EdgeInsets.all(10),
                       child: const Text(
-                        "Cost: drops (XRP)",
+                        "Cost: percentage of compute costs",
                         style: TextStyle(fontWeight: FontWeight.bold),
                       )),
                 ],
@@ -667,26 +921,26 @@ class FinalCostWidget extends StatelessWidget {
                 children: <Widget>[
                   Container(
                       padding: const EdgeInsets.all(10),
-                      child: const Text("Our charge")),
+                      child: const Text("Dhali's earnings")),
                   Container(
                       padding: const EdgeInsets.all(10),
-                      child: const Text("Each time the model is used")),
+                      child: const Text("When model is used")),
                   Container(
                       padding: const EdgeInsets.all(10),
-                      child: Text("$computeInferenceCost")),
+                      child: Text("$dhaliEarnings%")),
                 ],
               ),
               TableRow(
                 children: <Widget>[
                   Container(
                       padding: const EdgeInsets.all(10),
-                      child: const Text("Your charge")),
+                      child: const Text("Your earnings")),
                   Container(
                       padding: const EdgeInsets.all(10),
-                      child: const Text("Each time the model is used")),
+                      child: const Text("When model is used")),
                   Container(
                       padding: const EdgeInsets.all(10),
-                      child: Text("$earningsInferenceCost")),
+                      child: Text("$assetEarnings%")),
                 ],
               ),
               TableRow(
@@ -696,10 +950,10 @@ class FinalCostWidget extends StatelessWidget {
                       child: const Text("Total cost per inference")),
                   Container(
                       padding: const EdgeInsets.all(10),
-                      child: const Text("Each time the model is used")),
+                      child: const Text("When model is used")),
                   Container(
                       padding: const EdgeInsets.all(10),
-                      child: Text("$totalInferenceCost")),
+                      child: Text("${100 + dhaliEarnings + assetEarnings}%")),
                 ],
               ),
             ],
@@ -708,8 +962,7 @@ class FinalCostWidget extends StatelessWidget {
             height: 16,
           ),
           const Text(
-            "If you continue, the above costs will be applied now. "
-            "You can cancel your model's hosting at any point.",
+            "If you continue, the above costs will be applied.",
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 25, color: AppTheme.nearlyBlack),
           ),
@@ -736,7 +989,436 @@ class FinalCostWidget extends StatelessWidget {
                       backgroundColor: AppTheme.grey,
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(4))),
-                  onPressed: () => yesClicked(file, earningsInferenceCost),
+                  onPressed: () => yesClicked(file, assetEarnings),
+                  icon: const Icon(
+                    Icons.done_outline_rounded,
+                    size: 32,
+                  ),
+                  label: const Text(
+                    "Yes",
+                    style: TextStyle(fontSize: 30),
+                  )),
+              const SizedBox(
+                width: 16,
+              ),
+              ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 20, horizontal: 20),
+                      backgroundColor: AppTheme.grey,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(4))),
+                  onPressed: () async {
+                    Navigator.of(context).pop();
+                  },
+                  icon: const Icon(
+                    Icons.arrow_back,
+                    size: 32,
+                  ),
+                  label: const Text(
+                    "Back",
+                    style: TextStyle(fontSize: 30),
+                  )),
+              const SizedBox(
+                width: 32,
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class DataTransmissionWidget extends StatefulWidget {
+  final List<DataEndpointPair> data;
+  final Function(List<DataEndpointPair>) onNextClicked;
+  final BaseRequest Function(String method, String path) getRequest;
+  final Widget? Function(BuildContext context, BaseResponse?)
+      getOnSuccessWidget;
+
+  final GetUploader getUploader;
+
+  final Map<String, String> payment;
+
+  const DataTransmissionWidget(
+      {Key? key,
+      required this.data,
+      required this.onNextClicked,
+      required this.getRequest,
+      required this.payment,
+      required this.getUploader,
+      required this.getOnSuccessWidget})
+      : super(key: key);
+
+  @override
+  _DataTransmissionWidgetState createState() => _DataTransmissionWidgetState();
+}
+
+class _DataTransmissionWidgetState extends State<DataTransmissionWidget> {
+  String? currentFileUploading;
+  int currentFileIndexUploading = 1;
+  bool deploying = true;
+  bool uploadWasSuccessful = false;
+  int? responseCode;
+  BaseResponse? response;
+  double progressBarPercentage = 0;
+  late BaseUploader uploadRequest;
+  String? sessionID;
+
+  @override
+  void initState() {
+    currentFileUploading = widget.data[0].data.fileName;
+    super.initState();
+
+    var logger = Logger();
+
+    Future.forEach(widget.data, (element) async {
+      var castedElement = element as DataEndpointPair;
+      response = await uploader(
+          castedElement.data, widget.payment, castedElement.endPoint,
+          sessionID: sessionID);
+      try {
+        sessionID = response!
+            .headers[Config.config!["DHALI_ID"].toString().toLowerCase()];
+      } on FormatException catch (_) {
+        return;
+      } catch (e, stacktrace) {
+        logger.e("Unexpected response from asset deployment, with error: ${e} "
+            "and stacktrace: ${stacktrace}");
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return getDialogTemplate(
+        child: deploying ||
+                !uploadWasSuccessful ||
+                widget.getOnSuccessWidget(context, response) == null
+            ? Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const SizedBox(
+                    height: 16,
+                  ),
+                  LinearProgressIndicator(
+                    value: progressBarPercentage,
+                    semanticsLabel: 'Linear progress indicator',
+                  ),
+                  const SizedBox(
+                    height: 16,
+                  ),
+                  deploying
+                      ? Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              key: const Key("deploying_in_progress_dialog"),
+                              textAlign: TextAlign.center,
+                              "Uploading '${currentFileUploading.toString()}: "
+                              "file $currentFileIndexUploading of ${widget.data.length}'."
+                              "\nPlease wait.",
+                              style: const TextStyle(
+                                  fontSize: 30, color: AppTheme.nearlyBlack),
+                            ),
+                            SizedBox(height: 20),
+                            CircularProgressIndicator(),
+                          ],
+                        )
+                      : responseCode == 200
+                          ? Text(
+                              key: Key("upload_success_info"),
+                              "Your upload was successful",
+                              style: TextStyle(
+                                  fontSize: 30, color: AppTheme.nearlyBlack),
+                            )
+                          : Text(
+                              key: const Key("upload_failed_warning"),
+                              textAlign: TextAlign.center,
+                              "Upload failed: status code "
+                              "${responseCode.toString()}",
+                              style: const TextStyle(
+                                  fontSize: 30, color: AppTheme.nearlyBlack),
+                            ),
+                  const SizedBox(
+                    height: 16,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ElevatedButton.icon(
+                          style: ElevatedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 20, horizontal: 20),
+                              backgroundColor: AppTheme.grey,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(4))),
+                          onPressed: () {
+                            if (deploying) {
+                              uploadRequest.cancelUpload();
+                              setState(() {
+                                deploying = false;
+                                uploadWasSuccessful = false;
+                              });
+                            } else {
+                              Navigator.of(context).pop();
+                              Navigator.of(context).pop();
+                              Navigator.of(context).pop();
+                            }
+                          },
+                          icon: Icon(
+                            responseCode == 200
+                                ? Icons.done_outline_rounded
+                                : Icons.close_outlined,
+                            size: 32,
+                          ),
+                          label: Text(
+                            key: const Key("exit_deployment_dialogs"),
+                            deploying ? "Cancel" : "Exit",
+                            style: TextStyle(fontSize: 30),
+                          )),
+                      const SizedBox(
+                        width: 32,
+                      ),
+                    ],
+                  )
+                ],
+              )
+            : uploadWasSuccessful
+                ? widget.getOnSuccessWidget(context, response)!
+                : uploadFailed(context, responseCode!));
+  }
+
+  Future<BaseResponse?> uploader(
+      AssetModel file, Map<String, String> payment, String path,
+      {String? sessionID}) async {
+    uploadRequest = widget.getUploader(
+        payment: const JsonEncoder().convert(payment),
+        getRequest: widget.getRequest,
+        progressStatus: (progressPercentage) {
+          setState(() {
+            currentFileUploading = file.fileName;
+            progressBarPercentage = progressPercentage;
+            if (progressPercentage >= 1) {
+              currentFileIndexUploading += 1;
+            }
+          });
+        },
+        model: file,
+        maxChunkSize: 1024 * 1024 * 10);
+
+    final response = await uploadRequest.upload(path, sessionID: sessionID)
+        as StreamedResponse?;
+
+    setState(() {
+      if (response == null) {
+        return;
+      }
+      responseCode = response.statusCode;
+      if (responseCode != 200) {
+        deploying = false;
+        uploadWasSuccessful = false;
+        return;
+      } else {
+        if (currentFileIndexUploading > widget.data.length) {
+          deploying = false;
+          uploadWasSuccessful = true;
+          return;
+        } else {
+          deploying = true;
+          uploadWasSuccessful = true;
+          return;
+        }
+      }
+    });
+    return response;
+  }
+}
+
+Widget uploadFailed(BuildContext context, int responseCode) {
+  return Center(
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const Icon(
+          Icons.close_outlined,
+          color: Colors.red,
+          size: 80,
+        ),
+        Text(
+          key: Key("upload_failed_warning"),
+          textAlign: TextAlign.center,
+          "Deployment failed: status code "
+          "${responseCode.toString()}",
+          style: const TextStyle(fontSize: 30, color: AppTheme.nearlyBlack),
+        ),
+        const SizedBox(
+          height: 16,
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 20, horizontal: 20),
+                    backgroundColor: AppTheme.grey,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(4))),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  Navigator.of(context).pop();
+                  Navigator.of(context).pop();
+                },
+                icon: const Icon(
+                  Icons.close_outlined,
+                  size: 32,
+                ),
+                label: const Text(
+                  key: Key("exit_deployment_dialogs"),
+                  "Exit",
+                  style: TextStyle(fontSize: 30),
+                )),
+          ],
+        ),
+      ],
+    ),
+  );
+}
+
+Widget NFTUploadingWidget(
+    BuildContext context,
+    FirebaseFirestore? Function() getFirestore,
+    void onNFTOfferPoll(String nfTokenId),
+    String? Function() getSessionID) {
+  var nfTokenIdStream = getFirestore()!
+      .collection(Config.config!["MINTED_NFTS_COLLECTION_NAME"])
+      .doc(getSessionID())
+      .snapshots();
+
+  return StreamBuilder(
+      stream: nfTokenIdStream,
+      builder: (BuildContext _,
+          AsyncSnapshot<DocumentSnapshot<Map<String, dynamic>>> snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting ||
+            !snapshot.hasData ||
+            !snapshot.data!.exists) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                CircularProgressIndicator(),
+                SizedBox(height: 20),
+                Text(
+                  'Minting asset NFT: This may take a minute or two. Please wait.',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  key: Key("minting_nft_spinner"),
+                ),
+              ],
+            ),
+          );
+        }
+
+        var data = snapshot.data!.data()!;
+
+        onNFTOfferPoll(
+            data[Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]["NFTOKEN_ID"]]);
+        return Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(
+                Icons.done_outline_rounded,
+                color: Colors.green,
+                size: 80,
+              ),
+              const Text(
+                key: Key("upload_success_info"),
+                "Your NFT was successfully minted.",
+                style: TextStyle(fontSize: 30, color: AppTheme.nearlyBlack),
+              ),
+              const SizedBox(
+                height: 16,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 20, horizontal: 20),
+                          backgroundColor: AppTheme.grey,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(4))),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                        Navigator.of(context).pop();
+                        Navigator.of(context).pop();
+                      },
+                      icon: const Icon(
+                        Icons.done_outline_rounded,
+                        size: 32,
+                      ),
+                      label: const Text(
+                        key: Key("exit_deployment_dialogs"),
+                        "Exit",
+                        style: TextStyle(fontSize: 30),
+                      )),
+                ],
+              ),
+            ],
+          ),
+        );
+      });
+}
+
+class InferenceCostWidget extends StatelessWidget {
+  const InferenceCostWidget(
+      {Key? key,
+      required this.file,
+      required this.inferenceCost,
+      required this.yesClicked})
+      : super(key: key);
+
+  final Function(AssetModel, double) yesClicked;
+  final AssetModel file;
+  final double inferenceCost;
+
+  @override
+  Widget build(BuildContext context) {
+    return getDialogTemplate(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const SizedBox(
+            height: 16,
+          ),
+          Text(
+            "Running this model typically costs $inferenceCost drops",
+            style: TextStyle(fontSize: 25, color: AppTheme.nearlyBlack),
+          ),
+          const Text(
+            "Are you sure you want to continue?",
+            style: TextStyle(fontSize: 25, color: AppTheme.nearlyBlack),
+          ),
+          const SizedBox(
+            height: 16,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 20, horizontal: 20),
+                      backgroundColor: AppTheme.grey,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(4))),
+                  onPressed: () => yesClicked(file, inferenceCost),
                   icon: const Icon(
                     Icons.done_outline_rounded,
                     size: 32,
@@ -774,374 +1456,6 @@ class FinalCostWidget extends StatelessWidget {
         ],
       ),
     );
-  }
-}
-
-class ImageDeployWidget extends StatefulWidget {
-  final AssetModel asset;
-  final AssetModel readme;
-  final Function(AssetModel, AssetModel) onNextClicked;
-  final BaseRequest Function(String path) getMintingRequest;
-  final Map<String, String> payment;
-  final Function(String NFTokenID) onNFTOfferPoll;
-  final dynamic nfTokenIdStream;
-  final XRPLWallet? Function() getWallet;
-
-  const ImageDeployWidget({
-    Key? key,
-    required this.asset,
-    required this.readme,
-    required this.onNextClicked,
-    required this.getMintingRequest,
-    required this.payment,
-    required this.onNFTOfferPoll,
-    required this.nfTokenIdStream,
-    required this.getWallet,
-  }) : super(key: key);
-
-  @override
-  _ImageDeployWidgetState createState() => _ImageDeployWidgetState();
-}
-
-class _ImageDeployWidgetState extends State<ImageDeployWidget> {
-  bool deploying = true;
-  bool uploadWasSuccessful = false;
-  int? responseCode;
-  double progressBarPercentage = 0;
-  late UploadRequest uploadRequest;
-
-  @override
-  void initState() {
-    super.initState();
-    deployImage(widget.asset, widget.payment,
-            Config.config!["POST_DEPLOY_ASSET_ROUTE"])
-        .then((value) {
-      deployImage(widget.readme, widget.payment,
-          Config.config!["POST_DEPLOY_README_ROUTE"]);
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    var logger = Logger();
-
-    try {
-      return getDialogTemplate(
-          child: deploying
-              ? Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const SizedBox(
-                      height: 16,
-                    ),
-                    LinearProgressIndicator(
-                      value: progressBarPercentage,
-                      semanticsLabel: 'Linear progress indicator',
-                    ),
-                    const SizedBox(
-                      height: 16,
-                    ),
-                    deploying
-                        ? Text(
-                            key: const Key("deploying_in_progress_dialog"),
-                            textAlign: TextAlign.center,
-                            "Deploying '${widget.asset.fileName}'. \nThis may take a "
-                            "minute or two. Please wait.",
-                            style: const TextStyle(
-                                fontSize: 30, color: AppTheme.nearlyBlack),
-                          )
-                        : responseCode == 200
-                            ? const Text(
-                                key: Key("upload_success_info"),
-                                "Your image was successfully deployed.",
-                                style: TextStyle(
-                                    fontSize: 30, color: AppTheme.nearlyBlack),
-                              )
-                            : Text(
-                                key: const Key("upload_failed_warning"),
-                                textAlign: TextAlign.center,
-                                "Deployment failed: status code "
-                                "${responseCode.toString()}",
-                                style: const TextStyle(
-                                    fontSize: 30, color: AppTheme.nearlyBlack),
-                              ),
-                    const SizedBox(
-                      height: 16,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        ElevatedButton.icon(
-                            style: ElevatedButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 20, horizontal: 20),
-                                backgroundColor: AppTheme.grey,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(4))),
-                            onPressed: () {
-                              if (deploying) {
-                                uploadRequest.cancelUpload();
-                                deploying = false;
-                              } else {
-                                Navigator.of(context).pop();
-                                Navigator.of(context).pop();
-                                Navigator.of(context).pop();
-                              }
-                            },
-                            icon: Icon(
-                              responseCode == 200
-                                  ? Icons.done_outline_rounded
-                                  : Icons.close_outlined,
-                              size: 32,
-                            ),
-                            label: Text(
-                              key: const Key("exit_deployment_dialogs"),
-                              deploying ? "Cancel" : "Exit",
-                              style: TextStyle(fontSize: 30),
-                            )),
-                        const SizedBox(
-                          width: 32,
-                        ),
-                      ],
-                    )
-                  ],
-                )
-              : uploadWasSuccessful
-                  ? StreamBuilder(
-                      stream: widget.nfTokenIdStream,
-                      builder: (BuildContext _,
-                          AsyncSnapshot<DocumentSnapshot<Map<String, dynamic>>>
-                              snapshot) {
-                        if (snapshot.connectionState ==
-                                ConnectionState.waiting ||
-                            !snapshot.hasData ||
-                            !snapshot.data!.exists) {
-                          return Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                CircularProgressIndicator(),
-                                SizedBox(height: 20),
-                                Text(
-                                  'Minting asset NFT: This may take a minute or two. Please wait.',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                  key: Key("minting_nft_spinner"),
-                                ),
-                              ],
-                            ),
-                          );
-                        }
-
-                        var data = snapshot.data!.data()!;
-
-                        widget.onNFTOfferPoll(data[
-                            Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]
-                                ["NFTOKEN_ID"]]);
-                        return responseCode == 200
-                            ? Center(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    const Icon(
-                                      Icons.done_outline_rounded,
-                                      color: Colors.green,
-                                      size: 80,
-                                    ),
-                                    const Text(
-                                      key: Key("upload_success_info"),
-                                      "Your NFT was successfully minted.",
-                                      style: TextStyle(
-                                          fontSize: 30,
-                                          color: AppTheme.nearlyBlack),
-                                    ),
-                                    const SizedBox(
-                                      height: 16,
-                                    ),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        ElevatedButton.icon(
-                                            style: ElevatedButton.styleFrom(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        vertical: 20,
-                                                        horizontal: 20),
-                                                backgroundColor: AppTheme.grey,
-                                                shape: RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            4))),
-                                            onPressed: () {
-                                              if (deploying) {
-                                                uploadRequest.cancelUpload();
-                                                deploying = false;
-                                              } else {
-                                                Navigator.of(context).pop();
-                                                Navigator.of(context).pop();
-                                                Navigator.of(context).pop();
-                                              }
-                                            },
-                                            icon: const Icon(
-                                              Icons.done_outline_rounded,
-                                              size: 32,
-                                            ),
-                                            label: const Text(
-                                              key: Key(
-                                                  "exit_deployment_dialogs"),
-                                              "Exit",
-                                              style: TextStyle(fontSize: 30),
-                                            )),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              )
-                            : Center(
-                                child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                    const Icon(
-                                      Icons.close_outlined,
-                                      color: Colors.red,
-                                      size: 80,
-                                    ),
-                                    Text(
-                                      key: Key("upload_failed_warning"),
-                                      textAlign: TextAlign.center,
-                                      "Deployment failed: status code "
-                                      "${responseCode.toString()}",
-                                      style: const TextStyle(
-                                          fontSize: 30,
-                                          color: AppTheme.nearlyBlack),
-                                    ),
-                                    const SizedBox(
-                                      height: 16,
-                                    ),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        ElevatedButton.icon(
-                                            style: ElevatedButton.styleFrom(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        vertical: 20,
-                                                        horizontal: 20),
-                                                backgroundColor: AppTheme.grey,
-                                                shape: RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            4))),
-                                            onPressed: () {
-                                              if (deploying) {
-                                                uploadRequest.cancelUpload();
-                                                deploying = false;
-                                              } else {
-                                                Navigator.of(context).pop();
-                                                Navigator.of(context).pop();
-                                                Navigator.of(context).pop();
-                                              }
-                                            },
-                                            icon: const Icon(
-                                              Icons.close_outlined,
-                                              size: 32,
-                                            ),
-                                            label: const Text(
-                                              key: Key(
-                                                  "exit_deployment_dialogs"),
-                                              "Exit",
-                                              style: TextStyle(fontSize: 30),
-                                            )),
-                                      ],
-                                    ),
-                                  ]));
-                      })
-                  : Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(
-                            Icons.close_outlined,
-                            color: Colors.red,
-                            size: 80,
-                          ),
-                          Text(
-                            key: Key("upload_failed_warning"),
-                            textAlign: TextAlign.center,
-                            "Deployment failed: status code "
-                            "${responseCode.toString()}",
-                            style: const TextStyle(
-                                fontSize: 30, color: AppTheme.nearlyBlack),
-                          ),
-                          const SizedBox(
-                            height: 16,
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              ElevatedButton.icon(
-                                  style: ElevatedButton.styleFrom(
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 20, horizontal: 20),
-                                      backgroundColor: AppTheme.grey,
-                                      shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(4))),
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                    Navigator.of(context).pop();
-                                    Navigator.of(context).pop();
-                                  },
-                                  icon: const Icon(
-                                    Icons.close_outlined,
-                                    size: 32,
-                                  ),
-                                  label: const Text(
-                                    key: Key("exit_deployment_dialogs"),
-                                    "Exit",
-                                    style: TextStyle(fontSize: 30),
-                                  )),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ));
-    } catch (e, stacktrace) {
-      logger.e('Exception caught: {e}');
-      logger.e(stacktrace);
-      return Text("Something went wrong.");
-    }
-  }
-
-  Future deployImage(
-      AssetModel file, Map<String, String> payment, String path) async {
-    uploadRequest = UploadRequest(
-      payment: const JsonEncoder().convert(payment),
-      getMintingRequest: widget.getMintingRequest,
-      progressStatus: (progressPercentage) {
-        setState(() {
-          progressBarPercentage = progressPercentage;
-          if (progressPercentage >= 1) {
-            deploying = false;
-            uploadWasSuccessful = true;
-          }
-        });
-      },
-      model: file,
-      getWallet: widget.getWallet,
-    );
-    var response = await uploadRequest.upload(path);
-
-    setState(() {
-      deploying = false;
-      if (response != null) {
-        responseCode = response.statusCode;
-      }
-    });
   }
 }
 

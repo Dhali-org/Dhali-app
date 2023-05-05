@@ -1,7 +1,7 @@
 import 'package:xrpl/xrpl.dart';
 import 'package:flutter/material.dart';
 
-import 'xrpl_wallet.dart';
+import 'package:dhali/wallet/xrpl_wallet.dart';
 
 class WalletHomeScreen extends StatefulWidget {
   const WalletHomeScreen(
@@ -36,7 +36,7 @@ class _WalletHomeScreenState extends State<WalletHomeScreen> {
             children: <Widget>[
               Center(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 100.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 60.0),
                   child: Form(
                     key: _mnemonicFormKey,
                     child: Column(
@@ -83,7 +83,7 @@ class _WalletHomeScreenState extends State<WalletHomeScreen> {
                         Center(
                           child: Padding(
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 180.0, vertical: 25),
+                                horizontal: 0, vertical: 25),
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(15),
                               child: Stack(
