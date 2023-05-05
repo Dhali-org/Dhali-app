@@ -12,14 +12,12 @@ jobs:
         with:
           channel: 'stable'
       - name: Build
-        if: github.ref == 'refs/heads/develop'
         run: |
           mv firebase{.prod,}.json
           mv lib/firebase_options{.prod,}.dart
           cp assets/public{.prod,}.json
       - run: flutter build web --release --dart-define=DEPLOYMENT_ENVIRONMENT=prod
       - uses: FirebaseExtended/action-hosting-deploy@v0
-        if: github.ref == 'refs/heads/main'
         with:
           repoToken: '${{ secrets.GITHUB_TOKEN }}'
           firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_DHALI_PROD }}'

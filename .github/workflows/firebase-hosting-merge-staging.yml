@@ -16,14 +16,12 @@ jobs:
         with:
           channel: 'stable'
       - name: Build
-        if: github.ref == 'refs/heads/develop'
         run: |
           mv firebase{.staging,}.json
           mv lib/firebase_options{.staging,}.dart 
           cp assets/public{.staging,}.json
       - run: flutter build web --release --dart-define=DEPLOYMENT_ENVIRONMENT=staging
       - uses: FirebaseExtended/action-hosting-deploy@v0
-        if: github.ref == 'refs/heads/develop'
         with:
           repoToken: '${{ secrets.GITHUB_TOKEN }}'
           firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_KERNML }}'
