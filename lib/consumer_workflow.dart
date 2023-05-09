@@ -187,36 +187,64 @@ class _DownloadFileWidgetState extends State<DownloadFileWidget> {
   Widget build(BuildContext context) {
     return Container(
         child: Center(
-      child: ElevatedButton.icon(
-          style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
-              backgroundColor: AppTheme.grey,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(4))),
-          onPressed: () async {
-            try {
-              bytes =
-                  await (widget.response as StreamedResponse).stream.toBytes();
-            } catch (e) {
-              if (bytes == null) {
-                throw "An error occured when trying to download your result: ${e.toString()}";
+            child: Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        ElevatedButton.icon(
+            style: ElevatedButton.styleFrom(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+                backgroundColor: AppTheme.grey,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(4))),
+            onPressed: () async {
+              try {
+                bytes = await (widget.response as StreamedResponse)
+                    .stream
+                    .toBytes();
+              } catch (e) {
+                if (bytes == null) {
+                  throw "An error occured when trying to download your result: ${e.toString()}";
+                }
               }
-            }
 
-            final dataUri = 'data:text/plain;base64,${base64.encode(bytes!)}';
-            html.document.createElement('a') as html.AnchorElement
-              ..href = dataUri
-              ..download = 'output.txt'
-              ..dispatchEvent(html.Event.eventType('MouseEvent', 'click'));
-          },
-          icon: const Icon(
-            Icons.download,
-            size: 32,
-          ),
-          label: Text(
-            "Download result",
-            style: TextStyle(fontSize: 30),
-          )),
-    ));
+              final dataUri = 'data:text/plain;base64,${base64.encode(bytes!)}';
+              html.document.createElement('a') as html.AnchorElement
+                ..href = dataUri
+                ..download = 'output.txt'
+                ..dispatchEvent(html.Event.eventType('MouseEvent', 'click'));
+            },
+            icon: const Icon(
+              Icons.download,
+              size: 32,
+            ),
+            label: const Text(
+              "Download result",
+              style: TextStyle(fontSize: 30),
+            )),
+        const SizedBox(
+          width: 16,
+        ),
+        ElevatedButton.icon(
+            style: ElevatedButton.styleFrom(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+                backgroundColor: AppTheme.grey,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(4))),
+            onPressed: () async {
+              Navigator.of(context).pop();
+              Navigator.of(context).pop();
+            },
+            icon: const Icon(
+              Icons.exit_to_app,
+              size: 32,
+            ),
+            label: const Text(
+              "Exit",
+              style: TextStyle(fontSize: 30),
+            ))
+      ],
+    )));
   }
 }
