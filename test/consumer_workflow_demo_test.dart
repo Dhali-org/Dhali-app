@@ -158,6 +158,11 @@ void main() async {
           findsOneWidget);
       await tester.pump();
       expect(find.byKey(const Key("download_file")), findsOneWidget);
+      expect(find.text("Download result"), findsOneWidget);
+      expect(find.text("Exit"), findsOneWidget);
+      await tester.tap(find.text("Exit"));
+      await tester.pumpAndSettle();
+      expect(find.byType(AssetPage), findsOneWidget);
     });
 
     testWidgets('Unsuccessful run', (WidgetTester tester) async {

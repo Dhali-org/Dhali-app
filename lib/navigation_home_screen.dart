@@ -6,6 +6,7 @@ import 'package:dhali/marketplace/marketplace_home_screen.dart';
 import 'package:flutter/material.dart';
 
 import 'package:dhali/wallet/home_screen.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 enum DrawerIndex {
   Wallet,
@@ -106,6 +107,11 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
                 ),
                 ListTile(
                   leading: const Icon(Icons.book),
+                  title: const Text('Docs'),
+                  onTap: _launchUrl,
+                ),
+                ListTile(
+                  leading: const Icon(Icons.badge),
                   title: const Text('Licenses'),
                   onTap: () {
                     getScreenView(DrawerIndex.Licenses);
@@ -122,6 +128,12 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> _launchUrl() async {
+    if (!await launchUrl(Uri.parse("https://dhali.io/docs/#/"))) {
+      throw Exception('Could not launch https://dhali.io/docs/#/');
+    }
   }
 
   void changeIndex(DrawerIndex drawerIndexdata) {
