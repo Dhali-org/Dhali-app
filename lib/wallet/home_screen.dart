@@ -1,8 +1,11 @@
+import 'package:flutter/gestures.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:xrpl/xrpl.dart';
 import 'package:flutter/material.dart';
 
 import 'package:dhali/app_theme.dart';
 import 'package:dhali/wallet/xrpl_wallet.dart';
+import 'package:bip39/bip39.dart' as bip39;
 
 class WalletHomeScreen extends StatefulWidget {
   const WalletHomeScreen(
@@ -42,6 +45,65 @@ class _WalletHomeScreenState extends State<WalletHomeScreen> {
                     key: _mnemonicFormKey,
                     child: Column(
                       children: [
+                        Center(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 0, vertical: 25),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(15),
+                              child: Stack(
+                                children: <Widget>[
+                                  Positioned.fill(
+                                    child: Container(
+                                      color: AppTheme.dhali_blue,
+                                    ),
+                                  ),
+                                  TextButton(
+                                    style: TextButton.styleFrom(
+                                      foregroundColor: Colors.white,
+                                      padding: const EdgeInsets.all(.0),
+                                      textStyle: const TextStyle(fontSize: 20),
+                                    ),
+                                    onPressed: () {
+                                      setState(() {
+                                        _mnemonicState =
+                                            bip39.generateMnemonic();
+                                        var wallet = XRPLWallet(_mnemonicState!,
+                                            testMode: true);
+                                        widget.setWallet(wallet);
+                                        _publicKey =
+                                            widget.getWallet()!.publicKey();
+                                      });
+                                    },
+                                    child: const Padding(
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 50.0, vertical: 25),
+                                      child: Text(
+                                        'Generate new wallet',
+                                        style: TextStyle(
+                                          fontSize: 20,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        RichText(
+                          textAlign: TextAlign.center,
+                          text: TextSpan(
+                            children: [
+                              TextSpan(
+                                text: '\n\nor\n\n',
+                                style: TextStyle(
+                                    color: Colors.black, fontSize: 25),
+                              ),
+                            ],
+                          ),
+                        ),
                         TextFormField(
                             autovalidateMode:
                                 AutovalidateMode.onUserInteraction,
@@ -142,17 +204,41 @@ class _WalletHomeScreenState extends State<WalletHomeScreen> {
     } else {
       return Scaffold(
         body: Center(
-          child: getGeneratedWidget(widget.getWallet()!),
+          child: getGeneratedWidget(widget.getWallet()!, hideMnemonic: false),
         ),
       );
     }
   }
 }
 
-Widget getGeneratedWidget(XRPLWallet wallet) {
+Widget getGeneratedWidget(XRPLWallet wallet, {bool hideMnemonic = true}) {
   return ListView(
     shrinkWrap: true,
     children: <Widget>[
+      !hideMnemonic
+          ? RichText(
+              textAlign: TextAlign.center,
+              text: TextSpan(
+                children: [
+                  TextSpan(
+                    text:
+                        'To regenerate your wallet later, remember your keywords:\n',
+                    style: TextStyle(color: Colors.black, fontSize: 25),
+                  ),
+                ],
+              ),
+            )
+          : SizedBox.shrink(),
+      !hideMnemonic
+          ? SelectableText(
+              wallet.mnemonic!,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 25,
+                  fontWeight: FontWeight.bold),
+            )
+          : SizedBox.shrink(),
       //const Center(
       //  child: const Padding(
       //padding: EdgeInsets.symmetric(horizontal: 200.0,
