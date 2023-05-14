@@ -905,6 +905,10 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                   );
                 });
           },
+          backgroundColor: AppTheme.dhali_blue,
+          foregroundColor: AppTheme.white,
+          hoverColor: AppTheme.dhali_blue_highlight,
+          focusColor: AppTheme.dhali_blue_highlight,
           label: const Text('Add new asset'),
           icon: const Icon(Icons.add),
         );

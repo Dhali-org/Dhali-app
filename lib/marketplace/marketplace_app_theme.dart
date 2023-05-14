@@ -1,3 +1,4 @@
+import 'package:dhali/app_theme.dart';
 import 'package:dhali/main.dart';
 import 'package:flutter/material.dart';
 
@@ -22,7 +23,7 @@ class MarketplaceAppTheme {
   }
 
   static ThemeData buildLightTheme() {
-    final Color primaryColor = HexColor('#54D3C2');
+    final Color primaryColor = AppTheme.dhali_blue;
     final Color secondaryColor = HexColor('#54D3C2');
     final ColorScheme colorScheme = const ColorScheme.light().copyWith(
       primary: primaryColor,
