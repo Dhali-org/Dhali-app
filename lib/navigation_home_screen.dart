@@ -64,37 +64,40 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
             child: ListView(
               padding: EdgeInsets.zero,
               children: <Widget>[
-                const DrawerHeader(
+                DrawerHeader(
                   decoration: BoxDecoration(
-                    color: AppTheme.dark_grey,
+                    color: AppTheme.white,
                   ),
-                  child: Text(
-                    'Dhali',
-                    style: TextStyle(
-                      color: AppTheme.white,
-                      fontSize: 24,
+                  child: Container(
+                    height: 100, // Or any other height that suits your design
+                    child: FittedBox(
+                      child: Image.asset('assets/images/dhali-logo.png'),
+                      fit: BoxFit.contain,
                     ),
                   ),
                 ),
                 ListTile(
-                  leading: const Icon(Icons.wallet),
-                  title: const Text('Wallet'),
+                  leading: const Icon(Icons.wallet, color: AppTheme.dhali_blue),
+                  title: const Text('Wallet',
+                      style: TextStyle(color: AppTheme.nearlyBlack)),
                   onTap: () {
                     getScreenView(DrawerIndex.Wallet);
                     Navigator.pop(context);
                   },
                 ),
                 ListTile(
-                  leading: const Icon(Icons.token),
-                  title: const Text('My assets'),
+                  leading: const Icon(Icons.token, color: AppTheme.dhali_blue),
+                  title: const Text('My assets',
+                      style: TextStyle(color: AppTheme.nearlyBlack)),
                   onTap: () {
                     getScreenView(DrawerIndex.Assets);
                     Navigator.pop(context);
                   },
                 ),
                 ListTile(
-                  leading: const Icon(Icons.shop),
-                  title: const Text('Marketplace'),
+                  leading: const Icon(Icons.shop, color: AppTheme.dhali_blue),
+                  title: const Text('Marketplace',
+                      style: TextStyle(color: AppTheme.nearlyBlack)),
                   onTap: () {
                     getScreenView(DrawerIndex.Marketplace);
                     Navigator.pop(context);
@@ -106,13 +109,15 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
                   color: Colors.grey,
                 ),
                 ListTile(
-                  leading: const Icon(Icons.book),
-                  title: const Text('Docs'),
+                  leading: const Icon(Icons.book, color: AppTheme.dhali_blue),
+                  title: const Text('Docs',
+                      style: TextStyle(color: AppTheme.nearlyBlack)),
                   onTap: _launchUrl,
                 ),
                 ListTile(
-                  leading: const Icon(Icons.badge),
-                  title: const Text('Licenses'),
+                  leading: const Icon(Icons.badge, color: AppTheme.dhali_blue),
+                  title: const Text('Licenses',
+                      style: TextStyle(color: AppTheme.nearlyBlack)),
                   onTap: () {
                     getScreenView(DrawerIndex.Licenses);
                     Navigator.pop(context);
@@ -121,7 +126,6 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
               ],
             ),
           ),
-          //backgroundColor: AppTheme.nearlyWhite,
           backgroundColor: AppTheme.nearlyBlack,
           drawerEdgeDragWidth: 0,
           body: screenView,
@@ -146,6 +150,7 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
   }
 
   Widget? getScreenView(drawerIndex) {
+    Future(() => ScaffoldMessenger.of(context).hideCurrentSnackBar());
     screenView = MarketplaceHomeScreen(
         key: const Key("Marketplace"), // Key used to force State rebuild
         getRequest: widget.getRequest,
@@ -156,6 +161,15 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
     switch (drawerIndex) {
       case DrawerIndex.Wallet:
         setState(() {
+          SnackBar snackbar;
+          snackbar = const SnackBar(
+            backgroundColor: Colors.red,
+            content:
+                Text("Dhali is currently in alpha and uses test XRP only!"),
+            duration: Duration(days: 1),
+          );
+
+          Future(() => ScaffoldMessenger.of(context).showSnackBar(snackbar));
           screenView = WalletHomeScreen(
             title: "wallet",
             getWallet: widget.getWallet,
