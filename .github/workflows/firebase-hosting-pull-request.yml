@@ -17,7 +17,7 @@ jobs:
           mv firebase{.staging,}.json
           mv lib/firebase_options{.staging,}.dart 
           cp assets/public{.staging,}.json
-          flutter build web --release --dart-define=DEPLOYMENT_ENVIRONMENT=staging
+          flutter build web --profile --dart-define=Dart2jsOptimization=O0 --dart-define=DEPLOYMENT_ENVIRONMENT=staging
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: '${{ secrets.GITHUB_TOKEN }}'
