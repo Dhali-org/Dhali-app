@@ -150,6 +150,7 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
   }
 
   Widget? getScreenView(drawerIndex) {
+    Future(() => ScaffoldMessenger.of(context).hideCurrentSnackBar());
     screenView = MarketplaceHomeScreen(
         key: const Key("Marketplace"), // Key used to force State rebuild
         getRequest: widget.getRequest,
@@ -160,6 +161,15 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
     switch (drawerIndex) {
       case DrawerIndex.Wallet:
         setState(() {
+          SnackBar snackbar;
+          snackbar = const SnackBar(
+            backgroundColor: Colors.red,
+            content:
+                Text("Dhali is currently in alpha and uses test XRP only!"),
+            duration: Duration(days: 1),
+          );
+
+          Future(() => ScaffoldMessenger.of(context).showSnackBar(snackbar));
           screenView = WalletHomeScreen(
             title: "wallet",
             getWallet: widget.getWallet,

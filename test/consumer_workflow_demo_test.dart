@@ -95,6 +95,7 @@ void main() async {
     when(mockWallet.acceptOffer("0")).thenAnswer((_) async {
       return Future.value(true);
     });
+    when(mockWallet.mnemonic).thenReturn("memorable words");
     when(mockWallet.getOpenPaymentChannels(
             destination_address: "rstbSTpPcyxMsiXwkBxS9tFTrg2JsDNxWk"))
         .thenAnswer((_) async {
