@@ -165,7 +165,7 @@ class _AssetPageState extends State<AssetPage> {
                     child: ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
-                          backgroundColor: AppTheme.grey,
+                          backgroundColor: AppTheme.dhali_blue,
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(4))),
                       onPressed: () => {

@@ -1,6 +1,7 @@
 import 'package:xrpl/xrpl.dart';
 import 'package:flutter/material.dart';
 
+import 'package:dhali/app_theme.dart';
 import 'package:dhali/wallet/xrpl_wallet.dart';
 
 class WalletHomeScreen extends StatefulWidget {
@@ -90,17 +91,7 @@ class _WalletHomeScreenState extends State<WalletHomeScreen> {
                                 children: <Widget>[
                                   Positioned.fill(
                                     child: Container(
-                                      decoration: const BoxDecoration(
-                                        gradient: LinearGradient(
-                                          colors: <Color>[
-                                            Color(0xFF652EC8),
-                                            Color(0xFF8D68CE),
-                                            Color(0xFFB7AAD0),
-                                          ],
-                                          begin: Alignment.topLeft,
-                                          end: Alignment.bottomRight,
-                                        ),
-                                      ),
+                                      color: AppTheme.dhali_blue,
                                     ),
                                   ),
                                   TextButton(
