@@ -6,7 +6,8 @@ import 'package:async/async.dart';
 import 'package:dhali/marketplace/model/asset_model.dart';
 import 'package:dhali/utils/Uploaders.dart';
 import 'package:dhali/utils/not_implemented_dialog.dart';
-import 'package:dhali/wallet/home_screen.dart';
+import 'package:dhali_wallet/dhali_wallet.dart';
+import 'package:dhali_wallet/xrpl_wallet.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dropzone/flutter_dropzone.dart';
@@ -19,7 +20,7 @@ import 'package:dhali/marketplace/model/marketplace_list_data.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:dhali/wallet/xrpl_wallet.dart';
+import 'package:dhali_wallet/dhali_wallet.dart';
 import 'package:dhali/marketplace/asset_page.dart';
 import 'package:dhali/marketplace/filters_screen.dart';
 import 'package:dhali/marketplace/marketplace_app_theme.dart';
@@ -121,7 +122,7 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold, fontSize: 25),
                               )
-                            : getGeneratedWidget(widget.getWallet()!)
+                            : getGeneratedWallet(widget.getWallet()!)
                         : Container(),
                     Expanded(
                       child: NestedScrollView(
