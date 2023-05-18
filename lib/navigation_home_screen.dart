@@ -1,11 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dhali/wallet/xrpl_wallet.dart';
 import 'package:http/http.dart';
 import 'package:dhali/app_theme.dart';
 import 'package:dhali/marketplace/marketplace_home_screen.dart';
 import 'package:flutter/material.dart';
 
-import 'package:dhali/wallet/home_screen.dart';
+import 'package:dhali_wallet/xrpl_wallet.dart';
+import 'package:dhali_wallet/dhali_wallet.dart';
+
 import 'package:url_launcher/url_launcher.dart';
 
 enum DrawerIndex {
@@ -174,6 +175,8 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
             title: "wallet",
             getWallet: widget.getWallet,
             setWallet: widget.setWallet,
+            color: AppTheme.dhali_blue,
+            highlightedColor: AppTheme.dhali_blue_highlight,
           );
         });
         break;

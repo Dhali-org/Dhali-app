@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:dhali/wallet/xrpl_wallet.dart';
+import 'package:dhali_wallet/dhali_wallet.dart';
+import 'package:dhali_wallet/xrpl_wallet.dart';
 import 'package:http/http.dart';
 import 'package:dhali/app_theme.dart';
 import 'package:flutter/material.dart';

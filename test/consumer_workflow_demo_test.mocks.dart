@@ -5,8 +5,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _i7;
 
-import 'package:dhali/wallet/xrpl_types.dart' as _i9;
-import 'package:dhali/wallet/xrpl_wallet.dart' as _i5;
+import 'package:dhali_wallet/xrpl_types.dart' as _i9;
+import 'package:dhali_wallet/xrpl_wallet.dart' as _i5;
 import 'package:flutter/material.dart' as _i4;
 import 'package:http/http.dart' as _i3;
 import 'package:http/src/byte_stream.dart' as _i2;
