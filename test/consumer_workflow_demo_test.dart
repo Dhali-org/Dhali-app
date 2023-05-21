@@ -6,7 +6,7 @@ import 'package:dhali/marketplace/asset_page.dart';
 import 'package:dhali/marketplace/marketplace_home_screen.dart';
 import 'package:dhali/marketplace/marketplace_dialogs.dart';
 import 'package:dhali/marketplace/model/marketplace_list_data.dart';
-import 'package:dhali_wallet/xrpl_types.dart';
+import 'package:dhali_wallet/wallet_types.dart';
 import 'package:dhali_wallet/dhali_wallet.dart';
 import 'package:dhali_wallet/xrpl_wallet.dart';
 import 'package:flutter/material.dart';

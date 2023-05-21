@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dhali/marketplace/marketplace_home_screen.dart';
 import 'package:dhali/marketplace/marketplace_dialogs.dart';
-import 'package:dhali_wallet/xrpl_types.dart';
+import 'package:dhali_wallet/wallet_types.dart';
 import 'package:dhali_wallet/dhali_wallet.dart';
 import 'package:dhali_wallet/xrpl_wallet.dart';
 import 'package:flutter/material.dart';

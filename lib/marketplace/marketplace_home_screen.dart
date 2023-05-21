@@ -21,6 +21,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:dhali_wallet/dhali_wallet.dart';
+import 'package:dhali_wallet/wallet_types.dart';
 import 'package:dhali/marketplace/asset_page.dart';
 import 'package:dhali/marketplace/filters_screen.dart';
 import 'package:dhali/marketplace/marketplace_app_theme.dart';
@@ -39,7 +40,7 @@ class MarketplaceHomeScreen extends StatefulWidget {
       : super(key: key);
 
   final void Function(XRPLWallet) setWallet;
-  final XRPLWallet? Function() getWallet;
+  final DhaliWallet? Function() getWallet;
   final FirebaseFirestore? Function() getFirestore;
 
   final BaseRequest Function(String method, String path) getRequest;
@@ -115,14 +116,13 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                 },
                 child: Column(
                   children: <Widget>[
-                    widget.assetScreenType == AssetScreenType.MyAssets
-                        ? widget.getWallet() == null
-                            ? const Text(
-                                "Please activate your wallet using the Wallet page",
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold, fontSize: 25),
-                              )
-                            : getGeneratedWallet(widget.getWallet()!)
+                    widget.assetScreenType == AssetScreenType.MyAssets &&
+                            widget.getWallet() == null
+                        ? const Text(
+                            "Please activate your wallet using the Wallet page",
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 25),
+                          )
                         : Container(),
                     Expanded(
                       child: NestedScrollView(
@@ -756,10 +756,10 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                                                                     yesClicked:
                                                                         ((asset,
                                                                             earningsInferenceCost) {
-                                                                      XRPLWallet?
+                                                                      DhaliWallet?
                                                                           wallet =
                                                                           widget
-                                                                              .getWallet();
+                                                                              .getWallet()!;
 
                                                                       showDialog(
                                                                           context:

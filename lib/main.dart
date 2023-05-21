@@ -51,7 +51,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  XRPLWallet? _wallet;
+  DhaliWallet? _wallet;
 
   @override
   Widget build(BuildContext context) {
@@ -134,11 +134,11 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
-  XRPLWallet? getWallet() {
+  DhaliWallet? getWallet() {
     return _wallet;
   }
 
-  void setWallet(XRPLWallet wallet) {
+  void setWallet(DhaliWallet wallet) {
     setState(() {
       _wallet = wallet;
     });
