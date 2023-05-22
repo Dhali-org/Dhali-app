@@ -75,7 +75,7 @@ class RunUploader extends BaseUploader {
   final Function(double) progressStatus;
   late final int _maxChunkSize;
   late DropzoneViewController controller;
-  final XRPLWallet? Function() getWallet;
+  final DhaliWallet? Function() getWallet;
 
   RunUploader({
     required this.payment,
@@ -161,7 +161,7 @@ class DeployUploader extends BaseUploader {
   final Function(double) progressStatus;
   late final int _maxChunkSize;
   late DropzoneViewController controller;
-  final XRPLWallet? Function() getWallet;
+  final DhaliWallet? Function() getWallet;
   final double assetEarningRate;
 
   DeployUploader({

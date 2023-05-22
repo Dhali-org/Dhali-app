@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dhali_wallet/dhali_wallet_widget.dart';
 import 'package:http/http.dart';
 import 'package:dhali/app_theme.dart';
 import 'package:dhali/marketplace/marketplace_home_screen.dart';
@@ -28,8 +29,8 @@ class NavigationHomeScreen extends StatefulWidget {
   final FirebaseFirestore firestore;
 
   final DrawerIndex? drawerIndex;
-  final XRPLWallet? Function() getWallet;
-  final void Function(XRPLWallet) setWallet;
+  final DhaliWallet? Function() getWallet;
+  final void Function(DhaliWallet) setWallet;
 
   @override
   _NavigationHomeScreenState createState() =>
@@ -175,8 +176,9 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
             title: "wallet",
             getWallet: widget.getWallet,
             setWallet: widget.setWallet,
-            color: AppTheme.dhali_blue,
-            highlightedColor: AppTheme.dhali_blue_highlight,
+            appBarColor: AppTheme.dhali_blue,
+            bodyTextColor: Colors.black,
+            buttonsColor: AppTheme.dhali_blue,
           );
         });
         break;

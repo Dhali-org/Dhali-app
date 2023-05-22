@@ -5,6 +5,7 @@ import 'package:dhali/marketplace/model/asset_model.dart';
 import 'package:dhali/marketplace/model/marketplace_list_data.dart';
 import 'package:dhali/utils/Uploaders.dart';
 import 'package:dhali/utils/payment.dart';
+import 'package:dhali_wallet/wallet_types.dart';
 import 'package:dhali_wallet/dhali_wallet.dart';
 import 'package:dhali_wallet/xrpl_wallet.dart';
 import 'package:flutter/material.dart';
@@ -18,7 +19,7 @@ Widget consumerJourney(
     {required BuildContext context,
     required MarketplaceListData assetDescriptor,
     required String runURL,
-    required XRPLWallet? Function() getWallet,
+    required DhaliWallet? Function() getWallet,
     required BaseRequest Function(String method, String path) getRequest}) {
   if (getWallet() == null) {
     return const AlertDialog(
@@ -51,7 +52,7 @@ Dialog costDialog(
     required MarketplaceListData assetDescriptor,
     required String runURL,
     required AssetModel input,
-    required XRPLWallet? Function() getWallet,
+    required DhaliWallet? Function() getWallet,
     required BaseRequest Function(String method, String path) getRequest}) {
   return Dialog(
       backgroundColor: Colors.transparent,
@@ -78,7 +79,7 @@ Dialog run(
     {required BuildContext context,
     required AssetModel input,
     required String runURL,
-    required XRPLWallet? Function() getWallet,
+    required DhaliWallet? Function() getWallet,
     required BaseRequest Function(String method, String path) getRequest}) {
   String dest = Config.config!["DHALI_PUBLIC_ADDRESS"];
   var openChannelsFut =

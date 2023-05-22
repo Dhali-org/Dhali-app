@@ -18,7 +18,7 @@ class AssetPage extends StatefulWidget {
       required this.getRequest,
       this.getReadme});
   final MarketplaceListData asset;
-  final XRPLWallet? Function() getWallet;
+  final DhaliWallet? Function() getWallet;
   final BaseRequest Function(String method, String path) getRequest;
   final Future<Response> Function(Uri path)? getReadme;
 
