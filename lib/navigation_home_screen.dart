@@ -1,3 +1,5 @@
+import 'dart:js' as js;
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dhali_wallet/dhali_wallet_widget.dart';
 import 'package:http/http.dart';
@@ -125,6 +127,14 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
                     Navigator.pop(context);
                   },
                 ),
+                ListTile(
+                    leading:
+                        const Icon(Icons.cookie, color: AppTheme.dhali_blue),
+                    title: const Text('Cookie Consent Preferences',
+                        style: TextStyle(color: AppTheme.nearlyBlack)),
+                    onTap: () {
+                      js.context.callMethod('displayPreferenceModal');
+                    }),
               ],
             ),
           ),
