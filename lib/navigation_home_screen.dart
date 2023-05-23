@@ -1,11 +1,15 @@
+import 'dart:js' as js;
+
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dhali/wallet/xrpl_wallet.dart';
+import 'package:dhali_wallet/dhali_wallet_widget.dart';
 import 'package:http/http.dart';
 import 'package:dhali/app_theme.dart';
 import 'package:dhali/marketplace/marketplace_home_screen.dart';
 import 'package:flutter/material.dart';
 
-import 'package:dhali/wallet/home_screen.dart';
+import 'package:dhali_wallet/xrpl_wallet.dart';
+import 'package:dhali_wallet/dhali_wallet.dart';
+
 import 'package:url_launcher/url_launcher.dart';
 
 enum DrawerIndex {
@@ -27,8 +31,8 @@ class NavigationHomeScreen extends StatefulWidget {
   final FirebaseFirestore firestore;
 
   final DrawerIndex? drawerIndex;
-  final XRPLWallet? Function() getWallet;
-  final void Function(XRPLWallet) setWallet;
+  final DhaliWallet? Function() getWallet;
+  final void Function(DhaliWallet) setWallet;
 
   @override
   _NavigationHomeScreenState createState() =>
@@ -123,6 +127,14 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
                     Navigator.pop(context);
                   },
                 ),
+                ListTile(
+                    leading:
+                        const Icon(Icons.cookie, color: AppTheme.dhali_blue),
+                    title: const Text('Cookie Consent Preferences',
+                        style: TextStyle(color: AppTheme.nearlyBlack)),
+                    onTap: () {
+                      js.context.callMethod('displayPreferenceModal');
+                    }),
               ],
             ),
           ),
@@ -174,6 +186,9 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
             title: "wallet",
             getWallet: widget.getWallet,
             setWallet: widget.setWallet,
+            appBarColor: AppTheme.dhali_blue,
+            bodyTextColor: Colors.black,
+            buttonsColor: AppTheme.dhali_blue,
           );
         });
         break;

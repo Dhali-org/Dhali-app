@@ -1,8 +1,9 @@
 import 'package:dhali/config.dart';
-import 'package:dhali/wallet/xrpl_wallet.dart';
+import 'package:dhali_wallet/dhali_wallet.dart';
+import 'package:dhali_wallet/xrpl_wallet.dart';
 
 Map<String, String> preparePayment(
-    {required XRPLWallet? Function() getWallet,
+    {required DhaliWallet? Function() getWallet,
     required String destinationAddress,
     required String authAmount,
     required String channelId}) {

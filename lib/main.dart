@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:dhali/wallet/xrpl_wallet.dart';
+import 'package:dhali_wallet/dhali_wallet.dart';
+import 'package:dhali_wallet/xrpl_wallet.dart';
 import 'package:http/http.dart';
 import 'package:dhali/app_theme.dart';
 import 'package:flutter/material.dart';
@@ -50,7 +51,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  XRPLWallet? _wallet;
+  DhaliWallet? _wallet;
 
   @override
   Widget build(BuildContext context) {
@@ -133,11 +134,11 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
-  XRPLWallet? getWallet() {
+  DhaliWallet? getWallet() {
     return _wallet;
   }
 
-  void setWallet(XRPLWallet wallet) {
+  void setWallet(DhaliWallet wallet) {
     setState(() {
       _wallet = wallet;
     });

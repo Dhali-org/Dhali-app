@@ -51,6 +51,12 @@ dependencies:
     rxdart: ^0.27.7
     url_launcher: ^6.1.10
     bip39: ^1.0.6
+    dhali_wallet:
+      git:
+        url: "https://github.com/Dhali-org/Dhali-wallet.git"
+        ref: 0.0.6
+      # or
+      # path: <path to local dhali directory>
 
 dev_dependencies:
     flutter_oss_licenses: ^2.0.1

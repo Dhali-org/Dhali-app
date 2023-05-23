@@ -2,7 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:dhali/config.dart';
-import 'package:dhali/wallet/xrpl_wallet.dart';
+import 'package:dhali_wallet/dhali_wallet.dart';
+import 'package:dhali_wallet/xrpl_wallet.dart';
 import 'package:flutter/widgets.dart';
 import "package:universal_html/html.dart";
 import 'dart:math';
@@ -74,7 +75,7 @@ class RunUploader extends BaseUploader {
   final Function(double) progressStatus;
   late final int _maxChunkSize;
   late DropzoneViewController controller;
-  final XRPLWallet? Function() getWallet;
+  final DhaliWallet? Function() getWallet;
 
   RunUploader({
     required this.payment,
@@ -160,7 +161,7 @@ class DeployUploader extends BaseUploader {
   final Function(double) progressStatus;
   late final int _maxChunkSize;
   late DropzoneViewController controller;
-  final XRPLWallet? Function() getWallet;
+  final DhaliWallet? Function() getWallet;
   final double assetEarningRate;
 
   DeployUploader({

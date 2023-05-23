@@ -5,14 +5,14 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _i7;
 
-import 'package:dhali/wallet/xrpl_types.dart' as _i9;
-import 'package:dhali/wallet/xrpl_wallet.dart' as _i5;
+import 'package:dhali_wallet/wallet_types.dart' as _i5;
+import 'package:dhali_wallet/xrpl_wallet.dart' as _i8;
 import 'package:flutter/material.dart' as _i4;
 import 'package:http/http.dart' as _i3;
 import 'package:http/src/byte_stream.dart' as _i2;
 import 'package:http/src/multipart_file.dart' as _i6;
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:xrpl/xrpl.dart' as _i8;
+import 'package:xrpl/xrpl.dart' as _i9;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -205,7 +205,7 @@ class MockMultipartRequest extends _i1.Mock implements _i3.MultipartRequest {
 /// A class which mocks [XRPLWallet].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockXRPLWallet extends _i1.Mock implements _i5.XRPLWallet {
+class MockXRPLWallet extends _i1.Mock implements _i8.XRPLWallet {
   MockXRPLWallet() {
     _i1.throwOnMissingStub(this);
   }
@@ -264,8 +264,8 @@ class MockXRPLWallet extends _i1.Mock implements _i5.XRPLWallet {
       ) as String);
   @override
   _i7.Future<dynamic> submitRequest(
-    _i8.BaseRequest? request,
-    _i8.Client? client,
+    _i9.BaseRequest? request,
+    _i9.Client? client,
   ) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -294,14 +294,14 @@ class MockXRPLWallet extends _i1.Mock implements _i5.XRPLWallet {
         returnValue: _i7.Future<bool>.value(false),
       ) as _i7.Future<bool>);
   @override
-  _i7.Future<List<_i9.NFTOffer>> getNFTOffers(String? nfTokenId) =>
+  _i7.Future<List<_i5.NFTOffer>> getNFTOffers(String? nfTokenId) =>
       (super.noSuchMethod(
         Invocation.method(
           #getNFTOffers,
           [nfTokenId],
         ),
-        returnValue: _i7.Future<List<_i9.NFTOffer>>.value(<_i9.NFTOffer>[]),
-      ) as _i7.Future<List<_i9.NFTOffer>>);
+        returnValue: _i7.Future<List<_i5.NFTOffer>>.value(<_i5.NFTOffer>[]),
+      ) as _i7.Future<List<_i5.NFTOffer>>);
   @override
   _i7.Future<List<_i5.PaymentChannelDescriptor>> getOpenPaymentChannels(
           {String? destination_address}) =>
