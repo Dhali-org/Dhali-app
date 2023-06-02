@@ -989,13 +989,15 @@ class DeploymentCostWidget extends StatelessWidget {
                       backgroundColor: AppTheme.grey,
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(4))),
-                  onPressed: () => yesClicked(file, assetEarnings),
+                  onPressed: () async {
+                    Navigator.of(context).pop();
+                  },
                   icon: const Icon(
-                    Icons.done_outline_rounded,
+                    Icons.arrow_back,
                     size: 32,
                   ),
                   label: const Text(
-                    "Yes",
+                    "Back",
                     style: TextStyle(fontSize: 30),
                   )),
               const SizedBox(
@@ -1008,15 +1010,13 @@ class DeploymentCostWidget extends StatelessWidget {
                       backgroundColor: AppTheme.grey,
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(4))),
-                  onPressed: () async {
-                    Navigator.of(context).pop();
-                  },
+                  onPressed: () => yesClicked(file, assetEarnings),
                   icon: const Icon(
-                    Icons.arrow_back,
+                    Icons.done_outline_rounded,
                     size: 32,
                   ),
                   label: const Text(
-                    "Back",
+                    "Yes",
                     style: TextStyle(fontSize: 30),
                   )),
               const SizedBox(
@@ -1418,13 +1418,15 @@ class InferenceCostWidget extends StatelessWidget {
                       backgroundColor: AppTheme.grey,
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(4))),
-                  onPressed: () => yesClicked(file, inferenceCost),
+                  onPressed: () async {
+                    Navigator.of(context).pop();
+                  },
                   icon: const Icon(
-                    Icons.done_outline_rounded,
+                    Icons.close_outlined,
                     size: 32,
                   ),
                   label: const Text(
-                    "Yes",
+                    "No",
                     style: TextStyle(fontSize: 30),
                   )),
               const SizedBox(
@@ -1437,15 +1439,13 @@ class InferenceCostWidget extends StatelessWidget {
                       backgroundColor: AppTheme.grey,
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(4))),
-                  onPressed: () async {
-                    Navigator.of(context).pop();
-                  },
+                  onPressed: () => yesClicked(file, inferenceCost),
                   icon: const Icon(
-                    Icons.close_outlined,
+                    Icons.done_outline_rounded,
                     size: 32,
                   ),
                   label: const Text(
-                    "No",
+                    "Yes",
                     style: TextStyle(fontSize: 30),
                   )),
               const SizedBox(
