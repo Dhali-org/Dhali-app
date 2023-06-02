@@ -156,7 +156,7 @@ class _DropzoneRunWidgetState extends State<DropzoneRunWidget> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     getFileUploadButton(const Key("choose_run_input"),
-                        "Choose input file", [], AppTheme.dark_grey),
+                        "Choose input file", [], AppTheme.secondary),
                     const SizedBox(
                       width: 16,
                     ),
@@ -168,7 +168,7 @@ class _DropzoneRunWidgetState extends State<DropzoneRunWidget> {
                         style: ElevatedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(
                                 vertical: 20, horizontal: 20),
-                            backgroundColor: AppTheme.grey,
+                            backgroundColor: AppTheme.dhali_blue,
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(4))),
                         onPressed: input != null
@@ -388,6 +388,7 @@ class _DropzoneDeployWidgetState extends State<DropzoneDeployWidget> {
                 ),
                 const Icon(
                   Icons.cloud_upload_rounded,
+                  color: AppTheme.dhali_blue,
                   size: 80,
                 ),
                 Row(
@@ -456,7 +457,7 @@ class _DropzoneDeployWidgetState extends State<DropzoneDeployWidget> {
                         const Key("choose_docker_image_button"),
                         "Choose .tar file",
                         ["application/x-tar"],
-                        AppTheme.dark_grey),
+                        AppTheme.secondary),
                     const SizedBox(
                       width: 16,
                     ),
@@ -467,7 +468,7 @@ class _DropzoneDeployWidgetState extends State<DropzoneDeployWidget> {
                           "text/markdown",
                           "text/x-markdown"
                         ], // TODO : This is not filtering the correct mime type
-                        AppTheme.grey),
+                        AppTheme.secondary),
                     const SizedBox(
                       width: 16,
                     ),
@@ -476,7 +477,7 @@ class _DropzoneDeployWidgetState extends State<DropzoneDeployWidget> {
                         style: ElevatedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(
                                 vertical: 20, horizontal: 20),
-                            backgroundColor: AppTheme.grey,
+                            backgroundColor: AppTheme.dhali_blue,
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(4))),
                         onPressed: assetFile != null &&
@@ -644,7 +645,7 @@ class _ImageScanningWidgetState extends State<ImageScanningWidget> {
             style: ElevatedButton.styleFrom(
                 padding:
                     const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
-                backgroundColor: AppTheme.grey,
+                backgroundColor: AppTheme.dhali_blue,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(4))),
             onPressed: this.scanSuccess
@@ -766,7 +767,7 @@ class _ImageCostWidgetState extends State<ImageCostWidget> {
         ElevatedButton.icon(
           style: ElevatedButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
-              backgroundColor: AppTheme.grey,
+              backgroundColor: AppTheme.dhali_blue,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(4))),
           onPressed: controller.text.isNotEmpty
@@ -986,26 +987,7 @@ class DeploymentCostWidget extends StatelessWidget {
                   style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(
                           vertical: 20, horizontal: 20),
-                      backgroundColor: AppTheme.grey,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(4))),
-                  onPressed: () => yesClicked(file, assetEarnings),
-                  icon: const Icon(
-                    Icons.done_outline_rounded,
-                    size: 32,
-                  ),
-                  label: const Text(
-                    "Yes",
-                    style: TextStyle(fontSize: 30),
-                  )),
-              const SizedBox(
-                width: 16,
-              ),
-              ElevatedButton.icon(
-                  style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 20, horizontal: 20),
-                      backgroundColor: AppTheme.grey,
+                      backgroundColor: AppTheme.dhali_blue,
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(4))),
                   onPressed: () async {
@@ -1017,6 +999,25 @@ class DeploymentCostWidget extends StatelessWidget {
                   ),
                   label: const Text(
                     "Back",
+                    style: TextStyle(fontSize: 30),
+                  )),
+              const SizedBox(
+                width: 16,
+              ),
+              ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 20, horizontal: 20),
+                      backgroundColor: AppTheme.secondary,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(4))),
+                  onPressed: () => yesClicked(file, assetEarnings),
+                  icon: const Icon(
+                    Icons.done_outline_rounded,
+                    size: 32,
+                  ),
+                  label: const Text(
+                    "Yes",
                     style: TextStyle(fontSize: 30),
                   )),
               const SizedBox(
@@ -1151,7 +1152,7 @@ class _DataTransmissionWidgetState extends State<DataTransmissionWidget> {
                           style: ElevatedButton.styleFrom(
                               padding: const EdgeInsets.symmetric(
                                   vertical: 20, horizontal: 20),
-                              backgroundColor: AppTheme.grey,
+                              backgroundColor: AppTheme.dhali_blue,
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(4))),
                           onPressed: () {
@@ -1263,7 +1264,7 @@ Widget uploadFailed(BuildContext context, int responseCode) {
                 style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(
                         vertical: 20, horizontal: 20),
-                    backgroundColor: AppTheme.grey,
+                    backgroundColor: AppTheme.dhali_blue,
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(4))),
                 onPressed: () {
@@ -1351,7 +1352,7 @@ Widget NFTUploadingWidget(
                       style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(
                               vertical: 20, horizontal: 20),
-                          backgroundColor: AppTheme.grey,
+                          backgroundColor: AppTheme.dhali_blue,
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(4))),
                       onPressed: () {
@@ -1415,26 +1416,7 @@ class InferenceCostWidget extends StatelessWidget {
                   style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(
                           vertical: 20, horizontal: 20),
-                      backgroundColor: AppTheme.grey,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(4))),
-                  onPressed: () => yesClicked(file, inferenceCost),
-                  icon: const Icon(
-                    Icons.done_outline_rounded,
-                    size: 32,
-                  ),
-                  label: const Text(
-                    "Yes",
-                    style: TextStyle(fontSize: 30),
-                  )),
-              const SizedBox(
-                width: 16,
-              ),
-              ElevatedButton.icon(
-                  style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 20, horizontal: 20),
-                      backgroundColor: AppTheme.grey,
+                      backgroundColor: AppTheme.secondary,
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(4))),
                   onPressed: () async {
@@ -1446,6 +1428,25 @@ class InferenceCostWidget extends StatelessWidget {
                   ),
                   label: const Text(
                     "No",
+                    style: TextStyle(fontSize: 30),
+                  )),
+              const SizedBox(
+                width: 16,
+              ),
+              ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 20, horizontal: 20),
+                      backgroundColor: AppTheme.dhali_blue,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(4))),
+                  onPressed: () => yesClicked(file, inferenceCost),
+                  icon: const Icon(
+                    Icons.done_outline_rounded,
+                    size: 32,
+                  ),
+                  label: const Text(
+                    "Yes",
                     style: TextStyle(fontSize: 30),
                   )),
               const SizedBox(

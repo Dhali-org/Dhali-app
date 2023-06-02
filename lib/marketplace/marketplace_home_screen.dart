@@ -121,7 +121,7 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                     widget.assetScreenType == AssetScreenType.MyAssets &&
                             widget.getWallet() == null
                         ? const Text(
-                            "Please activate your wallet using the Wallet page",
+                            "Please link a wallet using the Wallet page",
                             style: TextStyle(
                                 fontWeight: FontWeight.bold, fontSize: 25),
                           )
@@ -689,7 +689,8 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                   if (widget.getWallet() == null) {
                     return AlertDialog(
                       title: Text("Unable to proceed"),
-                      content: Text("Your wallet has not been activated"),
+                      content:
+                          Text("Please link a wallet using the Wallet page"),
                     );
                   }
 
@@ -773,7 +774,7 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                                                                               // Should never make it here!
                                                                               return AlertDialog(
                                                                                 title: Text("Unable to proceed"),
-                                                                                content: Text("Your wallet has not been activated"),
+                                                                                content: Text("Please link a wallet using the Wallet page"),
                                                                               );
                                                                             }
                                                                             String

@@ -24,7 +24,7 @@ Widget consumerJourney(
   if (getWallet() == null) {
     return const AlertDialog(
       title: Text("Unable to proceed"),
-      content: Text("Your wallet has not been activated"),
+      content: Text("Please link a wallet using the Wallet page"),
     );
   }
   return Dialog(
