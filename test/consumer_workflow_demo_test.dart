@@ -60,7 +60,7 @@ Future<void> imageConsumptionDemo(WidgetTester tester) async {
   await tester.tap(find.text("Run"));
   await tester.pump();
   expect(find.text("Unable to proceed"), findsNothing);
-  expect(find.text("Your wallet has not been activated"), findsNothing);
+  expect(find.text("Please link a wallet using the Wallet page"), findsNothing);
 
   expectedInputUploadDialog();
   await tester.tap(find.text("Next"));
@@ -267,7 +267,8 @@ void main() async {
       await tester.tap(find.text("Run"));
       await tester.pump();
       expect(find.text("Unable to proceed"), findsOneWidget);
-      expect(find.text("Your wallet has not been activated"), findsOneWidget);
+      expect(find.text("Please link a wallet using the Wallet page"),
+          findsOneWidget);
     });
   });
 }
