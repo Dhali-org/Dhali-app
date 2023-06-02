@@ -50,6 +50,38 @@ class MyApp extends StatefulWidget {
   State<MyApp> createState() => _MyAppState();
 }
 
+class HomeWithBanner extends StatelessWidget {
+  final Widget child;
+
+  HomeWithBanner({required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        child,
+        Positioned(
+          bottom: 0.0,
+          left: 0.0,
+          right: 0.0,
+          child: Container(
+            color: const Color.fromARGB(255, 248, 149, 36),
+            child: const Padding(
+              padding: EdgeInsets.all(8.0),
+              child: FittedBox(
+                  child: Text(
+                      "Warning!  This is a preview, and uses the XRPL testnet.  Please only use testnet wallets.  Created assets may not persist!",
+                      style: TextStyle(color: Colors.white),
+                      textAlign: TextAlign.center),
+                  fit: BoxFit.fitWidth),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
 class _MyAppState extends State<MyApp> {
   DhaliWallet? _wallet;
 
@@ -67,71 +99,72 @@ class _MyAppState extends State<MyApp> {
     ));
 
     return MaterialApp(
-      onGenerateRoute: (settings) {
-        if (settings.name == null) {
-          return null;
-        }
-        List<String> pathList = settings.name!.split("/");
-        if (pathList.length == 3 && pathList[1] == "assets") {
-          Widget asset;
-          if (settings.arguments != null &&
-              settings.arguments.runtimeType == AssetPage) {
-            asset = settings.arguments as AssetPage;
-          } else {
-            Future<DocumentSnapshot<Map<String, dynamic>>> futureElement =
-                FirebaseFirestore.instance
-                    .collection(Config.config!["MINTED_NFTS_COLLECTION_NAME"])
-                    .doc(pathList[2])
-                    .get();
-            asset = FutureBuilder(
-              builder: (BuildContext context,
-                  AsyncSnapshot<DocumentSnapshot<Map<String, dynamic>>>
-                      snapshot) {
-                if (!snapshot.hasData) {
-                  return const Text("Asset not found");
-                }
-                MarketplaceListData element = MarketplaceListData(
-                    assetID: pathList[2],
-                    assetName: snapshot.data![Config
-                        .config!["MINTED_NFTS_DOCUMENT_KEYS"]["ASSET_NAME"]],
-                    assetCategories: snapshot.data![Config
-                        .config!["MINTED_NFTS_DOCUMENT_KEYS"]["CATEGORY"]],
-                    averageRuntime: snapshot.data![
-                        Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]
-                            ["AVERAGE_INFERENCE_TIME_MS"]],
-                    numberOfSuccessfullRequests: snapshot.data![
-                        Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]
-                            ["NUMBER_OF_SUCCESSFUL_REQUESTS"]],
-                    pricePerRun: snapshot.data![Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]["EXPECTED_INFERENCE_COST_PER_MS"]]);
-                return AssetPage(
-                  asset: element,
-                  getRequest: widget.getRequest,
-                  getWallet: getWallet,
-                );
-              },
-              future: futureElement,
-            );
+        onGenerateRoute: (settings) {
+          if (settings.name == null) {
+            return null;
           }
+          List<String> pathList = settings.name!.split("/");
+          if (pathList.length == 3 && pathList[1] == "assets") {
+            Widget asset;
+            if (settings.arguments != null &&
+                settings.arguments.runtimeType == AssetPage) {
+              asset = settings.arguments as AssetPage;
+            } else {
+              Future<DocumentSnapshot<Map<String, dynamic>>> futureElement =
+                  FirebaseFirestore.instance
+                      .collection(Config.config!["MINTED_NFTS_COLLECTION_NAME"])
+                      .doc(pathList[2])
+                      .get();
+              asset = FutureBuilder(
+                builder: (BuildContext context,
+                    AsyncSnapshot<DocumentSnapshot<Map<String, dynamic>>>
+                        snapshot) {
+                  if (!snapshot.hasData) {
+                    return const Text("Asset not found");
+                  }
+                  MarketplaceListData element = MarketplaceListData(
+                      assetID: pathList[2],
+                      assetName: snapshot.data![Config
+                          .config!["MINTED_NFTS_DOCUMENT_KEYS"]["ASSET_NAME"]],
+                      assetCategories: snapshot.data![Config
+                          .config!["MINTED_NFTS_DOCUMENT_KEYS"]["CATEGORY"]],
+                      averageRuntime: snapshot.data![
+                          Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]
+                              ["AVERAGE_INFERENCE_TIME_MS"]],
+                      numberOfSuccessfullRequests: snapshot.data![
+                          Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]
+                              ["NUMBER_OF_SUCCESSFUL_REQUESTS"]],
+                      pricePerRun: snapshot.data![Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]["EXPECTED_INFERENCE_COST_PER_MS"]]);
+                  return AssetPage(
+                    asset: element,
+                    getRequest: widget.getRequest,
+                    getWallet: getWallet,
+                  );
+                },
+                future: futureElement,
+              );
+            }
 
-          return MaterialPageRoute(
-              builder: (context) => asset,
-              settings: RouteSettings(name: settings.name));
-        }
-      },
-      title: title,
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        textTheme: AppTheme.textTheme,
-        platform: TargetPlatform.iOS,
-      ),
-      home: NavigationHomeScreen(
-        getWallet: getWallet,
-        setWallet: setWallet,
-        firestore: FirebaseFirestore.instance,
-        getRequest: widget.getRequest,
-      ),
-    );
+            return MaterialPageRoute(
+                builder: (context) => asset,
+                settings: RouteSettings(name: settings.name));
+          }
+        },
+        title: title,
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+          textTheme: AppTheme.textTheme,
+          platform: TargetPlatform.iOS,
+        ),
+        home: HomeWithBanner(
+          child: NavigationHomeScreen(
+            getWallet: getWallet,
+            setWallet: setWallet,
+            firestore: FirebaseFirestore.instance,
+            getRequest: widget.getRequest,
+          ),
+        ));
   }
 
   DhaliWallet? getWallet() {
