@@ -102,7 +102,9 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
               ? FloatingActionButtonLocation.centerFloat
               : null,
           floatingActionButton: this.widget.getWallet() != null
-              ? getFloatingActionButton(widget.assetScreenType)
+              ? Padding(
+                  padding: const EdgeInsets.only(bottom: 50.0),
+                  child: getFloatingActionButton(widget.assetScreenType))
               : null,
           body: Stack(
             children: <Widget>[
