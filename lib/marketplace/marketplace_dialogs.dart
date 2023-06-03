@@ -987,7 +987,7 @@ class DeploymentCostWidget extends StatelessWidget {
                   style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(
                           vertical: 20, horizontal: 20),
-                      backgroundColor: AppTheme.dhali_blue,
+                      backgroundColor: AppTheme.secondary,
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(4))),
                   onPressed: () async {
@@ -1008,7 +1008,7 @@ class DeploymentCostWidget extends StatelessWidget {
                   style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(
                           vertical: 20, horizontal: 20),
-                      backgroundColor: AppTheme.secondary,
+                      backgroundColor: AppTheme.dhali_blue,
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(4))),
                   onPressed: () => yesClicked(file, assetEarnings),
