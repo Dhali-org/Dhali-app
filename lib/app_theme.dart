@@ -10,7 +10,8 @@ class AppTheme {
   static const Color grey = Color(0xFF3A5160);
   static const Color dark_grey = Color(0xFF313A44);
   static const Color dhali_blue = Color(0xFF0000FF);
-  static const Color dhali_blue_highlight = Color.fromARGB(255, 80, 80, 250);
+  static const Color dhali_blue_highlight = Color.fromARGB(255, 120, 120, 255);
+  static const Color secondary = Color.fromARGB(255, 98, 98, 99);
 
   static const Color darkText = Color(0xFF253840);
   static const Color darkerText = Color(0xFF17262A);
