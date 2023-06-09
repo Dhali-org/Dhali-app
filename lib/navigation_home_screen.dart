@@ -32,7 +32,7 @@ class NavigationHomeScreen extends StatefulWidget {
 
   final DrawerIndex? drawerIndex;
   final DhaliWallet? Function() getWallet;
-  final void Function(DhaliWallet) setWallet;
+  final Function(DhaliWallet?) setWallet;
 
   @override
   _NavigationHomeScreenState createState() =>

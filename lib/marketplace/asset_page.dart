@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dhali/app_theme.dart';
 import 'package:dhali/consumer_workflow.dart';
 import 'package:dhali_wallet/dhali_wallet.dart';
@@ -16,9 +17,11 @@ class AssetPage extends StatefulWidget {
       required this.asset,
       required this.getWallet,
       required this.getRequest,
+      required this.getFirestore,
       this.getReadme});
   final MarketplaceListData asset;
   final DhaliWallet? Function() getWallet;
+  final FirebaseFirestore? Function() getFirestore;
   final BaseRequest Function(String method, String path) getRequest;
   final Future<Response> Function(Uri path)? getReadme;
 
@@ -175,6 +178,7 @@ class _AssetPageState extends State<AssetPage> {
                             builder: (BuildContext context) {
                               return consumerJourney(
                                   assetDescriptor: widget.asset,
+                                  getFirestore: widget.getFirestore,
                                   context: context,
                                   runURL:
                                       "${Config.config!["ROOT_RUN_URL"]}/${widget.asset.assetID}/run",

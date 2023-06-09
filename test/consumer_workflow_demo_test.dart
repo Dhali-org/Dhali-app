@@ -81,6 +81,7 @@ Future<void> imageConsumptionDemo(WidgetTester tester) async {
 
 @GenerateMocks([MultipartRequest, XRPLWallet])
 void main() async {
+  late FakeFirebaseFirestore firebaseMockInstance;
   TestWidgetsFlutterBinding.ensureInitialized();
   Config.config = jsonDecode(utils.publicConfig);
 
@@ -88,6 +89,7 @@ void main() async {
 
   setUpAll(() {
     mockWallet = MockXRPLWallet();
+    firebaseMockInstance = FakeFirebaseFirestore();
 
     when(mockWallet.balance).thenReturn(ValueNotifier("1000000"));
     when(mockWallet.address).thenReturn("a-random-address");
@@ -133,6 +135,7 @@ void main() async {
         ),
         home: AssetPage(
           getReadme: (path) => Future.value(Response("# A markdown", 200)),
+          getFirestore: () => firebaseMockInstance,
           asset: MarketplaceListData(
               assetID: theAssetID,
               assetName: theAssetName,
@@ -194,6 +197,7 @@ void main() async {
         ),
         home: AssetPage(
           getReadme: (path) => Future.value(Response("# A markdown", 200)),
+          getFirestore: () => firebaseMockInstance,
           asset: MarketplaceListData(
               assetID: theAssetID,
               assetName: theAssetName,
@@ -252,6 +256,7 @@ void main() async {
         ),
         home: AssetPage(
           getReadme: (path) => Future.value(Response("# A markdown", 200)),
+          getFirestore: () => firebaseMockInstance,
           asset: MarketplaceListData(
               assetID: theAssetID,
               assetName: theAssetName,
