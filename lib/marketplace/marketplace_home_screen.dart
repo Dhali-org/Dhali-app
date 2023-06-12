@@ -19,6 +19,7 @@ import 'package:dhali/marketplace/marketplace_list_view.dart';
 import 'package:dhali/marketplace/model/marketplace_list_data.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:logger/logger.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:dhali_wallet/dhali_wallet.dart';
 import 'package:dhali_wallet/wallet_types.dart';
@@ -731,19 +732,22 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                                                               final assetDeploymentCost = Config
                                                                           .config![
                                                                       "DHALI_DEPLOYMENT_COST_PER_CHUNK_DROPS"] *
-                                                                  asset.size /
-                                                                  Config.config![
-                                                                      "MAX_NUMBER_OF_BYTES_PER_DEPLOY_CHUNK"];
+                                                                  ((asset.size /
+                                                                              Config.config!["MAX_NUMBER_OF_BYTES_PER_DEPLOY_CHUNK"])
+                                                                          .floor() +
+                                                                      1);
                                                               final readmeDeploymentCost = Config
                                                                           .config![
                                                                       "DHALI_DEPLOYMENT_COST_PER_CHUNK_DROPS"] *
-                                                                  readme.size /
-                                                                  Config.config![
-                                                                      "MAX_NUMBER_OF_BYTES_PER_DEPLOY_CHUNK"];
+                                                                  ((readme.size /
+                                                                              Config.config!["MAX_NUMBER_OF_BYTES_PER_DEPLOY_CHUNK"])
+                                                                          .floor() +
+                                                                      1);
                                                               final dhaliEarnings =
                                                                   Config.config![
                                                                       "DHALI_EARNINGS_PERCENTAGE_PER_INFERENCE"];
-                                                              var deploymentCost =
+                                                              double
+                                                                  deploymentCost =
                                                                   assetDeploymentCost +
                                                                       readmeDeploymentCost;
                                                               return Dialog(
@@ -788,14 +792,15 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                                                                               double to_claim = 0;
                                                                               if (channelDescriptors.isEmpty) {
                                                                                 channelDescriptors = [
-                                                                                  await wallet.openPaymentChannel(dest, deploymentCost)
+                                                                                  await wallet.openPaymentChannel(dest, deploymentCost.ceil().toString())
                                                                                 ];
                                                                               }
                                                                               var doc_id = Uuid().v5(Uuid.NAMESPACE_URL, channelDescriptors[0].channelId);
                                                                               var to_claim_doc = await widget.getFirestore()!.collection("public_claim_info").doc(doc_id).get();
                                                                               to_claim = to_claim_doc.exists ? to_claim_doc.data()!["to_claim"] as double : 0;
-                                                                              String total = (to_claim + double.parse(deploymentCost)).toString();
-                                                                              return wallet.preparePayment(destinationAddress: dest, authAmount: total, channelDescriptor: channelDescriptors[0]);
+                                                                              String total = (to_claim + double.parse(deploymentCost.ceil().toString())).toString();
+                                                                              var payment = wallet.preparePayment(destinationAddress: dest, authAmount: total, channelDescriptor: channelDescriptors[0]);
+                                                                              return payment;
                                                                             });
 
                                                                             void
