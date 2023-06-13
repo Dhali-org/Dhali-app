@@ -852,7 +852,7 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                                                                                         },
                                                                                       );
                                                                                     }
-                                                                                    return const CircularProgressIndicator();
+                                                                                    return Container();
                                                                                   },
                                                                                   future: payment,
                                                                                 ));

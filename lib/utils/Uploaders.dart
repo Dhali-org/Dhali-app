@@ -129,8 +129,13 @@ class RunUploader extends BaseUploader {
 
         if (finalResponse.statusCode != 200 &&
             finalResponse.statusCode != 308) {
-          String reason =
-              json.decode(await finalResponse.stream.bytesToString())["detail"];
+          String reason;
+          try {
+            reason = json
+                .decode(await finalResponse.stream.bytesToString())["detail"];
+          } catch (e) {
+            reason = "Could not parse reason";
+          }
           return StreamedResponse(Stream.empty(), finalResponse.statusCode,
               reasonPhrase: reason);
         }
