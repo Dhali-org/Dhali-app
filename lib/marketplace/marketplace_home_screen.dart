@@ -799,6 +799,10 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                                                                               var to_claim_doc = await widget.getFirestore()!.collection("public_claim_info").doc(doc_id).get();
                                                                               to_claim = to_claim_doc.exists ? to_claim_doc.data()!["to_claim"] as double : 0;
                                                                               String total = (to_claim + double.parse(deploymentCost.ceil().toString())).toString();
+                                                                              double requiredInChannel = double.parse(total) - channelDescriptors[0].amount + 1;
+                                                                              if (requiredInChannel > 0) {
+                                                                                await wallet.fundPaymentChannel(channelDescriptors[0], requiredInChannel.toString());
+                                                                              }
                                                                               var payment = wallet.preparePayment(destinationAddress: dest, authAmount: total, channelDescriptor: channelDescriptors[0]);
                                                                               return payment;
                                                                             });

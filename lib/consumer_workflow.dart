@@ -110,7 +110,6 @@ Dialog run(
       var channelDescriptors =
           await getWallet()!.getOpenPaymentChannels(destination_address: dest);
 
-      double to_claim = 0;
       if (channelDescriptors.isEmpty) {
         channelDescriptors = [
           await getWallet()!.openPaymentChannel(dest, cost.toString())
@@ -122,10 +121,17 @@ Dialog run(
           .collection("public_claim_info")
           .doc(doc_id)
           .get();
+      double to_claim = 0;
       to_claim =
           to_claim_doc.exists ? to_claim_doc.data()!["to_claim"] as double : 0;
       String total =
           (to_claim + double.parse(cost.toString())).ceil().toString();
+      double requiredInChannel =
+          double.parse(total) - channelDescriptors[0].amount + 1;
+      if (requiredInChannel > 0) {
+        await getWallet()!.fundPaymentChannel(
+            channelDescriptors[0], requiredInChannel.toString());
+      }
       return getWallet()!.preparePayment(
           destinationAddress: dest,
           authAmount: total,
