@@ -19,6 +19,7 @@ import 'package:dhali/marketplace/marketplace_list_view.dart';
 import 'package:dhali/marketplace/model/marketplace_list_data.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:logger/logger.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:dhali_wallet/dhali_wallet.dart';
 import 'package:dhali_wallet/wallet_types.dart';
@@ -28,6 +29,7 @@ import 'package:dhali/marketplace/marketplace_app_theme.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dhali/config.dart' show Config;
 import 'package:http/http.dart' as http;
+import 'package:uuid/uuid.dart';
 
 class MarketplaceHomeScreen extends StatefulWidget {
   const MarketplaceHomeScreen(
@@ -387,6 +389,7 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
   void displayAsset(MarketplaceListData asset) {
     Navigator.pushNamed(context, '/assets/${asset.assetID}',
         arguments: AssetPage(
+          getFirestore: widget.getFirestore,
           asset: asset,
           getRequest: widget.getRequest,
           getWallet: widget.getWallet,
@@ -729,19 +732,24 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                                                               final assetDeploymentCost = Config
                                                                           .config![
                                                                       "DHALI_DEPLOYMENT_COST_PER_CHUNK_DROPS"] *
-                                                                  asset.size /
-                                                                  Config.config![
-                                                                      "MAX_NUMBER_OF_BYTES_PER_DEPLOY_CHUNK"];
+                                                                  ((asset.size /
+                                                                              Config.config!["MAX_NUMBER_OF_BYTES_PER_DEPLOY_CHUNK"])
+                                                                          .floor() +
+                                                                      1);
                                                               final readmeDeploymentCost = Config
                                                                           .config![
                                                                       "DHALI_DEPLOYMENT_COST_PER_CHUNK_DROPS"] *
-                                                                  readme.size /
-                                                                  Config.config![
-                                                                      "MAX_NUMBER_OF_BYTES_PER_DEPLOY_CHUNK"];
+                                                                  ((readme.size /
+                                                                              Config.config!["MAX_NUMBER_OF_BYTES_PER_DEPLOY_CHUNK"])
+                                                                          .floor() +
+                                                                      1);
                                                               final dhaliEarnings =
                                                                   Config.config![
                                                                       "DHALI_EARNINGS_PERCENTAGE_PER_INFERENCE"];
-
+                                                              double
+                                                                  deploymentCost =
+                                                                  assetDeploymentCost +
+                                                                      readmeDeploymentCost;
                                                               return Dialog(
                                                                   backgroundColor:
                                                                       Colors
@@ -750,8 +758,7 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                                                                       DeploymentCostWidget(
                                                                     file: asset,
                                                                     deploymentCost:
-                                                                        assetDeploymentCost +
-                                                                            readmeDeploymentCost,
+                                                                        deploymentCost,
                                                                     assetEarnings:
                                                                         assetEarnings,
                                                                     dhaliEarnings:
@@ -780,14 +787,25 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                                                                             String
                                                                                 dest =
                                                                                 Config.config!["DHALI_PUBLIC_ADDRESS"]; // TODO : This should be Dhali's address
-                                                                            var openChannelsFut =
-                                                                                wallet.getOpenPaymentChannels(destination_address: dest);
-                                                                            String
-                                                                                amount =
-                                                                                "10000000"; // TODO : Make sure that these are appropriate 10 XRP
-                                                                            String
-                                                                                authAmount =
-                                                                                "9000000"; // TODO : Make sure that these are appropriate 3 XRP
+                                                                            var payment =
+                                                                                wallet.getOpenPaymentChannels(destination_address: dest).then((channelDescriptors) async {
+                                                                              double to_claim = 0;
+                                                                              if (channelDescriptors.isEmpty) {
+                                                                                channelDescriptors = [
+                                                                                  await wallet.openPaymentChannel(dest, deploymentCost.ceil().toString())
+                                                                                ];
+                                                                              }
+                                                                              var doc_id = Uuid().v5(Uuid.NAMESPACE_URL, channelDescriptors[0].channelId);
+                                                                              var to_claim_doc = await widget.getFirestore()!.collection("public_claim_info").doc(doc_id).get();
+                                                                              to_claim = to_claim_doc.exists ? to_claim_doc.data()!["to_claim"] as double : 0;
+                                                                              String total = (to_claim + double.parse(deploymentCost.ceil().toString())).toString();
+                                                                              double requiredInChannel = double.parse(total) - channelDescriptors[0].amount + 1;
+                                                                              if (requiredInChannel > 0) {
+                                                                                await wallet.fundPaymentChannel(channelDescriptors[0], requiredInChannel.toString());
+                                                                              }
+                                                                              var payment = wallet.preparePayment(destinationAddress: dest, authAmount: total, channelDescriptor: channelDescriptors[0]);
+                                                                              return payment;
+                                                                            });
 
                                                                             void
                                                                                 onNFTOfferPoll(String nfTokenId) {
@@ -807,94 +825,40 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                                                                               });
                                                                             }
 
-                                                                            var nfTokenIdStream =
-                                                                                widget.getFirestore()!.collection(Config.config!["MINTED_NFTS_COLLECTION_NAME"]).doc(asset.modelName).snapshots();
-
                                                                             return Dialog(
                                                                                 backgroundColor: Colors.transparent,
-                                                                                child: FutureBuilder<List<PaymentChannelDescriptor>>(
+                                                                                child: FutureBuilder<Map<String, String>>(
                                                                                   builder: (context, snapshot) {
                                                                                     final exceptionString = "The NFTUploadingWidget must have access to ${Config.config!["DHALI_ID"]}";
                                                                                     if (snapshot.hasData) {
-                                                                                      dynamic channel = null;
-
-                                                                                      snapshot.data!.forEach((returnedChannel) {
-                                                                                        if (returnedChannel.amount >= int.parse(authAmount)) {
-                                                                                          channel = returnedChannel;
-                                                                                        }
-                                                                                      });
                                                                                       var entryPointUrlRoot = const String.fromEnvironment('ENTRY_POINT_URL_ROOT', defaultValue: '');
                                                                                       if (entryPointUrlRoot == '') {
                                                                                         entryPointUrlRoot = Config.config!["ROOT_DEPLOY_URL"];
                                                                                       }
-                                                                                      if (channel != null) {
-                                                                                        print(Config.config);
-                                                                                        Map<String, String> payment = {
-                                                                                          Config.config!["PAYMENT_CLAIM_KEYS"]["ACCOUNT"]: wallet.address,
-                                                                                          Config.config!["PAYMENT_CLAIM_KEYS"]["DESTINATION_ACCOUNT"]: dest,
-                                                                                          Config.config!["PAYMENT_CLAIM_KEYS"]["AUTHORIZED_AMOUNT"]: authAmount,
-                                                                                          Config.config!["PAYMENT_CLAIM_KEYS"]["SIGNATURE"]: wallet.sendDrops(authAmount, channel.channelId),
-                                                                                          Config.config!["PAYMENT_CLAIM_KEYS"]["CHANNEL_ID"]: channel.channelId
-                                                                                        };
-                                                                                        return DataTransmissionWidget(
-                                                                                          getUploader: ({required payment, required getRequest, required dynamic Function(double) progressStatus, required int maxChunkSize, required AssetModel model}) {
-                                                                                            return DeployUploader(payment: payment, getRequest: getRequest, progressStatus: progressStatus, model: model, maxChunkSize: Config.config!["MAX_NUMBER_OF_BYTES_PER_DEPLOY_CHUNK"], getWallet: widget.getWallet, assetEarningRate: assetEarnings);
-                                                                                          },
-                                                                                          payment: payment,
-                                                                                          getRequest: widget.getRequest,
-                                                                                          data: [
-                                                                                            DataEndpointPair(data: asset, endPoint: "$entryPointUrlRoot/${Config.config!["POST_DEPLOY_ASSET_ROUTE"]}/"),
-                                                                                            DataEndpointPair(data: readme, endPoint: "$entryPointUrlRoot/${Config.config!["POST_DEPLOY_README_ROUTE"]}/"),
-                                                                                          ],
-                                                                                          onNextClicked: (data) {},
-                                                                                          getOnSuccessWidget: (BuildContext context, BaseResponse? response) {
-                                                                                            if (response == null || !response.headers.containsKey(Config.config!["DHALI_ID"].toString().toLowerCase())) {
-                                                                                              throw Exception(exceptionString);
-                                                                                            }
-
-                                                                                            return NFTUploadingWidget(context, widget.getFirestore, onNFTOfferPoll, () => response.headers[Config.config!["DHALI_ID"].toString().toLowerCase()]);
-                                                                                          },
-                                                                                        );
-                                                                                      }
-                                                                                      var newChannelsFut = wallet.openPaymentChannel(dest, amount);
-                                                                                      return FutureBuilder<PaymentChannelDescriptor>(
-                                                                                        builder: (context, snapshot) {
-                                                                                          if (snapshot.hasData) {
-                                                                                            Map<String, String> payment = {
-                                                                                              Config.config!["PAYMENT_CLAIM_KEYS"]["ACCOUNT"]: wallet.address,
-                                                                                              Config.config!["PAYMENT_CLAIM_KEYS"]["DESTINATION_ACCOUNT"]: dest,
-                                                                                              Config.config!["PAYMENT_CLAIM_KEYS"]["AUTHORIZED_AMOUNT"]: authAmount,
-                                                                                              Config.config!["PAYMENT_CLAIM_KEYS"]["SIGNATURE"]: wallet.sendDrops(authAmount, snapshot.data!.channelId),
-                                                                                              Config.config!["PAYMENT_CLAIM_KEYS"]["CHANNEL_ID"]: snapshot.data!.channelId
-                                                                                            };
-
-                                                                                            return DataTransmissionWidget(
-                                                                                                getUploader: ({required payment, required getRequest, required dynamic Function(double) progressStatus, required int maxChunkSize, required AssetModel model}) {
-                                                                                                  return DeployUploader(payment: payment, getRequest: getRequest, progressStatus: progressStatus, model: model, maxChunkSize: Config.config!["MAX_NUMBER_OF_BYTES_PER_DEPLOY_CHUNK"], getWallet: widget.getWallet, assetEarningRate: assetEarnings);
-                                                                                                },
-                                                                                                payment: payment,
-                                                                                                getRequest: widget.getRequest,
-                                                                                                data: [
-                                                                                                  DataEndpointPair(data: asset, endPoint: "$entryPointUrlRoot/${Config.config!["POST_DEPLOY_ASSET_ROUTE"]}/"),
-                                                                                                  DataEndpointPair(data: readme, endPoint: "$entryPointUrlRoot/${Config.config!["POST_DEPLOY_README_ROUTE"]}/"),
-                                                                                                ],
-                                                                                                onNextClicked: (data) {},
-                                                                                                getOnSuccessWidget: (BuildContext context, BaseResponse? response) {
-                                                                                                  if (response == null || !response.headers.containsKey(Config.config!["DHALI_ID"].toString().toLowerCase())) {
-                                                                                                    throw Exception(exceptionString);
-                                                                                                  }
-
-                                                                                                  return NFTUploadingWidget(context, widget.getFirestore, onNFTOfferPoll, () => response.headers[Config.config!["DHALI_ID"].toString().toLowerCase()]);
-                                                                                                });
-                                                                                          }
-                                                                                          return Container();
+                                                                                      Map<String, String> payment = snapshot.data!;
+                                                                                      return DataTransmissionWidget(
+                                                                                        getUploader: ({required payment, required getRequest, required dynamic Function(double) progressStatus, required int maxChunkSize, required AssetModel model}) {
+                                                                                          return DeployUploader(payment: payment, getRequest: getRequest, progressStatus: progressStatus, model: model, maxChunkSize: Config.config!["MAX_NUMBER_OF_BYTES_PER_DEPLOY_CHUNK"], getWallet: widget.getWallet, assetEarningRate: assetEarnings);
                                                                                         },
-                                                                                        future: newChannelsFut,
+                                                                                        payment: payment,
+                                                                                        getRequest: widget.getRequest,
+                                                                                        data: [
+                                                                                          DataEndpointPair(data: asset, endPoint: "$entryPointUrlRoot/${Config.config!["POST_DEPLOY_ASSET_ROUTE"]}/"),
+                                                                                          DataEndpointPair(data: readme, endPoint: "$entryPointUrlRoot/${Config.config!["POST_DEPLOY_README_ROUTE"]}/"),
+                                                                                        ],
+                                                                                        onNextClicked: (data) {},
+                                                                                        getOnSuccessWidget: (BuildContext context, BaseResponse? response) {
+                                                                                          if (response == null || !response.headers.containsKey(Config.config!["DHALI_ID"].toString().toLowerCase())) {
+                                                                                            throw Exception(exceptionString);
+                                                                                          }
+
+                                                                                          return NFTUploadingWidget(context, widget.getFirestore, onNFTOfferPoll, () => response.headers[Config.config!["DHALI_ID"].toString().toLowerCase()]);
+                                                                                        },
                                                                                       );
                                                                                     }
                                                                                     return Container();
                                                                                   },
-                                                                                  future: openChannelsFut,
+                                                                                  future: payment,
                                                                                 ));
                                                                           });
                                                                     }),

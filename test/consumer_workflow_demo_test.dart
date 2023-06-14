@@ -19,6 +19,7 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
+import 'package:uuid/uuid.dart';
 
 import 'image_deployment_demo_test.mocks.dart';
 
@@ -81,6 +82,7 @@ Future<void> imageConsumptionDemo(WidgetTester tester) async {
 
 @GenerateMocks([MultipartRequest, XRPLWallet])
 void main() async {
+  late FakeFirebaseFirestore firebaseMockInstance;
   TestWidgetsFlutterBinding.ensureInitialized();
   Config.config = jsonDecode(utils.publicConfig);
 
@@ -88,6 +90,7 @@ void main() async {
 
   setUpAll(() {
     mockWallet = MockXRPLWallet();
+    firebaseMockInstance = FakeFirebaseFirestore();
 
     when(mockWallet.balance).thenReturn(ValueNotifier("1000000"));
     when(mockWallet.address).thenReturn("a-random-address");
@@ -103,6 +106,13 @@ void main() async {
       return Future.value(
           [PaymentChannelDescriptor("CHANNEL_ID_STRING", 10000000)]);
     });
+    when(mockWallet.preparePayment(
+            destinationAddress: "rstbSTpPcyxMsiXwkBxS9tFTrg2JsDNxWk",
+            authAmount: anyNamed("authAmount"),
+            channelDescriptor: anyNamed("channelDescriptor")))
+        .thenAnswer((_) {
+      return Future.value({"key": "value"});
+    });
   });
 
   group('Asset consumption journeys', () {
@@ -110,6 +120,16 @@ void main() async {
       const w = 1920;
       const h = 1080;
       int responseCode = 200;
+
+      await firebaseMockInstance
+          .collection("public_minted_nfts")
+          .doc(theAssetID)
+          .set({"cost_per_ms": 1000});
+      var doc_id = Uuid().v5(Uuid.NAMESPACE_URL, "CHANNEL_ID_STRING");
+      await firebaseMockInstance
+          .collection("public_claim_info")
+          .doc(doc_id)
+          .set({"to_claim": 0});
 
       MockMultipartRequest getMockMultipartRequest(String _, String path) {
         var mockRunRequester = MockMultipartRequest();
@@ -133,6 +153,7 @@ void main() async {
         ),
         home: AssetPage(
           getReadme: (path) => Future.value(Response("# A markdown", 200)),
+          getFirestore: () => firebaseMockInstance,
           asset: MarketplaceListData(
               assetID: theAssetID,
               assetName: theAssetName,
@@ -172,10 +193,24 @@ void main() async {
       const h = 1080;
       int responseCode = 723948239;
 
+      await firebaseMockInstance
+          .collection("public_minted_nfts")
+          .doc(theAssetID)
+          .set({"cost_per_ms": 1000});
+      var doc_id = Uuid().v5(Uuid.NAMESPACE_URL, "CHANNEL_ID_STRING");
+      await firebaseMockInstance
+          .collection("public_claim_info")
+          .doc(doc_id)
+          .set({"to_claim": 0});
+
+      String reasonPhrase = "you are useless";
+
       MockMultipartRequest getMockMultipartRequest(String _, String path) {
         var mockRunRequester = MockMultipartRequest();
-        when(mockRunRequester.send()).thenAnswer(
-            (_) async => StreamedResponse(Stream.empty(), responseCode));
+        when(mockRunRequester.send()).thenAnswer((_) async => StreamedResponse(
+              Stream.value(utf8.encode('{"detail": "$reasonPhrase"}')),
+              responseCode,
+            ));
         when(mockRunRequester.headers).thenAnswer((_) => {});
 
         return mockRunRequester;
@@ -194,6 +229,7 @@ void main() async {
         ),
         home: AssetPage(
           getReadme: (path) => Future.value(Response("# A markdown", 200)),
+          getFirestore: () => firebaseMockInstance,
           asset: MarketplaceListData(
               assetID: theAssetID,
               assetName: theAssetName,
@@ -221,8 +257,9 @@ void main() async {
           findsOneWidget);
       await tester.pump();
       expect(
-          find.text("Upload failed: status code "
-              "${responseCode.toString()}"),
+          find.text("Upload failed"
+              "\nStatus code: ${responseCode.toString()}"
+              "\nReason: $reasonPhrase"),
           findsOneWidget);
     });
 
@@ -252,6 +289,7 @@ void main() async {
         ),
         home: AssetPage(
           getReadme: (path) => Future.value(Response("# A markdown", 200)),
+          getFirestore: () => firebaseMockInstance,
           asset: MarketplaceListData(
               assetID: theAssetID,
               assetName: theAssetName,

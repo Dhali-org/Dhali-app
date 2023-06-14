@@ -129,7 +129,15 @@ class RunUploader extends BaseUploader {
 
         if (finalResponse.statusCode != 200 &&
             finalResponse.statusCode != 308) {
-          return StreamedResponse(Stream.empty(), finalResponse.statusCode);
+          String reason;
+          try {
+            reason = json
+                .decode(await finalResponse.stream.bytesToString())["detail"];
+          } catch (e) {
+            reason = "Could not parse reason";
+          }
+          return StreamedResponse(Stream.empty(), finalResponse.statusCode,
+              reasonPhrase: reason);
         }
         // TODO : Deal with response appropriately
 
@@ -269,9 +277,9 @@ class DeployUploader extends BaseUploader {
           if (retries >= maxNumberOfRetries) {
             // Something went wrong!
             logger.d(finalResponse!.statusCode);
-            return StreamedResponse(
-                const Stream.empty(), finalResponse.statusCode,
-                reasonPhrase: finalResponse.reasonPhrase);
+            String reason = await finalResponse.stream.bytesToString();
+            return StreamedResponse(Stream.empty(), finalResponse.statusCode,
+                reasonPhrase: reason);
           }
         }
       }
