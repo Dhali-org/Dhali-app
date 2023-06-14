@@ -1137,8 +1137,9 @@ class _DataTransmissionWidgetState extends State<DataTransmissionWidget> {
                           : Text(
                               key: const Key("upload_failed_warning"),
                               textAlign: TextAlign.center,
-                              "Upload failed: status code "
-                              "${responseCode.toString()}",
+                              "Upload failed"
+                              "\nStatus code: ${responseCode.toString()}"
+                              "\nReason: ${response!.reasonPhrase}",
                               style: const TextStyle(
                                   fontSize: 30, color: AppTheme.nearlyBlack),
                             ),

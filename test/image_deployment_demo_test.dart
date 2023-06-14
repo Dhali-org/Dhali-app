@@ -233,6 +233,13 @@ void main() async {
         "type": "response"
       });
     });
+    when(mockWallet.preparePayment(
+            destinationAddress: "rstbSTpPcyxMsiXwkBxS9tFTrg2JsDNxWk",
+            authAmount: "10000",
+            channelDescriptor: anyNamed("channelDescriptor")))
+        .thenAnswer((_) {
+      return Future.value({"key": "value"});
+    });
   });
 
   group('Image deployment journeys', () {

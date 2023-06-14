@@ -137,6 +137,7 @@ class _MyAppState extends State<MyApp> {
                       pricePerRun: snapshot.data![Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]["EXPECTED_INFERENCE_COST_PER_MS"]]);
                   return AssetPage(
                     asset: element,
+                    getFirestore: () => FirebaseFirestore.instance,
                     getRequest: widget.getRequest,
                     getWallet: getWallet,
                   );
@@ -171,7 +172,7 @@ class _MyAppState extends State<MyApp> {
     return _wallet;
   }
 
-  void setWallet(DhaliWallet wallet) {
+  void setWallet(DhaliWallet? wallet) {
     setState(() {
       _wallet = wallet;
     });
