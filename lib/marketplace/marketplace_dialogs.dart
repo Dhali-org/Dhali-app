@@ -409,21 +409,6 @@ class _DropzoneDeployWidgetState extends State<DropzoneDeployWidget> {
                               ? AppTheme.nearlyWhite
                               : AppTheme.nearlyBlack),
                     ),
-                    const SizedBox(
-                      width: 16,
-                    ),
-                    IconButton(
-                      onPressed: () async {
-                        showNotImplentedWidget(
-                            context: context,
-                            feature: "Helper: Drag or select your files");
-                        // TODO : Add link to documentation for docker prep
-                      },
-                      icon: const Icon(
-                        Icons.help_outline_outlined,
-                        size: 32,
-                      ),
-                    )
                   ],
                 ),
                 const SizedBox(

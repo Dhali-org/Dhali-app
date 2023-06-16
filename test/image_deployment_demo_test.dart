@@ -39,7 +39,7 @@ Future<void> selectAssets(
   expect(find.text("No .md asset description selected"), findsOneWidget);
   expect(find.text("What your asset will be called"), findsOneWidget);
   expect(find.byIcon(Icons.cloud_upload_rounded), findsOneWidget);
-  expect(find.byIcon(Icons.help_outline_outlined), findsNWidgets(3));
+  expect(find.byIcon(Icons.help_outline_outlined), findsNWidgets(2));
   expect(find.byType(DropzoneView), findsOneWidget);
 
   await tester.tap(find.byType(DropzoneView));
