@@ -455,7 +455,7 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                         MarketplaceAppTheme.buildLightTheme().primaryColor,
                     decoration: const InputDecoration(
                       border: InputBorder.none,
-                      hintText: 'Model name, model type, solution space, etc',
+                      hintText: 'Asset name, asset type, solution space, etc',
                     ),
                   ),
                 ),
@@ -483,7 +483,7 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                 ),
                 onTap: () {
                   showNotImplentedWidget(
-                      context: context, feature: "Helper: Search for models");
+                      context: context, feature: "Helper: Search for assets");
                   FocusScope.of(context).requestFocus(FocusNode());
                 },
                 child: Padding(
@@ -540,7 +540,7 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                     ),
                     onTap: () {
                       showNotImplentedWidget(
-                          context: context, feature: "Helper: Filter models");
+                          context: context, feature: "Helper: Filter assets");
                       return;
                       FocusScope.of(context).requestFocus(FocusNode());
                       Navigator.push<dynamic>(

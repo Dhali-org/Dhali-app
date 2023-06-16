@@ -77,14 +77,53 @@ class _AssetPageState extends State<AssetPage> {
                     (BuildContext context, AsyncSnapshot<Response> snapshot) {
                   if (snapshot.hasData) {
                     return Markdown(
-                        onTapLink: (text, url, title) {
-                          if (url != null) {
-                            launchUrl(Uri.parse(url));
-                          }
-                        },
-                        selectable: true,
-                        key: const Key("asset_page_readme"),
-                        data: snapshot.data!.body);
+                      onTapLink: (text, url, title) {
+                        if (url != null) {
+                          launchUrl(Uri.parse(url));
+                        }
+                      },
+                      selectable: true,
+                      key: const Key("asset_page_readme"),
+                      styleSheet: MarkdownStyleSheet(
+                        p: Theme.of(context)
+                            .textTheme
+                            .bodyText2!
+                            .copyWith(fontSize: 18),
+                        h1: Theme.of(context)
+                            .textTheme
+                            .headline1!
+                            .copyWith(fontSize: 30),
+                        h2: Theme.of(context)
+                            .textTheme
+                            .headline2!
+                            .copyWith(fontSize: 26),
+                        h3: Theme.of(context)
+                            .textTheme
+                            .headline3!
+                            .copyWith(fontSize: 22),
+                        h4: Theme.of(context)
+                            .textTheme
+                            .headline4!
+                            .copyWith(fontSize: 18),
+                        h5: Theme.of(context)
+                            .textTheme
+                            .headline5!
+                            .copyWith(fontSize: 16),
+                        h6: Theme.of(context)
+                            .textTheme
+                            .headline6!
+                            .copyWith(fontSize: 14),
+                        code: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                              fontSize: 18,
+                              backgroundColor: Colors.grey[200],
+                            ),
+                        codeblockDecoration: BoxDecoration(
+                          color: Colors.grey[200],
+                          borderRadius: BorderRadius.circular(2.0),
+                        ),
+                      ),
+                      data: snapshot.data!.body,
+                    );
                   } else {
                     return const Center(
                         child: CircularProgressIndicator(
