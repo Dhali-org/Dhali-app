@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:dhali/utils/show_popup_text_with_link.dart';
 import 'package:http/http.dart';
 import 'package:logger/logger.dart';
 import "package:universal_html/html.dart" as html;
@@ -324,10 +325,12 @@ class _DropzoneDeployWidgetState extends State<DropzoneDeployWidget> {
                     ),
                     IconButton(
                       onPressed: () async {
-                        showNotImplentedWidget(
-                            context: context,
-                            feature: "Helper: Select asset file");
-                        // TODO : Add link to documentation for docker prep
+                        showPopupTextWithLink(
+                            text:
+                                "Please provide a docker image file, in '.tar' format.  For instructions on how to create one, please refer to ",
+                            urlText: "the documentation.",
+                            url: "https://dhali.io/docs/#/?id=ai-creators",
+                            context: context);
                       },
                       icon: const Icon(
                         Icons.help_outline_outlined,
@@ -365,10 +368,12 @@ class _DropzoneDeployWidgetState extends State<DropzoneDeployWidget> {
                     ),
                     IconButton(
                       onPressed: () async {
-                        showNotImplentedWidget(
-                            context: context,
-                            feature: "Helper: Select markdown  file");
-                        // TODO : Add link to documentation for docker prep
+                        showPopupTextWithLink(
+                            text:
+                                "Please provide a 'README.md' file documenting your asset.  For more information on asset creation, please refer to ",
+                            urlText: "the documentation.",
+                            url: "https://dhali.io/docs/#/?id=ai-creators",
+                            context: context);
                       },
                       icon: const Icon(
                         Icons.help_outline_outlined,
