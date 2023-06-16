@@ -191,6 +191,7 @@ class _DropzoneRunWidgetState extends State<DropzoneRunWidget> {
           )
         ],
       ),
+      context: context,
     );
   }
 
@@ -499,9 +500,10 @@ class _DropzoneDeployWidgetState extends State<DropzoneDeployWidget> {
                 )
               ],
             ),
-          )
+          ),
         ],
       ),
+      context: context,
     );
   }
 
@@ -662,6 +664,7 @@ class _ImageScanningWidgetState extends State<ImageScanningWidget> {
           ),
         ],
       ),
+      context: context,
     );
   }
 
@@ -722,71 +725,74 @@ class _ImageCostWidgetState extends State<ImageCostWidget> {
   @override
   Widget build(BuildContext context) {
     return getDialogTemplate(
-        child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        const Text(
-          textAlign: TextAlign.center,
-          "Set your earning rate per inference.",
-          style: TextStyle(fontSize: 30, color: AppTheme.nearlyBlack),
-        ),
-        const Text(
-          textAlign: TextAlign.center,
-          "\nKeep this small to encourage usage.\n",
-          style: TextStyle(fontSize: 20, color: AppTheme.nearlyBlack),
-        ),
-        const Text(
-          textAlign: TextAlign.center,
-          "Example: If running your asset costs Dhali \$1 in compute costs per inference, by setting 20 below you will earn \$0.20 per inference.",
-          style: TextStyle(fontSize: 20, color: AppTheme.nearlyBlack),
-        ),
-        const SizedBox(
-          height: 16,
-        ),
-        TextField(
-          key: const Key("percentage_earnings_input"),
-          onChanged: (value) => setState(() {}),
-          controller: controller,
-          maxLength: 5,
-          // ignore: prefer_const_constructors
-          decoration: InputDecoration(
-            labelStyle: const TextStyle(fontSize: 20),
-            helperStyle: const TextStyle(
-                color: Colors.black, fontWeight: FontWeight.bold),
-            helperText: "Percentage you earn above Dhali compute costs",
-            hintText: "Enter a percentage (e.g., '20')",
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Text(
+            textAlign: TextAlign.center,
+            "Set your earning rate per inference.",
+            style: TextStyle(fontSize: 30, color: AppTheme.nearlyBlack),
           ),
-          keyboardType: TextInputType.number,
-          inputFormatters: <TextInputFormatter>[
-            FilteringTextInputFormatter.digitsOnly
-          ], // Only numbers can be entered
-        ),
-        const SizedBox(
-          height: 16,
-        ),
-        ElevatedButton.icon(
-          style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
-              backgroundColor: AppTheme.dhali_blue,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(4))),
-          onPressed: controller.text.isNotEmpty
-              ? () => widget.onNextClicked(
-                  widget.file,
-                  double.tryParse(
-                      controller.text)!) // != null because input "digitsOnly"
-              : null,
-          icon: const Icon(
-            Icons.navigate_next_outlined,
-            size: 32,
+          const Text(
+            textAlign: TextAlign.center,
+            "\nKeep this small to encourage usage.\n",
+            style: TextStyle(fontSize: 20, color: AppTheme.nearlyBlack),
           ),
-          label: const Text(
-            "Next",
-            style: TextStyle(fontSize: 30),
+          const Text(
+            textAlign: TextAlign.center,
+            "Example: If running your asset costs Dhali \$1 in compute costs per inference, by setting 20 below you will earn \$0.20 per inference.",
+            style: TextStyle(fontSize: 20, color: AppTheme.nearlyBlack),
           ),
-        ),
-      ],
-    ));
+          const SizedBox(
+            height: 16,
+          ),
+          TextField(
+            key: const Key("percentage_earnings_input"),
+            onChanged: (value) => setState(() {}),
+            controller: controller,
+            maxLength: 5,
+            // ignore: prefer_const_constructors
+            decoration: InputDecoration(
+              labelStyle: const TextStyle(fontSize: 20),
+              helperStyle: const TextStyle(
+                  color: Colors.black, fontWeight: FontWeight.bold),
+              helperText: "Percentage you earn above Dhali compute costs",
+              hintText: "Enter a percentage (e.g., '20')",
+            ),
+            keyboardType: TextInputType.number,
+            inputFormatters: <TextInputFormatter>[
+              FilteringTextInputFormatter.digitsOnly
+            ], // Only numbers can be entered
+          ),
+          const SizedBox(
+            height: 16,
+          ),
+          ElevatedButton.icon(
+            style: ElevatedButton.styleFrom(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+                backgroundColor: AppTheme.dhali_blue,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(4))),
+            onPressed: controller.text.isNotEmpty
+                ? () => widget.onNextClicked(
+                    widget.file,
+                    double.tryParse(
+                        controller.text)!) // != null because input "digitsOnly"
+                : null,
+            icon: const Icon(
+              Icons.navigate_next_outlined,
+              size: 32,
+            ),
+            label: const Text(
+              "Next",
+              style: TextStyle(fontSize: 30),
+            ),
+          ),
+        ],
+      ),
+      context: context,
+    );
   }
 }
 
@@ -1027,6 +1033,7 @@ class DeploymentCostWidget extends StatelessWidget {
           ),
         ],
       ),
+      context: context,
     );
   }
 }
@@ -1094,102 +1101,104 @@ class _DataTransmissionWidgetState extends State<DataTransmissionWidget> {
   @override
   Widget build(BuildContext context) {
     return getDialogTemplate(
-        child: deploying ||
-                !uploadWasSuccessful ||
-                widget.getOnSuccessWidget(context, response) == null
-            ? Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const SizedBox(
-                    height: 16,
-                  ),
-                  LinearProgressIndicator(
-                    value: progressBarPercentage,
-                    semanticsLabel: 'Linear progress indicator',
-                  ),
-                  const SizedBox(
-                    height: 16,
-                  ),
-                  deploying
-                      ? Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              key: const Key("deploying_in_progress_dialog"),
-                              textAlign: TextAlign.center,
-                              "Uploading '${currentFileUploading.toString()}: "
-                              "file $currentFileIndexUploading of ${widget.data.length}'."
-                              "\nPlease wait.",
-                              style: const TextStyle(
-                                  fontSize: 30, color: AppTheme.nearlyBlack),
-                            ),
-                            SizedBox(height: 20),
-                            CircularProgressIndicator(),
-                          ],
-                        )
-                      : responseCode == 200
-                          ? Text(
-                              key: Key("upload_success_info"),
-                              "Your upload was successful",
-                              style: TextStyle(
-                                  fontSize: 30, color: AppTheme.nearlyBlack),
-                            )
-                          : Text(
-                              key: const Key("upload_failed_warning"),
-                              textAlign: TextAlign.center,
-                              "Upload failed"
-                              "\nStatus code: ${responseCode.toString()}"
-                              "\nReason: ${response!.reasonPhrase}",
-                              style: const TextStyle(
-                                  fontSize: 30, color: AppTheme.nearlyBlack),
-                            ),
-                  const SizedBox(
-                    height: 16,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      ElevatedButton.icon(
-                          style: ElevatedButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 20, horizontal: 20),
-                              backgroundColor: AppTheme.dhali_blue,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(4))),
-                          onPressed: () {
-                            if (deploying) {
-                              uploadRequest.cancelUpload();
-                              setState(() {
-                                deploying = false;
-                                uploadWasSuccessful = false;
-                              });
-                            } else {
-                              Navigator.of(context).pop();
-                              Navigator.of(context).pop();
-                              Navigator.of(context).pop();
-                            }
-                          },
-                          icon: Icon(
-                            responseCode == 200
-                                ? Icons.done_outline_rounded
-                                : Icons.close_outlined,
-                            size: 32,
+      child: deploying ||
+              !uploadWasSuccessful ||
+              widget.getOnSuccessWidget(context, response) == null
+          ? Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const SizedBox(
+                  height: 16,
+                ),
+                LinearProgressIndicator(
+                  value: progressBarPercentage,
+                  semanticsLabel: 'Linear progress indicator',
+                ),
+                const SizedBox(
+                  height: 16,
+                ),
+                deploying
+                    ? Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            key: const Key("deploying_in_progress_dialog"),
+                            textAlign: TextAlign.center,
+                            "Uploading '${currentFileUploading.toString()}: "
+                            "file $currentFileIndexUploading of ${widget.data.length}'."
+                            "\nPlease wait.",
+                            style: const TextStyle(
+                                fontSize: 30, color: AppTheme.nearlyBlack),
                           ),
-                          label: Text(
-                            key: const Key("exit_deployment_dialogs"),
-                            deploying ? "Cancel" : "Exit",
-                            style: TextStyle(fontSize: 30),
-                          )),
-                      const SizedBox(
-                        width: 32,
-                      ),
-                    ],
-                  )
-                ],
-              )
-            : uploadWasSuccessful
-                ? widget.getOnSuccessWidget(context, response)!
-                : uploadFailed(context, responseCode!));
+                          SizedBox(height: 20),
+                          CircularProgressIndicator(),
+                        ],
+                      )
+                    : responseCode == 200
+                        ? Text(
+                            key: Key("upload_success_info"),
+                            "Your upload was successful",
+                            style: TextStyle(
+                                fontSize: 30, color: AppTheme.nearlyBlack),
+                          )
+                        : Text(
+                            key: const Key("upload_failed_warning"),
+                            textAlign: TextAlign.center,
+                            "Upload failed"
+                            "\nStatus code: ${responseCode.toString()}"
+                            "\nReason: ${response!.reasonPhrase}",
+                            style: const TextStyle(
+                                fontSize: 30, color: AppTheme.nearlyBlack),
+                          ),
+                const SizedBox(
+                  height: 16,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ElevatedButton.icon(
+                        style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 20, horizontal: 20),
+                            backgroundColor: AppTheme.dhali_blue,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(4))),
+                        onPressed: () {
+                          if (deploying) {
+                            uploadRequest.cancelUpload();
+                            setState(() {
+                              deploying = false;
+                              uploadWasSuccessful = false;
+                            });
+                          } else {
+                            Navigator.of(context).pop();
+                            Navigator.of(context).pop();
+                            Navigator.of(context).pop();
+                          }
+                        },
+                        icon: Icon(
+                          responseCode == 200
+                              ? Icons.done_outline_rounded
+                              : Icons.close_outlined,
+                          size: 32,
+                        ),
+                        label: Text(
+                          key: const Key("exit_deployment_dialogs"),
+                          deploying ? "Cancel" : "Exit",
+                          style: TextStyle(fontSize: 30),
+                        )),
+                    const SizedBox(
+                      width: 32,
+                    ),
+                  ],
+                )
+              ],
+            )
+          : uploadWasSuccessful
+              ? widget.getOnSuccessWidget(context, response)!
+              : uploadFailed(context, responseCode!),
+      context: context,
+    );
   }
 
   Future<BaseResponse?> uploader(
@@ -1457,25 +1466,46 @@ class InferenceCostWidget extends StatelessWidget {
           ),
         ],
       ),
+      context: context,
     );
   }
 }
 
-Widget getDialogTemplate({required Widget child}) {
-  return ClipRRect(
-      borderRadius: BorderRadius.circular(20),
-      child: Container(
+Widget getDialogTemplate(
+    {required Widget child, required BuildContext context}) {
+  return Stack(
+    children: [
+      ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: Container(
           padding: const EdgeInsets.all(15),
           color: AppTheme.nearlyWhite,
           child: DottedBorder(
-              dashPattern: const [10, 10],
-              radius: const Radius.circular(20),
-              strokeWidth: 6,
-              borderType: BorderType.RRect,
-              color: AppTheme.nearlyBlack,
-              padding: EdgeInsets.zero,
-              child: Center(
-                  child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 80),
-                      child: child)))));
+            dashPattern: const [10, 10],
+            radius: const Radius.circular(20),
+            strokeWidth: 6,
+            borderType: BorderType.RRect,
+            color: AppTheme.nearlyBlack,
+            padding: EdgeInsets.zero,
+            child: Center(
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 80),
+                child: child,
+              ),
+            ),
+          ),
+        ),
+      ),
+      Positioned(
+        right: 55,
+        top: 15,
+        child: IconButton(
+          icon: Icon(Icons.close, size: 60),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+      ),
+    ],
+  );
 }
