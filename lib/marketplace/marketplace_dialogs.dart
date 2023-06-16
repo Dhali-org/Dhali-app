@@ -424,7 +424,7 @@ class _DropzoneDeployWidgetState extends State<DropzoneDeployWidget> {
                   height: 16,
                 ),
                 TextField(
-                  key: const Key('model_name_input_field'),
+                  key: const Key('asset_name_input_field'),
                   onChanged: (value) => setState(() {
                     if (assetFile != null) {
                       assetFile!.modelName = textController.text;
@@ -437,9 +437,9 @@ class _DropzoneDeployWidgetState extends State<DropzoneDeployWidget> {
                     labelStyle: TextStyle(fontSize: 20),
                     helperStyle: TextStyle(
                         color: Colors.black, fontWeight: FontWeight.bold),
-                    helperText: "What your model will be called",
-                    labelText: "Model name",
-                    hintText: "Enter the name you'd like for your model "
+                    helperText: "What your asset will be called",
+                    labelText: "Asset name",
+                    hintText: "Enter the name you'd like for your asset "
                         "(a-z, 0-9, -, .)",
                   ),
                   keyboardType: TextInputType.text,
@@ -816,7 +816,7 @@ class DeploymentCostWidget extends StatelessWidget {
             height: 16,
           ),
           const Text(
-            "Here is a break down of the model's costs:",
+            "Here is a break down of the asset's costs:",
             style: TextStyle(fontSize: 25, color: AppTheme.nearlyBlack),
           ),
           const SizedBox(
@@ -880,7 +880,7 @@ class DeploymentCostWidget extends StatelessWidget {
             height: 16,
           ),
           const Text(
-            "Paid by the user of your model:",
+            "Paid by the user of your asset:",
             textAlign: TextAlign.left,
             style: TextStyle(
                 fontSize: 30,
@@ -925,7 +925,7 @@ class DeploymentCostWidget extends StatelessWidget {
                       child: const Text("Dhali's earnings")),
                   Container(
                       padding: const EdgeInsets.all(10),
-                      child: const Text("When model is used")),
+                      child: const Text("When asset is used")),
                   Container(
                       padding: const EdgeInsets.all(10),
                       child: Text("$dhaliEarnings%")),
@@ -938,7 +938,7 @@ class DeploymentCostWidget extends StatelessWidget {
                       child: const Text("Your earnings")),
                   Container(
                       padding: const EdgeInsets.all(10),
-                      child: const Text("When model is used")),
+                      child: const Text("When asset is used")),
                   Container(
                       padding: const EdgeInsets.all(10),
                       child: Text("$assetEarnings%")),
@@ -951,7 +951,7 @@ class DeploymentCostWidget extends StatelessWidget {
                       child: const Text("Total cost per inference")),
                   Container(
                       padding: const EdgeInsets.all(10),
-                      child: const Text("When model is used")),
+                      child: const Text("When asset is used")),
                   Container(
                       padding: const EdgeInsets.all(10),
                       child: Text("${100 + dhaliEarnings + assetEarnings}%")),
@@ -1400,7 +1400,7 @@ class InferenceCostWidget extends StatelessWidget {
             height: 16,
           ),
           Text(
-            "Running this model typically costs $inferenceCost drops",
+            "Running this asset typically costs $inferenceCost drops",
             style: TextStyle(fontSize: 25, color: AppTheme.nearlyBlack),
           ),
           const Text(

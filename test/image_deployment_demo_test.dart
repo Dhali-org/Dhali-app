@@ -23,8 +23,8 @@ import 'image_deployment_demo_test.mocks.dart';
 import 'package:dhali/config.dart' show Config;
 import 'utils.dart' as utils;
 
-const String theInputAssetName = "a_badl3y_n@med-model";
-const String theAssetName = "abadl3ynmed-model";
+const String theInputAssetName = "a_badl3y_n@med-asset";
+const String theAssetName = "abadl3ynmed-asset";
 const String theDhaliAssetID = "a-session-id";
 
 Future<void> selectAssets(
@@ -37,22 +37,22 @@ Future<void> selectAssets(
   expect(find.text("Drag or select your files"), findsOneWidget);
   expect(find.text("No .tar docker image asset selected"), findsOneWidget);
   expect(find.text("No .md asset description selected"), findsOneWidget);
-  expect(find.text("What your model will be called"), findsOneWidget);
+  expect(find.text("What your asset will be called"), findsOneWidget);
   expect(find.byIcon(Icons.cloud_upload_rounded), findsOneWidget);
   expect(find.byIcon(Icons.help_outline_outlined), findsNWidgets(3));
   expect(find.byType(DropzoneView), findsOneWidget);
 
   await tester.tap(find.byType(DropzoneView));
-  await tester.tap(find.text("Model name"));
+  await tester.tap(find.text("Asset name"));
   await tester.pumpAndSettle();
 
   expect(
-      find.text("Enter the name you'd like for your model "
+      find.text("Enter the name you'd like for your asset "
           "(a-z, 0-9, -, .)"),
       findsOneWidget);
 
   await tester.enterText(
-      find.byKey(const Key("model_name_input_field")), theInputAssetName);
+      find.byKey(const Key("asset_name_input_field")), theInputAssetName);
   await tester.pumpAndSettle(const Duration(seconds: 5));
 
   expect(find.text(theAssetName), findsOneWidget);
@@ -72,9 +72,9 @@ Future<void> displayCosts(
     MockMultipartRequest mockRequester,
     FakeFirebaseFirestore mockFirebaseFirestore) async {
   expect(
-      find.text("Here is a break down of the model's costs:"), findsOneWidget);
+      find.text("Here is a break down of the asset's costs:"), findsOneWidget);
   expect(find.text("Paid by you:"), findsOneWidget);
-  expect(find.text("Paid by the user of your model:"), findsOneWidget);
+  expect(find.text("Paid by the user of your asset:"), findsOneWidget);
 
   expect(find.text("What?"), findsNWidgets(2));
   expect(find.text("When?"), findsNWidgets(2));
@@ -200,7 +200,7 @@ void main() async {
     mockRequester = MockMultipartRequest();
     firebaseMockInstance = FakeFirebaseFirestore();
 
-    const String theAssetName = "abadl3ynmed-model";
+    const String theAssetName = "abadl3ynmed-asset";
     when(mockWallet.balance).thenReturn(ValueNotifier("1000000"));
     when(mockWallet.address).thenReturn("a-random-address");
     when(mockWallet.mnemonic).thenReturn("memorable words");

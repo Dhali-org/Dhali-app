@@ -139,7 +139,7 @@ class _FiltersScreenState extends State<FiltersScreen> {
           padding:
               const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 8),
           child: Text(
-            'Type of model',
+            'Type of asset',
             textAlign: TextAlign.left,
             style: TextStyle(
                 color: Colors.grey,
@@ -399,7 +399,8 @@ class _FiltersScreenState extends State<FiltersScreen> {
                                 ? Icons.check_box
                                 : Icons.check_box_outline_blank,
                             color: date.isSelected
-                                ? MarketplaceAppTheme.buildLightTheme().primaryColor
+                                ? MarketplaceAppTheme.buildLightTheme()
+                                    .primaryColor
                                 : Colors.grey.withOpacity(0.6),
                           ),
                           const SizedBox(
