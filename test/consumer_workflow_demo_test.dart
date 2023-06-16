@@ -73,7 +73,7 @@ Future<void> imageConsumptionDemo(WidgetTester tester) async {
   expect(find.text("Selected input file: test.tar"), findsOneWidget);
   await tester.tap(find.text("Next"));
   await tester.pumpAndSettle();
-  expect(find.text("Running this model typically costs $cost drops"),
+  expect(find.text("Running this asset typically costs $cost drops"),
       findsOneWidget);
   expect(find.text("Are you sure you want to continue?"), findsOneWidget);
   expect(find.text("Yes"), findsOneWidget);
