@@ -1,17 +1,35 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-  <script
-    type="text/javascript"
-    src="https://app.termly.io/embed.min.js"
-    data-auto-block="on"
-    data-website-uuid="1b1475d2-3c77-4545-b5fc-785d862fd817"
-  ></script>
+  <script type="text/javascript" src="https://app.termly.io/embed.min.js" data-auto-block="off"
+    data-website-uuid="1b1475d2-3c77-4545-b5fc-785d862fd817"></script>
   <!-- Google Tag Manager -->
+  <script>(function (w, d, s, l, i) {
+      w[l] = w[l] || []; w[l].push({
+        'gtm.start':
+          new Date().getTime(), event: 'gtm.js'
+      }); var f = d.getElementsByTagName(s)[0],
+        j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : ''; j.async = true; j.src =
+          'https://www.googletagmanager.com/gtm.js?id=' + i + dl; f.parentNode.insertBefore(j, f);
+    })(window, document, 'script', 'dataLayer', 'GTM-KMZJNJH');</script>
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z5J90FJ19J"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+    if (localStorage.getItem('consentMode') == null) {
+      gtag('consent', 'default', {
+        'ad_storage': 'denied',
+        'analytics_storage': 'denied',
+        'persinalization_storage': 'denied',
+        'functionality_storage': 'denied',
+        'security_storage': 'denied',
+      });
+    } else {
+      gtag('consent', 'default', JSON.parse(localStorage.getItem('consentMode')));
+    }
     gtag('js', new Date());
     gtag('config', 'G-6TPZFK7NQ6');
   </script>
@@ -42,7 +60,7 @@
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
   <!-- Favicon -->
-  <link rel="icon" type="image/png" href="assets/assets/images/dhali.png"/>
+  <link rel="icon" type="image/png" href="assets/assets/images/dhali.png" />
 
   <title>Dhali Marketplace</title>
   <link rel="manifest" href="manifest.json">
@@ -54,16 +72,21 @@
   <!-- This script adds the flutter initialization JS code -->
   <script src="flutter.js" defer></script>
 </head>
+
 <body>
+  <!-- Google Tag Manager (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KMZJNJH" height="0" width="0"
+      style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
   <script>
-    window.addEventListener('load', function(ev) {
+    window.addEventListener('load', function (ev) {
       // Download main.dart.js
       _flutter.loader.loadEntrypoint({
         serviceWorker: {
           serviceWorkerVersion: serviceWorkerVersion,
         },
-        onEntrypointLoaded: function(engineInitializer) {
-          engineInitializer.initializeEngine().then(function(appRunner) {
+        onEntrypointLoaded: function (engineInitializer) {
+          engineInitializer.initializeEngine().then(function (appRunner) {
             appRunner.runApp();
           });
         }
@@ -72,4 +95,5 @@
   </script>
   <script src="https://unpkg.com/xrpl@2.6.0/build/xrpl-latest-min.js"></script>
 </body>
+
 </html>
