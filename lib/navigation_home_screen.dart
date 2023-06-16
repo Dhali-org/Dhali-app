@@ -43,12 +43,20 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
   _NavigationHomeScreenState(this.drawerIndex);
   Widget? screenView;
   DrawerIndex? drawerIndex;
+  bool _showContinueButton = false;
 
   @override
   void initState() {
     drawerIndex == Null ? DrawerIndex.Marketplace : drawerIndex;
     screenView = getScreenView(drawerIndex);
     super.initState();
+  }
+
+  void activateWallet() {
+    setState(() {
+      _showContinueButton = true;
+      screenView = getScreenView(DrawerIndex.Wallet);
+    });
   }
 
   @override
@@ -182,14 +190,40 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
           );
 
           Future(() => ScaffoldMessenger.of(context).showSnackBar(snackbar));
-          screenView = WalletHomeScreen(
-            title: "wallet",
-            getWallet: widget.getWallet,
-            setWallet: widget.setWallet,
-            appBarColor: AppTheme.dhali_blue,
-            bodyTextColor: Colors.black,
-            buttonsColor: AppTheme.dhali_blue,
-          );
+          if (_showContinueButton) {}
+          screenView = Scaffold(
+              body: Stack(children: [
+            WalletHomeScreen(
+              title: "wallet",
+              getWallet: widget.getWallet,
+              setWallet: widget.setWallet,
+              appBarColor: AppTheme.dhali_blue,
+              bodyTextColor: Colors.black,
+              buttonsColor: AppTheme.dhali_blue,
+              onActivation: activateWallet,
+            ),
+            if (_showContinueButton)
+              Positioned(
+                bottom: 100,
+                left: 0,
+                right: 0,
+                child: Center(
+                  child: FloatingActionButton.extended(
+                    label: Text('Continue to assets page'),
+                    onPressed: (() {
+                      setState(() {
+                        screenView = getScreenView(DrawerIndex.Assets);
+                        _showContinueButton = false;
+                      });
+                    }),
+                    backgroundColor: AppTheme.dhali_blue,
+                    foregroundColor: AppTheme.white,
+                    hoverColor: AppTheme.dhali_blue_highlight,
+                    focusColor: AppTheme.dhali_blue_highlight,
+                  ),
+                ),
+              )
+          ]));
         });
         break;
       case DrawerIndex.Assets:
