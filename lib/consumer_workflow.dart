@@ -5,13 +5,9 @@ import 'package:dhali/marketplace/marketplace_dialogs.dart';
 import 'package:dhali/marketplace/model/asset_model.dart';
 import 'package:dhali/marketplace/model/marketplace_list_data.dart';
 import 'package:dhali/utils/Uploaders.dart';
-import 'package:dhali_wallet/wallet_types.dart';
 import 'package:dhali_wallet/dhali_wallet.dart';
-import 'package:dhali_wallet/xrpl_wallet.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:http/http.dart';
-import 'package:logger/logger.dart';
 import 'package:universal_io/io.dart';
 import 'dart:html' as html;
 import 'dart:convert';
@@ -115,17 +111,17 @@ Dialog run(
           await getWallet()!.openPaymentChannel(dest, cost.toString())
         ];
       }
-      var doc_id =
-          Uuid().v5(Uuid.NAMESPACE_URL, channelDescriptors[0].channelId);
-      var to_claim_doc = await getFirestore()!
+      var docId =
+          const Uuid().v5(Uuid.NAMESPACE_URL, channelDescriptors[0].channelId);
+      var toClaimDoc = await getFirestore()!
           .collection("public_claim_info")
-          .doc(doc_id)
+          .doc(docId)
           .get();
-      double to_claim = 0;
-      to_claim =
-          to_claim_doc.exists ? to_claim_doc.data()!["to_claim"] as double : 0;
+      double toClaim = 0;
+      toClaim =
+          toClaimDoc.exists ? toClaimDoc.data()!["to_claim"] as double : 0;
       String total =
-          (to_claim + double.parse(cost.toString())).ceil().toString();
+          (toClaim + double.parse(cost.toString())).ceil().toString();
       double requiredInChannel =
           double.parse(total) - channelDescriptors[0].amount + 1;
       if (requiredInChannel > 0) {
@@ -137,7 +133,7 @@ Dialog run(
           authAmount: total,
           channelDescriptor: channelDescriptors[0]);
     } else {
-      throw HttpException("Asset could not be found");
+      throw const HttpException("Asset could not be found");
     }
   });
 
@@ -176,7 +172,7 @@ Dialog run(
                 onNextClicked: (asset) {},
                 getOnSuccessWidget: (context, response) => response != null
                     ? DownloadFileWidget(
-                        key: Key("download_file"), response: response)
+                        key: const Key("download_file"), response: response)
                     : null);
           }
           return Container();

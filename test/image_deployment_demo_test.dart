@@ -1,11 +1,8 @@
-import 'dart:developer';
 import 'dart:convert';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dhali/marketplace/marketplace_home_screen.dart';
 import 'package:dhali/marketplace/marketplace_dialogs.dart';
 import 'package:dhali_wallet/wallet_types.dart';
-import 'package:dhali_wallet/dhali_wallet.dart';
 import 'package:dhali_wallet/xrpl_wallet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dropzone/flutter_dropzone.dart';
@@ -249,7 +246,7 @@ void main() async {
       int responseCode = 402;
 
       when(mockRequester.send()).thenAnswer((_) async => StreamedResponse(
-              Stream.empty(), responseCode, headers: {
+              const Stream.empty(), responseCode, headers: {
             Config.config!["DHALI_ID"].toString().toLowerCase(): theDhaliAssetID
           }));
       when(mockRequester.headers).thenAnswer((_) => {});
@@ -283,7 +280,7 @@ void main() async {
       int responseCode = 200;
 
       when(mockRequester.send()).thenAnswer((_) async => StreamedResponse(
-              Stream.empty(), responseCode, headers: {
+              const Stream.empty(), responseCode, headers: {
             Config.config!["DHALI_ID"].toString().toLowerCase(): theDhaliAssetID
           }));
       when(mockRequester.headers).thenAnswer((_) => {});
@@ -318,7 +315,7 @@ void main() async {
       int responseCode = 200;
 
       when(mockRequester.send()).thenAnswer((_) async => StreamedResponse(
-              Stream.empty(), responseCode, headers: {
+              const Stream.empty(), responseCode, headers: {
             Config.config!["DHALI_ID"].toString().toLowerCase(): theDhaliAssetID
           }));
       when(mockRequester.headers).thenAnswer((_) => {});

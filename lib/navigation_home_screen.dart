@@ -7,7 +7,6 @@ import 'package:dhali/app_theme.dart';
 import 'package:dhali/marketplace/marketplace_home_screen.dart';
 import 'package:flutter/material.dart';
 
-import 'package:dhali_wallet/xrpl_wallet.dart';
 import 'package:dhali_wallet/dhali_wallet.dart';
 
 import 'package:url_launcher/url_launcher.dart';
@@ -21,7 +20,7 @@ enum DrawerIndex {
 
 class NavigationHomeScreen extends StatefulWidget {
   const NavigationHomeScreen(
-      {this.drawerIndex,
+      {super.key, this.drawerIndex,
       required this.getWallet,
       required this.setWallet,
       required this.getRequest,
@@ -77,14 +76,14 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
               padding: EdgeInsets.zero,
               children: <Widget>[
                 DrawerHeader(
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     color: AppTheme.white,
                   ),
-                  child: Container(
+                  child: SizedBox(
                     height: 100, // Or any other height that suits your design
                     child: FittedBox(
-                      child: Image.asset('assets/images/dhali-logo.png'),
                       fit: BoxFit.contain,
+                      child: Image.asset('assets/images/dhali-logo.png'),
                     ),
                   ),
                 ),
@@ -209,7 +208,7 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
                 right: 0,
                 child: Center(
                   child: FloatingActionButton.extended(
-                    label: Text('Continue to assets page'),
+                    label: const Text('Continue to assets page'),
                     onPressed: (() {
                       setState(() {
                         screenView = getScreenView(DrawerIndex.Assets);
@@ -251,7 +250,7 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
         break;
       case DrawerIndex.Licenses:
         setState(() {
-          screenView = LicensePage();
+          screenView = const LicensePage();
         });
         break;
       default:

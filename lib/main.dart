@@ -1,7 +1,5 @@
-import 'dart:convert';
 import 'dart:io';
 import 'package:dhali_wallet/dhali_wallet.dart';
-import 'package:dhali_wallet/xrpl_wallet.dart';
 import 'package:http/http.dart';
 import 'package:dhali/app_theme.dart';
 import 'package:flutter/material.dart';
@@ -12,7 +10,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:dhali/firebase_options.dart';
 import 'package:dhali/config.dart' show Config;
-import 'package:flutter/services.dart' show rootBundle;
 
 import 'package:dhali/marketplace/asset_page.dart';
 import 'package:dhali/marketplace/model/marketplace_list_data.dart';
@@ -53,7 +50,7 @@ class MyApp extends StatefulWidget {
 class HomeWithBanner extends StatelessWidget {
   final Widget child;
 
-  HomeWithBanner({required this.child});
+  const HomeWithBanner({super.key, required this.child});
 
   @override
   Widget build(BuildContext context) {
@@ -69,11 +66,11 @@ class HomeWithBanner extends StatelessWidget {
             child: const Padding(
               padding: EdgeInsets.all(8.0),
               child: FittedBox(
+                  fit: BoxFit.fitWidth,
                   child: Text(
                       "Warning!  This is a preview, and uses the XRPL testnet.  Please only use testnet wallets.  Created assets may not persist!",
                       style: TextStyle(color: Colors.white),
-                      textAlign: TextAlign.center),
-                  fit: BoxFit.fitWidth),
+                      textAlign: TextAlign.center)),
             ),
           ),
         ),
@@ -150,6 +147,7 @@ class _MyAppState extends State<MyApp> {
                 builder: (context) => asset,
                 settings: RouteSettings(name: settings.name));
           }
+          return null;
         },
         title: title,
         debugShowCheckedModeBanner: false,
@@ -185,7 +183,7 @@ class HexColor extends Color {
   static int _getColorFromHex(String hexColor) {
     hexColor = hexColor.toUpperCase().replaceAll('#', '');
     if (hexColor.length == 6) {
-      hexColor = 'FF' + hexColor;
+      hexColor = 'FF$hexColor';
     }
     return int.parse(hexColor, radix: 16);
   }

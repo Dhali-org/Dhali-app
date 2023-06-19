@@ -1,17 +1,12 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:async/async.dart';
 
 import 'package:dhali/marketplace/model/asset_model.dart';
 import 'package:dhali/utils/Uploaders.dart';
 import 'package:dhali/utils/not_implemented_dialog.dart';
 import 'package:dhali_wallet/dhali_wallet.dart';
 import 'package:dhali_wallet/xrpl_wallet.dart';
-import 'package:dotted_border/dotted_border.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_dropzone/flutter_dropzone.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:http/http.dart';
 import 'package:dhali/app_theme.dart';
 import 'package:dhali/marketplace/marketplace_dialogs.dart';
@@ -19,16 +14,12 @@ import 'package:dhali/marketplace/marketplace_list_view.dart';
 import 'package:dhali/marketplace/model/marketplace_list_data.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:logger/logger.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:dhali_wallet/dhali_wallet.dart';
-import 'package:dhali_wallet/wallet_types.dart';
 import 'package:dhali/marketplace/asset_page.dart';
 import 'package:dhali/marketplace/filters_screen.dart';
 import 'package:dhali/marketplace/marketplace_app_theme.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dhali/config.dart' show Config;
-import 'package:http/http.dart' as http;
 import 'package:uuid/uuid.dart';
 
 class MarketplaceHomeScreen extends StatefulWidget {
@@ -100,10 +91,10 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
       data: MarketplaceAppTheme.buildLightTheme(),
       child: Container(
         child: Scaffold(
-          floatingActionButtonLocation: this.widget.getWallet() != null
+          floatingActionButtonLocation: widget.getWallet() != null
               ? FloatingActionButtonLocation.centerFloat
               : null,
-          floatingActionButton: this.widget.getWallet() != null
+          floatingActionButton: widget.getWallet() != null
               ? Padding(
                   padding: const EdgeInsets.only(bottom: 50.0),
                   child: getFloatingActionButton(widget.assetScreenType))
@@ -151,7 +142,7 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                         },
                         body: Container(
                             color: MarketplaceAppTheme.buildLightTheme()
-                                .backgroundColor,
+                                .colorScheme.background,
                             child: widget.assetScreenType ==
                                     AssetScreenType.MyAssets
                                 ? getFilteredAssetStreamBuilder()
@@ -179,7 +170,7 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
         ? FutureBuilder(
             builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
               if (!snapshot.hasData) {
-                return Row(
+                return const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
@@ -273,7 +264,7 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
           } else {
             return Center(
                 child: Container(
-                    child: Text("An error occured loading your assets")));
+                    child: const Text("An error occured loading your assets")));
           }
         });
   }
@@ -293,11 +284,11 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
 
   Widget getAssetGridView(List<QueryDocumentSnapshot<Object?>> docs) {
     return GridView.builder(
-      key: Key("asset_grid_view"),
+      key: const Key("asset_grid_view"),
       itemCount: docs.length,
       padding: const EdgeInsets.only(top: 8),
       scrollDirection: Axis.vertical,
-      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
           maxCrossAxisExtent: 600, childAspectRatio: 3),
       itemBuilder: (BuildContext context, int index) {
         final int count = docs.length > 10 ? 10 : docs.length;
@@ -336,7 +327,7 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
   Widget getListUI() {
     return Container(
       decoration: BoxDecoration(
-        color: MarketplaceAppTheme.buildLightTheme().backgroundColor,
+        color: MarketplaceAppTheme.buildLightTheme().colorScheme.background,
         boxShadow: <BoxShadow>[
           BoxShadow(
               color: Colors.grey.withOpacity(0.2),
@@ -346,7 +337,7 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
       ),
       child: Column(
         children: <Widget>[
-          Container(
+          SizedBox(
             height: MediaQuery.of(context).size.height - 156 - 50,
             child: FutureBuilder<bool>(
               future: getData(),
@@ -432,7 +423,7 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
               padding: const EdgeInsets.only(right: 16, top: 8, bottom: 8),
               child: Container(
                 decoration: BoxDecoration(
-                  color: MarketplaceAppTheme.buildLightTheme().backgroundColor,
+                  color: MarketplaceAppTheme.buildLightTheme().colorScheme.background,
                   borderRadius: const BorderRadius.all(
                     Radius.circular(38.0),
                   ),
@@ -491,7 +482,7 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                   child: Icon(FontAwesomeIcons.magnifyingGlass,
                       size: 20,
                       color: MarketplaceAppTheme.buildLightTheme()
-                          .backgroundColor),
+                          .colorScheme.background),
                 ),
               ),
             ),
@@ -511,7 +502,7 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
           child: Container(
             height: 24,
             decoration: BoxDecoration(
-              color: MarketplaceAppTheme.buildLightTheme().backgroundColor,
+              color: MarketplaceAppTheme.buildLightTheme().colorScheme.background,
               boxShadow: <BoxShadow>[
                 BoxShadow(
                     color: Colors.grey.withOpacity(0.2),
@@ -522,7 +513,7 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
           ),
         ),
         Container(
-          color: MarketplaceAppTheme.buildLightTheme().backgroundColor,
+          color: MarketplaceAppTheme.buildLightTheme().colorScheme.background,
           child: Padding(
             padding:
                 const EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 4),
@@ -546,7 +537,7 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                       Navigator.push<dynamic>(
                         context,
                         MaterialPageRoute<dynamic>(
-                            builder: (BuildContext context) => FiltersScreen(),
+                            builder: (BuildContext context) => const FiltersScreen(),
                             fullscreenDialog: true),
                       );
                     },
@@ -591,7 +582,7 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
   Widget getAppBarUI() {
     return Container(
       decoration: BoxDecoration(
-        color: MarketplaceAppTheme.buildLightTheme().backgroundColor,
+        color: MarketplaceAppTheme.buildLightTheme().colorScheme.background,
         boxShadow: <BoxShadow>[
           BoxShadow(
               color: Colors.grey.withOpacity(0.2),
@@ -635,7 +626,7 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                 ),
               ),
             ),
-            Container(
+            SizedBox(
               width: AppBar().preferredSize.height + 40,
               height: AppBar().preferredSize.height,
               child: Row(
@@ -678,7 +669,7 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
   }
 
   FloatingActionButton? getFloatingActionButton(assetScreenType) {
-    FloatingActionButton? actionButton = null;
+    FloatingActionButton? actionButton;
     switch (assetScreenType) {
       case AssetScreenType.Marketplace:
         actionButton = null;
@@ -690,7 +681,7 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                 context: context,
                 builder: (BuildContext _) {
                   if (widget.getWallet() == null) {
-                    return AlertDialog(
+                    return const AlertDialog(
                       title: Text("Unable to proceed"),
                       content:
                           Text("Please link a wallet using the Wallet page"),
@@ -779,7 +770,7 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                                                                             if (wallet ==
                                                                                 null) {
                                                                               // Should never make it here!
-                                                                              return AlertDialog(
+                                                                              return const AlertDialog(
                                                                                 title: Text("Unable to proceed"),
                                                                                 content: Text("Please link a wallet using the Wallet page"),
                                                                               );
@@ -789,16 +780,16 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                                                                                 Config.config!["DHALI_PUBLIC_ADDRESS"]; // TODO : This should be Dhali's address
                                                                             var payment =
                                                                                 wallet.getOpenPaymentChannels(destination_address: dest).then((channelDescriptors) async {
-                                                                              double to_claim = 0;
+                                                                              double toClaim = 0;
                                                                               if (channelDescriptors.isEmpty) {
                                                                                 channelDescriptors = [
                                                                                   await wallet.openPaymentChannel(dest, deploymentCost.ceil().toString())
                                                                                 ];
                                                                               }
-                                                                              var doc_id = Uuid().v5(Uuid.NAMESPACE_URL, channelDescriptors[0].channelId);
-                                                                              var to_claim_doc = await widget.getFirestore()!.collection("public_claim_info").doc(doc_id).get();
-                                                                              to_claim = to_claim_doc.exists ? to_claim_doc.data()!["to_claim"] as double : 0;
-                                                                              String total = (to_claim + double.parse(deploymentCost.ceil().toString())).toString();
+                                                                              var docId = const Uuid().v5(Uuid.NAMESPACE_URL, channelDescriptors[0].channelId);
+                                                                              var toClaimDoc = await widget.getFirestore()!.collection("public_claim_info").doc(docId).get();
+                                                                              toClaim = toClaimDoc.exists ? toClaimDoc.data()!["to_claim"] as double : 0;
+                                                                              String total = (toClaim + double.parse(deploymentCost.ceil().toString())).toString();
                                                                               double requiredInChannel = double.parse(total) - channelDescriptors[0].amount + 1;
                                                                               if (requiredInChannel > 0) {
                                                                                 await wallet.fundPaymentChannel(channelDescriptors[0], requiredInChannel.toString());
@@ -811,17 +802,17 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                                                                                 onNFTOfferPoll(String nfTokenId) {
                                                                               // TODO: Maybe there's more validation we can do here.  This is just a PoC
                                                                               widget.getWallet()!.getNFTOffers(nfTokenId).then((offers) {
-                                                                                offers.forEach((offer) {
+                                                                                for (var offer in offers) {
                                                                                   int amount = offer.amount;
                                                                                   // We are transferring ownership to the creator, so we want the
                                                                                   // offer to be for free:
                                                                                   if (amount != 0) {
-                                                                                    return;
+                                                                                    continue;
                                                                                   }
 
                                                                                   var offerIndex = offer.offerIndex;
                                                                                   widget.getWallet()!.acceptOffer(offerIndex);
-                                                                                });
+                                                                                }
                                                                               });
                                                                             }
 
