@@ -1,6 +1,5 @@
 import 'package:dhali/marketplace/marketplace_app_theme.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'package:dhali/marketplace/model/marketplace_list_data.dart';
@@ -52,7 +51,7 @@ class MarketplaceListView extends StatelessWidget {
                           const BorderRadius.all(Radius.circular(16.0)),
                       child: Container(
                         color: MarketplaceAppTheme.buildLightTheme()
-                            .backgroundColor,
+                            .colorScheme.background,
                         child: Padding(
                           padding: const EdgeInsets.all(15),
                           child: Column(
@@ -69,7 +68,7 @@ class MarketplaceListView extends StatelessWidget {
                                       fontSize: 50,
                                     ),
                                   )),
-                              Spacer(),
+                              const Spacer(),
                               Row(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 mainAxisAlignment:
@@ -105,15 +104,15 @@ class MarketplaceListView extends StatelessWidget {
                                     width: 4,
                                   ),
                                   Expanded(
+                                    flex: 2,
                                     child: Text(
                                       ' ${marketplaceData!.pricePerRun.ceil()} drops/run',
                                       textAlign: TextAlign.left,
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                         fontWeight: FontWeight.w600,
                                         fontSize: 16,
                                       ),
                                     ),
-                                    flex: 2,
                                   ),
                                   const Spacer(
                                     flex: 1,
@@ -125,16 +124,16 @@ class MarketplaceListView extends StatelessWidget {
                                         .primaryColor,
                                   ),
                                   Expanded(
+                                    flex: 2,
                                     child: Text(
                                       ' ${(marketplaceData!.averageRuntime / 1000).toStringAsFixed(2)} secs/run',
                                       overflow: TextOverflow.ellipsis,
                                       textAlign: TextAlign.left,
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                         fontWeight: FontWeight.w600,
                                         fontSize: 16,
                                       ),
                                     ),
-                                    flex: 2,
                                   )
                                 ],
                               ),

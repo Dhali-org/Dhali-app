@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dhali/app_theme.dart';
 import 'package:dhali/consumer_workflow.dart';
 import 'package:dhali_wallet/dhali_wallet.dart';
-import 'package:dhali_wallet/xrpl_wallet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:http/http.dart';
@@ -32,7 +31,7 @@ class AssetPage extends StatefulWidget {
 class _AssetPageState extends State<AssetPage> {
   @override
   Widget build(BuildContext context) {
-    var future;
+    Future<Response> future;
     var uri = Uri.parse(
         "${Config.config!["ROOT_CONSUMER_URL"]}/${widget.asset.assetID}/${Config.config!['GET_READMES_ROUTE']}");
     if (widget.getReadme == null) {
@@ -51,14 +50,14 @@ class _AssetPageState extends State<AssetPage> {
             children: [
               Text(
                 widget.asset.assetName,
-                style: TextStyle(color: Colors.black, fontSize: 28),
+                style: const TextStyle(color: Colors.black, fontSize: 28),
               ),
               Text(
                 widget.asset.assetCategories.isNotEmpty
                     ? "Categories: ${widget.asset.assetCategories}"
                     : "Categories: NONE",
-                key: Key("categories_in_asset_page"),
-                style: TextStyle(color: Colors.black, fontSize: 20),
+                key: const Key("categories_in_asset_page"),
+                style: const TextStyle(color: Colors.black, fontSize: 20),
               ),
             ],
           ),
@@ -87,31 +86,31 @@ class _AssetPageState extends State<AssetPage> {
                       styleSheet: MarkdownStyleSheet(
                         p: Theme.of(context)
                             .textTheme
-                            .bodyText2!
+                            .bodyMedium!
                             .copyWith(fontSize: 18),
                         h1: Theme.of(context)
                             .textTheme
-                            .headline1!
+                            .displayLarge!
                             .copyWith(fontSize: 30),
                         h2: Theme.of(context)
                             .textTheme
-                            .headline2!
+                            .displayMedium!
                             .copyWith(fontSize: 26),
                         h3: Theme.of(context)
                             .textTheme
-                            .headline3!
+                            .displaySmall!
                             .copyWith(fontSize: 22),
                         h4: Theme.of(context)
                             .textTheme
-                            .headline4!
+                            .headlineMedium!
                             .copyWith(fontSize: 18),
                         h5: Theme.of(context)
                             .textTheme
-                            .headline5!
+                            .headlineSmall!
                             .copyWith(fontSize: 16),
                         h6: Theme.of(context)
                             .textTheme
-                            .headline6!
+                            .titleLarge!
                             .copyWith(fontSize: 14),
                         code: Theme.of(context).textTheme.bodyMedium!.copyWith(
                               fontSize: 18,
@@ -189,7 +188,7 @@ class _AssetPageState extends State<AssetPage> {
                         ),
                         SelectableText.rich(
                           TextSpan(
-                            style: TextStyle(color: Colors.black, fontSize: 15),
+                            style: const TextStyle(color: Colors.black, fontSize: 15),
                             children: <TextSpan>[
                               const TextSpan(
                                   text: 'Endpoint: ',

@@ -1,20 +1,14 @@
-import 'dart:developer';
 import 'dart:convert';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dhali/marketplace/asset_page.dart';
-import 'package:dhali/marketplace/marketplace_home_screen.dart';
-import 'package:dhali/marketplace/marketplace_dialogs.dart';
 import 'package:dhali/marketplace/model/marketplace_list_data.dart';
 import 'package:dhali_wallet/wallet_types.dart';
-import 'package:dhali_wallet/dhali_wallet.dart';
 import 'package:dhali_wallet/xrpl_wallet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dropzone/flutter_dropzone.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart';
 import 'package:dhali/app_theme.dart';
-import 'package:dhali/navigation_home_screen.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 
@@ -27,13 +21,13 @@ import 'package:dhali/config.dart' show Config;
 import 'utils.dart' as utils;
 
 const String theAssetName = "my name";
-const String theOtherAssetName = theAssetName + "diff";
+const String theOtherAssetName = "${theAssetName}diff";
 const String theAssetID = "An asset ID";
-const String theOtherAssetID = theAssetID + "diff";
+const String theOtherAssetID = "${theAssetID}diff";
 const String NFTokenID = "An asset NFT ID";
-const String anotherNFTokenID = NFTokenID + "diff";
+const String anotherNFTokenID = "${NFTokenID}diff";
 const String creatorAccount = "A random classic address";
-const String dhaliAccount = creatorAccount + "diff";
+const String dhaliAccount = "${creatorAccount}diff";
 const double inferenceTime = 1.0;
 const List<String> categories = ["A category"];
 const double cost = 1;
@@ -125,16 +119,16 @@ void main() async {
           .collection("public_minted_nfts")
           .doc(theAssetID)
           .set({"cost_per_ms": 1000});
-      var doc_id = Uuid().v5(Uuid.NAMESPACE_URL, "CHANNEL_ID_STRING");
+      var docId = const Uuid().v5(Uuid.NAMESPACE_URL, "CHANNEL_ID_STRING");
       await firebaseMockInstance
           .collection("public_claim_info")
-          .doc(doc_id)
+          .doc(docId)
           .set({"to_claim": 0});
 
       MockMultipartRequest getMockMultipartRequest(String _, String path) {
         var mockRunRequester = MockMultipartRequest();
         when(mockRunRequester.send()).thenAnswer(
-            (_) async => StreamedResponse(Stream.empty(), responseCode));
+            (_) async => StreamedResponse(const Stream.empty(), responseCode));
         when(mockRunRequester.headers).thenAnswer((_) => {});
 
         return mockRunRequester;
@@ -197,10 +191,10 @@ void main() async {
           .collection("public_minted_nfts")
           .doc(theAssetID)
           .set({"cost_per_ms": 1000});
-      var doc_id = Uuid().v5(Uuid.NAMESPACE_URL, "CHANNEL_ID_STRING");
+      var docId = const Uuid().v5(Uuid.NAMESPACE_URL, "CHANNEL_ID_STRING");
       await firebaseMockInstance
           .collection("public_claim_info")
-          .doc(doc_id)
+          .doc(docId)
           .set({"to_claim": 0});
 
       String reasonPhrase = "you are useless";
@@ -270,7 +264,7 @@ void main() async {
       MockMultipartRequest getMockMultipartRequest(String _, String path) {
         var mockRunRequester = MockMultipartRequest();
         when(mockRunRequester.send()).thenAnswer(
-            (_) async => StreamedResponse(Stream.empty(), responseCode));
+            (_) async => StreamedResponse(const Stream.empty(), responseCode));
         when(mockRunRequester.headers).thenAnswer((_) => {});
 
         return mockRunRequester;

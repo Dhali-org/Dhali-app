@@ -1,10 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 import 'package:dhali/config.dart';
 import 'package:dhali_wallet/dhali_wallet.dart';
-import 'package:dhali_wallet/xrpl_wallet.dart';
-import 'package:flutter/widgets.dart';
 import "package:universal_html/html.dart";
 import 'dart:math';
 import 'package:flutter_dropzone/flutter_dropzone.dart';
@@ -136,7 +133,7 @@ class RunUploader extends BaseUploader {
           } catch (e) {
             reason = "Could not parse reason";
           }
-          return StreamedResponse(Stream.empty(), finalResponse.statusCode,
+          return StreamedResponse(const Stream.empty(), finalResponse.statusCode,
               reasonPhrase: reason);
         }
         // TODO : Deal with response appropriately
@@ -246,12 +243,11 @@ class DeployUploader extends BaseUploader {
               "Chunk $i returned status code ${finalResponse.statusCode}: ${finalResponse.reasonPhrase}");
         }
         try {
-          sessionID = finalResponse!
-              .headers[Config.config!["DHALI_ID"].toString().toLowerCase()];
+          sessionID = finalResponse.headers[Config.config!["DHALI_ID"].toString().toLowerCase()];
         } catch (e, stacktrace) {
           throw FormatException(
-              "Unexpected response from asset deployment, with error: ${e} "
-              "and stacktrace: ${stacktrace}");
+              "Unexpected response from asset deployment, with error: $e "
+              "and stacktrace: $stacktrace");
         }
         // TODO : Deal with response appropriately
 
@@ -278,7 +274,7 @@ class DeployUploader extends BaseUploader {
             // Something went wrong!
             logger.d(finalResponse!.statusCode);
             String reason = await finalResponse.stream.bytesToString();
-            return StreamedResponse(Stream.empty(), finalResponse.statusCode,
+            return StreamedResponse(const Stream.empty(), finalResponse.statusCode,
                 reasonPhrase: reason);
           }
         }
