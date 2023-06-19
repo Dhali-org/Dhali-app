@@ -1,0 +1,21 @@
+name: lint
+on: [pull_request]
+
+jobs:
+  dart-fix:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: dart-lang/setup-dart@v1
+    - uses: subosito/flutter-action@v2
+      with:
+        channel: 'stable'
+    - name: Install dependencies
+      run: flutter pub get
+    - name: Check for fixable issues
+      id: dart_fix
+      run: |
+        OUTPUT=$(dart fix --dry-run)
+        if [[ ! "$OUTPUT" == *"Nothing to fix!"* ]]; then
+          exit 1
+        fi
