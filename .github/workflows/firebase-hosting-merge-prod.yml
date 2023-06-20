@@ -11,12 +11,19 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-      - name: Build
+      - name: Configure the app for production
         run: |
           mv firebase{.prod,}.json
           mv lib/firebase_options{.prod,}.dart
           cp assets/public{.prod,}.json
-      - run: flutter build web --release --dart-define=DEPLOYMENT_ENVIRONMENT=prod
+      - name: Inject GTM snippets
+        run: |
+          GTM_PROD_HEAD_SNIPPET=$(cat web/gtm_head_prod.html)
+          GTM_PROD_BODY_SNIPPET=$(cat web/gtm_body_prod.html)
+          perl -i -pe "s#<!-- GTM_HEAD -->#${GTM_PROD_HEAD_SNIPPET}#gs" web/index.html
+          perl -i -pe "s#<!-- GTM_BODY -->#${GTM_PROD_BODY_SNIPPET}#gs" web/index.html
+      - name: Build the app
+        run: flutter build web --release --dart-define=DEPLOYMENT_ENVIRONMENT=prod
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: '${{ secrets.GITHUB_TOKEN }}'

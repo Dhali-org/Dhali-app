@@ -15,12 +15,19 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-      - name: Build
+      - name: Configure the app for staging
         run: |
           mv firebase{.staging,}.json
           mv lib/firebase_options{.staging,}.dart 
           cp assets/public{.staging,}.json
-      - run: flutter build web --profile --dart-define=Dart2jsOptimization=O0 --dart-define=DEPLOYMENT_ENVIRONMENT=staging
+      - name: Inject GTM snippets
+        run: |
+          GTM_STAGING_HEAD_SNIPPET=$(cat web/gtm_head_staging.html)
+          GTM_STAGING_BODY_SNIPPET=$(cat web/gtm_body_staging.html)
+          perl -i -pe "s#<!-- GTM_HEAD -->#${GTM_STAGING_HEAD_SNIPPET}#gs" web/index.html
+          perl -i -pe "s#<!-- GTM_BODY -->#${GTM_STAGING_BODY_SNIPPET}#gs" web/index.html
+      - name: Build the app
+        run: flutter build web --profile --dart-define=Dart2jsOptimization=O0 --dart-define=DEPLOYMENT_ENVIRONMENT=staging
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: '${{ secrets.GITHUB_TOKEN }}'
