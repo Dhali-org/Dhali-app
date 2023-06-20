@@ -1,17 +1,9 @@
-import 'dart:developer';
 import 'dart:convert';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dhali/marketplace/marketplace_home_screen.dart';
-import 'package:dhali/marketplace/marketplace_dialogs.dart';
-import 'package:dhali_wallet/dhali_wallet.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dropzone/flutter_dropzone.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:http/http.dart';
 import 'package:dhali/app_theme.dart';
 import 'package:dhali/navigation_home_screen.dart';
-import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
@@ -30,13 +22,13 @@ void main() async {
   late MockMultipartRequest mockRequester;
 
   const String theAssetName = "my name";
-  const String theOtherAssetName = theAssetName + "diff";
+  const String theOtherAssetName = "${theAssetName}diff";
   const String theAssetID = "An asset ID";
-  const String theOtherAssetID = theAssetID + "diff";
+  const String theOtherAssetID = "${theAssetID}diff";
   const String NFTokenID = "An asset NFT ID";
-  const String anotherNFTokenID = NFTokenID + "diff";
+  const String anotherNFTokenID = "${NFTokenID}diff";
   const String creatorAccount = "A random classic address";
-  const String dhaliAccount = creatorAccount + "diff";
+  const String dhaliAccount = "${creatorAccount}diff";
   const int inferenceTime = 1;
   const List<String> categories = ["A category"];
   const int cost = 1;
@@ -309,7 +301,7 @@ void main() async {
       const w = 1480;
       const h = 1080;
 
-      final someOtherNFTkokenID = "this_is_not_in_firebase";
+      const someOtherNFTkokenID = "this_is_not_in_firebase";
 
       when(mockWallet.address).thenReturn(creatorAccount);
       when(mockWallet.getAvailableNFTs()).thenAnswer((_) async {

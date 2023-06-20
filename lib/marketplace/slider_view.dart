@@ -33,7 +33,7 @@ class _SliderViewState extends State<SliderView> {
                 flex: distValue.round(),
                 child: const SizedBox(),
               ),
-              Container(
+              SizedBox(
                 width: 170,
                 child: Text(
                   'Less than ${(distValue / 10).toStringAsFixed(1)} secs',
@@ -121,10 +121,10 @@ class CustomThumbShape extends SliderComponentShape {
               MaskFilter.blur(BlurStyle.normal, convertRadiusToSigma(8)));
 
     final Paint cPaint = Paint();
-    cPaint..color = Colors.white;
-    cPaint..strokeWidth = 14 / 2;
+    cPaint.color = Colors.white;
+    cPaint.strokeWidth = 14 / 2;
     canvas.drawCircle(Offset(thumbCenter.dx, thumbCenter.dy), 12, cPaint);
-    cPaint..color = colorTween.evaluate(enableAnimation!)!;
+    cPaint.color = colorTween.evaluate(enableAnimation!)!;
     canvas.drawCircle(Offset(thumbCenter.dx, thumbCenter.dy), 10, cPaint);
   }
 

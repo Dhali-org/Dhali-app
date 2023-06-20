@@ -3,7 +3,6 @@ import 'package:dhali/utils/show_popup_text_with_link.dart';
 import 'package:http/http.dart';
 import 'package:logger/logger.dart';
 import "package:universal_html/html.dart" as html;
-import 'package:http/http.dart' as http;
 import 'package:dhali/utils/Uploaders.dart';
 import 'dart:convert';
 
@@ -78,8 +77,8 @@ class _DropzoneRunWidgetState extends State<DropzoneRunWidget> {
                   children: [
                     Text(
                       textAlign: TextAlign.center,
-                      this.input != null
-                          ? "Selected input file: ${this.input!.fileName}"
+                      input != null
+                          ? "Selected input file: ${input!.fileName}"
                           : "No input file selected",
                       style: TextStyle(
                           fontSize: 20,
@@ -237,7 +236,7 @@ class _DropzoneRunWidgetState extends State<DropzoneRunWidget> {
         ),
         label: Text(
           text,
-          style: TextStyle(fontSize: 30),
+          style: const TextStyle(fontSize: 30),
         ));
   }
 
@@ -311,8 +310,8 @@ class _DropzoneDeployWidgetState extends State<DropzoneDeployWidget> {
                   children: [
                     Text(
                       textAlign: TextAlign.center,
-                      this.assetFile != null
-                          ? "Selected asset file: ${this.assetFile!.fileName}"
+                      assetFile != null
+                          ? "Selected asset file: ${assetFile!.fileName}"
                           : "No .tar docker image asset selected",
                       style: TextStyle(
                           fontSize: 20,
@@ -354,8 +353,8 @@ class _DropzoneDeployWidgetState extends State<DropzoneDeployWidget> {
                   children: [
                     Text(
                       textAlign: TextAlign.center,
-                      this.readmeFile != null
-                          ? "Selected markdown file: ${this.readmeFile!.fileName}"
+                      readmeFile != null
+                          ? "Selected markdown file: ${readmeFile!.fileName}"
                           : "No .md asset description selected",
                       style: TextStyle(
                           fontSize: 20,
@@ -531,7 +530,7 @@ class _DropzoneDeployWidgetState extends State<DropzoneDeployWidget> {
         ),
         label: Text(
           text,
-          style: TextStyle(fontSize: 30),
+          style: const TextStyle(fontSize: 30),
         ));
   }
 
@@ -589,7 +588,7 @@ class _ImageScanningWidgetState extends State<ImageScanningWidget> {
           const SizedBox(
             height: 16,
           ),
-          this.scanning
+          scanning
               ? const SpinKitCubeGrid(
                   size: 80,
                   color: AppTheme.nearlyBlack,
@@ -608,7 +607,7 @@ class _ImageScanningWidgetState extends State<ImageScanningWidget> {
           const SizedBox(
             height: 16,
           ),
-          this.scanning
+          scanning
               ? Text(
                   textAlign: TextAlign.center,
                   "Scanning '${widget.file.fileName}'. \nThis may take a "
@@ -616,7 +615,7 @@ class _ImageScanningWidgetState extends State<ImageScanningWidget> {
                   style: const TextStyle(
                       fontSize: 30, color: AppTheme.nearlyBlack),
                 )
-              : this.scanSuccess
+              : scanSuccess
                   ? const Text(
                       "Your image was successfully scanned.",
                       style:
@@ -640,7 +639,7 @@ class _ImageScanningWidgetState extends State<ImageScanningWidget> {
                 backgroundColor: AppTheme.dhali_blue,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(4))),
-            onPressed: this.scanSuccess
+            onPressed: scanSuccess
                 ? () => widget.onNextClicked(widget.file)
                 : null,
             icon: const Icon(
@@ -1082,8 +1081,8 @@ class _DataTransmissionWidgetState extends State<DataTransmissionWidget> {
       } on FormatException catch (_) {
         return;
       } catch (e, stacktrace) {
-        logger.e("Unexpected response from asset deployment, with error: ${e} "
-            "and stacktrace: ${stacktrace}");
+        logger.e("Unexpected response from asset deployment, with error: $e "
+            "and stacktrace: $stacktrace");
       }
     });
   }
@@ -1120,12 +1119,12 @@ class _DataTransmissionWidgetState extends State<DataTransmissionWidget> {
                             style: const TextStyle(
                                 fontSize: 30, color: AppTheme.nearlyBlack),
                           ),
-                          SizedBox(height: 20),
-                          CircularProgressIndicator(),
+                          const SizedBox(height: 20),
+                          const CircularProgressIndicator(),
                         ],
                       )
                     : responseCode == 200
-                        ? Text(
+                        ? const Text(
                             key: Key("upload_success_info"),
                             "Your upload was successful",
                             style: TextStyle(
@@ -1175,7 +1174,7 @@ class _DataTransmissionWidgetState extends State<DataTransmissionWidget> {
                         label: Text(
                           key: const Key("exit_deployment_dialogs"),
                           deploying ? "Cancel" : "Exit",
-                          style: TextStyle(fontSize: 30),
+                          style: const TextStyle(fontSize: 30),
                         )),
                     const SizedBox(
                       width: 32,
@@ -1248,7 +1247,7 @@ Widget uploadFailed(BuildContext context, int responseCode) {
           size: 80,
         ),
         Text(
-          key: Key("upload_failed_warning"),
+          key: const Key("upload_failed_warning"),
           textAlign: TextAlign.center,
           "Deployment failed: status code "
           "${responseCode.toString()}",
@@ -1291,7 +1290,7 @@ Widget uploadFailed(BuildContext context, int responseCode) {
 Widget NFTUploadingWidget(
     BuildContext context,
     FirebaseFirestore? Function() getFirestore,
-    void onNFTOfferPoll(String nfTokenId),
+    void Function(String nfTokenId) onNFTOfferPoll,
     String? Function() getSessionID) {
   var nfTokenIdStream = getFirestore()!
       .collection(Config.config!["MINTED_NFTS_COLLECTION_NAME"])
@@ -1305,7 +1304,7 @@ Widget NFTUploadingWidget(
         if (snapshot.connectionState == ConnectionState.waiting ||
             !snapshot.hasData ||
             !snapshot.data!.exists) {
-          return Center(
+          return const Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -1400,7 +1399,7 @@ class InferenceCostWidget extends StatelessWidget {
           ),
           Text(
             "Running this asset typically costs $inferenceCost drops",
-            style: TextStyle(fontSize: 25, color: AppTheme.nearlyBlack),
+            style: const TextStyle(fontSize: 25, color: AppTheme.nearlyBlack),
           ),
           const Text(
             "Are you sure you want to continue?",
@@ -1490,7 +1489,7 @@ Widget getDialogTemplate(
         right: 55,
         top: 15,
         child: IconButton(
-          icon: Icon(Icons.close, size: 60),
+          icon: const Icon(Icons.close, size: 60),
           onPressed: () {
             Navigator.of(context).pop();
           },

@@ -2,6 +2,8 @@ import 'package:dhali/app_theme.dart';
 import 'package:flutter/material.dart';
 
 class HelpScreen extends StatefulWidget {
+  const HelpScreen({super.key});
+
   @override
   _HelpScreenState createState() => _HelpScreenState();
 }
