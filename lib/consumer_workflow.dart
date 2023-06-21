@@ -1,4 +1,13 @@
+import 'dart:convert';
+import 'dart:html' as html;
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
+import 'package:http/http.dart';
+import 'package:universal_io/io.dart';
+import 'package:uuid/uuid.dart';
+
+import 'package:dhali/analytics/analytics.dart';
 import 'package:dhali/app_theme.dart';
 import 'package:dhali/config.dart';
 import 'package:dhali/marketplace/marketplace_dialogs.dart';
@@ -6,13 +15,6 @@ import 'package:dhali/marketplace/model/asset_model.dart';
 import 'package:dhali/marketplace/model/marketplace_list_data.dart';
 import 'package:dhali/utils/Uploaders.dart';
 import 'package:dhali_wallet/dhali_wallet.dart';
-import 'package:flutter/material.dart';
-import 'package:http/http.dart';
-import 'package:universal_io/io.dart';
-import 'dart:html' as html;
-import 'dart:convert';
-
-import 'package:uuid/uuid.dart';
 
 Widget consumerJourney(
     {required BuildContext context,
@@ -172,7 +174,9 @@ Dialog run(
                 onNextClicked: (asset) {},
                 getOnSuccessWidget: (context, response) => response != null
                     ? DownloadFileWidget(
-                        key: const Key("download_file"), response: response)
+                        key: const Key("download_file"),
+                        response: response,
+                        runURL: runURL)
                     : null);
           }
           return Container();
@@ -182,8 +186,10 @@ Dialog run(
 }
 
 class DownloadFileWidget extends StatefulWidget {
-  const DownloadFileWidget({super.key, required this.response});
+  const DownloadFileWidget(
+      {super.key, required this.response, required this.runURL});
   final BaseResponse response;
+  final String runURL;
 
   @override
   State<DownloadFileWidget> createState() => _DownloadFileWidgetState();
@@ -210,7 +216,20 @@ class _DownloadFileWidgetState extends State<DownloadFileWidget> {
                 bytes = await (widget.response as StreamedResponse)
                     .stream
                     .toBytes();
+                gtag(
+                    command: "event",
+                    target: "ResultDownloadSuccessful",
+                    parameters: {
+                      "url": widget.runURL,
+                    });
               } catch (e) {
+                gtag(
+                    command: "event",
+                    target: "ResultDownloadUnsuccessful",
+                    parameters: {
+                      "url": widget.runURL,
+                      "response": widget.response
+                    });
                 if (bytes == null) {
                   throw "An error occured when trying to download your result: ${e.toString()}";
                 }

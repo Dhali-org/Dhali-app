@@ -129,7 +129,13 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
                   leading: const Icon(Icons.book, color: AppTheme.dhali_blue),
                   title: const Text('Docs',
                       style: TextStyle(color: AppTheme.nearlyBlack)),
-                  onTap: _launchUrl,
+                  onTap: () {
+                    gtag(
+                        command: "event",
+                        target: "DocsSelected",
+                        parameters: {});
+                    _launchUrl;
+                  },
                 ),
                 ListTile(
                   leading: const Icon(Icons.badge, color: AppTheme.dhali_blue),
@@ -227,6 +233,10 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
                   child: FloatingActionButton.extended(
                     label: const Text('Continue to assets page'),
                     onPressed: (() {
+                      gtag(
+                          command: "event",
+                          target: "AssetsScreenShownFromWalletContinue",
+                          parameters: {"walletIsLinked": _walletIsLinked});
                       setState(() {
                         screenView = getScreenView(DrawerIndex.Assets);
                         _showContinueButton = false;
