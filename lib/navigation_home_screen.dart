@@ -94,6 +94,24 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
                   ),
                 ),
                 ListTile(
+                  leading:
+                      const Icon(Icons.home_filled, color: AppTheme.dhali_blue),
+                  title: const Text('Home',
+                      style: TextStyle(color: AppTheme.nearlyBlack)),
+                  onTap: () {
+                    gtag(
+                        command: "event",
+                        target: "HomeSelected",
+                        parameters: {});
+                    _launchUrl("https://dhali.io");
+                  },
+                ),
+                const Divider(
+                  height: 20,
+                  thickness: 1,
+                  color: Colors.grey,
+                ),
+                ListTile(
                   leading: const Icon(Icons.wallet, color: AppTheme.dhali_blue),
                   title: const Text('Wallet',
                       style: TextStyle(color: AppTheme.nearlyBlack)),
@@ -134,7 +152,7 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
                         command: "event",
                         target: "DocsSelected",
                         parameters: {});
-                    _launchUrl;
+                    _launchUrl("https://dhali.io/docs");
                   },
                 ),
                 ListTile(
@@ -165,9 +183,9 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
     );
   }
 
-  Future<void> _launchUrl() async {
-    if (!await launchUrl(Uri.parse("https://dhali.io/docs/#/"))) {
-      throw Exception('Could not launch https://dhali.io/docs/#/');
+  Future<void> _launchUrl(String url) async {
+    if (!await launchUrl(Uri.parse(url))) {
+      throw Exception('Could not launch $url');
     }
   }
 
