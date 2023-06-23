@@ -7,7 +7,10 @@ import 'package:dhali/app_theme.dart';
 import 'package:dhali/marketplace/marketplace_home_screen.dart';
 import 'package:flutter/material.dart';
 
+import 'package:dhali/analytics/analytics.dart';
 import 'package:dhali_wallet/dhali_wallet.dart';
+import 'package:dhali_wallet/xrpl_wallet.dart';
+import 'package:dhali_wallet/xumm_wallet.dart';
 
 import 'package:url_launcher/url_launcher.dart';
 
@@ -20,7 +23,8 @@ enum DrawerIndex {
 
 class NavigationHomeScreen extends StatefulWidget {
   const NavigationHomeScreen(
-      {super.key, this.drawerIndex,
+      {super.key,
+      this.drawerIndex,
       required this.getWallet,
       required this.setWallet,
       required this.getRequest,
@@ -43,6 +47,7 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
   Widget? screenView;
   DrawerIndex? drawerIndex;
   bool _showContinueButton = false;
+  bool _walletIsLinked = false;
 
   @override
   void initState() {
@@ -51,8 +56,9 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
     super.initState();
   }
 
-  void activateWallet() {
+  void linkWallet() {
     setState(() {
+      _walletIsLinked = true;
       _showContinueButton = true;
       screenView = getScreenView(DrawerIndex.Wallet);
     });
@@ -123,7 +129,13 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
                   leading: const Icon(Icons.book, color: AppTheme.dhali_blue),
                   title: const Text('Docs',
                       style: TextStyle(color: AppTheme.nearlyBlack)),
-                  onTap: _launchUrl,
+                  onTap: () {
+                    gtag(
+                        command: "event",
+                        target: "DocsSelected",
+                        parameters: {});
+                    _launchUrl;
+                  },
                 ),
                 ListTile(
                   leading: const Icon(Icons.badge, color: AppTheme.dhali_blue),
@@ -188,6 +200,17 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
             duration: Duration(days: 1),
           );
 
+          final String walletType = widget.getWallet() is XRPLWallet
+              ? "XRPL"
+              : widget.getWallet() is XummWallet
+                  ? "Xumm"
+                  : "Not selected yet";
+
+          gtag(command: "event", target: "WalletScreenShown", parameters: {
+            "type": walletType,
+            "walletIsLinked": _walletIsLinked
+          });
+
           Future(() => ScaffoldMessenger.of(context).showSnackBar(snackbar));
           if (_showContinueButton) {}
           screenView = Scaffold(
@@ -199,7 +222,7 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
               appBarColor: AppTheme.dhali_blue,
               bodyTextColor: Colors.black,
               buttonsColor: AppTheme.dhali_blue,
-              onActivation: activateWallet,
+              onActivation: linkWallet,
             ),
             if (_showContinueButton)
               Positioned(
@@ -210,6 +233,10 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
                   child: FloatingActionButton.extended(
                     label: const Text('Continue to assets page'),
                     onPressed: (() {
+                      gtag(
+                          command: "event",
+                          target: "AssetsScreenShownFromWalletContinue",
+                          parameters: {"walletIsLinked": _walletIsLinked});
                       setState(() {
                         screenView = getScreenView(DrawerIndex.Assets);
                         _showContinueButton = false;
@@ -226,6 +253,11 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
         });
         break;
       case DrawerIndex.Assets:
+        gtag(
+            command: "event",
+            target: "AssetsScreenShown",
+            parameters: {"walletIsLinked": _walletIsLinked});
+
         setState(() {
           screenView = MarketplaceHomeScreen(
             key: const Key("My Assets"), // Key used to force State rebuild
@@ -238,6 +270,10 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
         });
         break;
       case DrawerIndex.Marketplace:
+        gtag(
+            command: "event",
+            target: "MarketplaceScreenShown",
+            parameters: {"walletIsLinked": _walletIsLinked});
         setState(() {
           screenView = MarketplaceHomeScreen(
               key: const Key("Marketplace"), // Key used to force State rebuild

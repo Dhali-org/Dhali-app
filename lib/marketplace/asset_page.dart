@@ -3,7 +3,7 @@ import 'package:dhali/app_theme.dart';
 import 'package:dhali/consumer_workflow.dart';
 import 'package:dhali_wallet/dhali_wallet.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:flutter_markdown_selectionarea/flutter_markdown_selectionarea.dart';
 import 'package:http/http.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -75,7 +75,8 @@ class _AssetPageState extends State<AssetPage> {
                 builder:
                     (BuildContext context, AsyncSnapshot<Response> snapshot) {
                   if (snapshot.hasData) {
-                    return Markdown(
+                    return SelectionArea(
+                        child: Markdown(
                       onTapLink: (text, url, title) {
                         if (url != null) {
                           launchUrl(Uri.parse(url));
@@ -122,7 +123,7 @@ class _AssetPageState extends State<AssetPage> {
                         ),
                       ),
                       data: snapshot.data!.body,
-                    );
+                    ));
                   } else {
                     return const Center(
                         child: CircularProgressIndicator(
@@ -188,7 +189,8 @@ class _AssetPageState extends State<AssetPage> {
                         ),
                         SelectableText.rich(
                           TextSpan(
-                            style: const TextStyle(color: Colors.black, fontSize: 15),
+                            style: const TextStyle(
+                                color: Colors.black, fontSize: 15),
                             children: <TextSpan>[
                               const TextSpan(
                                   text: 'Endpoint: ',

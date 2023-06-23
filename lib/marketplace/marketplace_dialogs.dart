@@ -1,22 +1,23 @@
 import 'dart:async';
-import 'package:dhali/utils/show_popup_text_with_link.dart';
-import 'package:http/http.dart';
-import 'package:logger/logger.dart';
-import "package:universal_html/html.dart" as html;
-import 'package:dhali/utils/Uploaders.dart';
 import 'dart:convert';
 
+import "package:universal_html/html.dart" as html;
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dhali/utils/show_popup_text_with_link.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dropzone/flutter_dropzone.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:dhali/app_theme.dart';
-import 'package:dhali/utils/not_implemented_dialog.dart';
+import 'package:http/http.dart';
+import 'package:logger/logger.dart';
 
-import 'package:dhali/marketplace/model/asset_model.dart';
+import 'package:dhali/analytics/analytics.dart';
+import 'package:dhali/app_theme.dart';
 import 'package:dhali/config.dart' show Config;
+import 'package:dhali/marketplace/model/asset_model.dart';
+import 'package:dhali/utils/Uploaders.dart';
+import 'package:dhali/utils/not_implemented_dialog.dart';
 
 class DataEndpointPair {
   DataEndpointPair({required this.data, required this.endPoint});
@@ -173,6 +174,10 @@ class _DropzoneRunWidgetState extends State<DropzoneRunWidget> {
                                 borderRadius: BorderRadius.circular(4))),
                         onPressed: input != null
                             ? () async {
+                                gtag(
+                                    command: "event",
+                                    target: "NextClicked",
+                                    parameters: {"from": "DropZoneWidget"});
                                 widget.onNextClicked(input!);
                               }
                             : null,
@@ -205,6 +210,8 @@ class _DropzoneRunWidgetState extends State<DropzoneRunWidget> {
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(4))),
         onPressed: () async {
+          gtag(command: "event", target: "FileUploadClicked");
+
           // When we run a unit test, `controller` is not
           // correctly initialised. I don't know exactly why.
           // It looks as though it should get init'd through
@@ -324,6 +331,10 @@ class _DropzoneDeployWidgetState extends State<DropzoneDeployWidget> {
                     ),
                     IconButton(
                       onPressed: () async {
+                        gtag(
+                            command: "event",
+                            target: "HelperButtonClicked",
+                            parameters: {"forAction": "Asset upload"});
                         showPopupTextWithLink(
                             text:
                                 "Please provide a docker image file, in '.tar' format.  For instructions on how to create one, please refer to ",
@@ -367,6 +378,10 @@ class _DropzoneDeployWidgetState extends State<DropzoneDeployWidget> {
                     ),
                     IconButton(
                       onPressed: () async {
+                        gtag(
+                            command: "event",
+                            target: "HelperButtonClicked",
+                            parameters: {"forAction": "README.md upload"});
                         showPopupTextWithLink(
                             text:
                                 "Please provide a 'README.md' file documenting your asset.  For more information on asset creation, please refer to ",
@@ -474,6 +489,12 @@ class _DropzoneDeployWidgetState extends State<DropzoneDeployWidget> {
                                 readmeFile != null &&
                                 textController.text != ""
                             ? () async {
+                                gtag(
+                                    command: "event",
+                                    target: "NextClicked",
+                                    parameters: {
+                                      "from": "DropZoneDeployWidget"
+                                    });
                                 widget.onNextClicked(assetFile!, readmeFile!);
                               }
                             : null,
@@ -506,6 +527,8 @@ class _DropzoneDeployWidgetState extends State<DropzoneDeployWidget> {
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(4))),
         onPressed: () async {
+          gtag(command: "event", target: "FileUploadClicked");
+
           // When we run a unit test, `controller` is not
           // correctly initialised. I don't know exactly why.
           // It looks as though it should get init'd through
@@ -640,7 +663,13 @@ class _ImageScanningWidgetState extends State<ImageScanningWidget> {
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(4))),
             onPressed: scanSuccess
-                ? () => widget.onNextClicked(widget.file)
+                ? () {
+                    gtag(
+                        command: "event",
+                        target: "NextClicked",
+                        parameters: {"from": "ImageScanWidget"});
+                    widget.onNextClicked(widget.file);
+                  }
                 : null,
             icon: const Icon(
               Icons.navigate_next_outlined,
@@ -764,10 +793,16 @@ class _ImageCostWidgetState extends State<ImageCostWidget> {
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(4))),
             onPressed: controller.text.isNotEmpty
-                ? () => widget.onNextClicked(
-                    widget.file,
-                    double.tryParse(
-                        controller.text)!) // != null because input "digitsOnly"
+                ? () {
+                    gtag(
+                        command: "event",
+                        target: "NextClicked",
+                        parameters: {"from": "ImageCostWidget"});
+                    widget.onNextClicked(
+                        widget.file,
+                        double.tryParse(controller
+                            .text)!); // != null because input "digitsOnly"
+                  }
                 : null,
             icon: const Icon(
               Icons.navigate_next_outlined,
@@ -986,6 +1021,10 @@ class DeploymentCostWidget extends StatelessWidget {
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(4))),
                   onPressed: () async {
+                    gtag(
+                        command: "event",
+                        target: "BackClicked",
+                        parameters: {"from": "DeploymentCostWidget"});
                     Navigator.of(context).pop();
                   },
                   icon: const Icon(
@@ -1006,7 +1045,13 @@ class DeploymentCostWidget extends StatelessWidget {
                       backgroundColor: AppTheme.dhali_blue,
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(4))),
-                  onPressed: () => yesClicked(file, assetEarnings),
+                  onPressed: () {
+                    gtag(
+                        command: "event",
+                        target: "YesClicked",
+                        parameters: {"from": "DeploymentCostWidget"});
+                    yesClicked(file, assetEarnings);
+                  },
                   icon: const Icon(
                     Icons.done_outline_rounded,
                     size: 32,
@@ -1154,12 +1199,20 @@ class _DataTransmissionWidgetState extends State<DataTransmissionWidget> {
                                 borderRadius: BorderRadius.circular(4))),
                         onPressed: () {
                           if (deploying) {
+                            gtag(
+                                command: "event",
+                                target: "CancelClicked",
+                                parameters: {"from": "DataTransmissionWidget"});
                             uploadRequest.cancelUpload();
                             setState(() {
                               deploying = false;
                               uploadWasSuccessful = false;
                             });
                           } else {
+                            gtag(
+                                command: "event",
+                                target: "ExitClicked",
+                                parameters: {"from": "DataTransmissionWidget"});
                             Navigator.of(context).pop();
                             Navigator.of(context).pop();
                             Navigator.of(context).pop();
@@ -1237,6 +1290,10 @@ class _DataTransmissionWidgetState extends State<DataTransmissionWidget> {
 }
 
 Widget uploadFailed(BuildContext context, int responseCode) {
+  gtag(
+      command: "event",
+      target: "UploadFailed",
+      parameters: {"errorCode": responseCode.toString()});
   return Center(
     child: Column(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -1419,6 +1476,10 @@ class InferenceCostWidget extends StatelessWidget {
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(4))),
                   onPressed: () async {
+                    gtag(
+                        command: "event",
+                        target: "NoClicked",
+                        parameters: {"from": "InferenceCostWidget"});
                     Navigator.of(context).pop();
                   },
                   icon: const Icon(
@@ -1439,7 +1500,13 @@ class InferenceCostWidget extends StatelessWidget {
                       backgroundColor: AppTheme.dhali_blue,
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(4))),
-                  onPressed: () => yesClicked(file, inferenceCost),
+                  onPressed: () {
+                    gtag(
+                        command: "event",
+                        target: "YesClicked",
+                        parameters: {"from": "InferenceCostWidget"});
+                    yesClicked(file, inferenceCost);
+                  },
                   icon: const Icon(
                     Icons.done_outline_rounded,
                     size: 32,
@@ -1491,6 +1558,7 @@ Widget getDialogTemplate(
         child: IconButton(
           icon: const Icon(Icons.close, size: 60),
           onPressed: () {
+            gtag(command: "event", target: "DialogClosed");
             Navigator.of(context).pop();
           },
         ),
