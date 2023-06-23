@@ -166,8 +166,9 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
   }
 
   Future<void> _launchUrl() async {
-    if (!await launchUrl(Uri.parse("https://dhali.io/docs/#/"))) {
-      throw Exception('Could not launch https://dhali.io/docs/#/');
+    if (!await launchUrl(Uri.parse("https://dhali.io/docs"),
+        mode: LaunchMode.externalApplication)) {
+      throw Exception('Could not launch https://dhali.io/docs');
     }
   }
 
