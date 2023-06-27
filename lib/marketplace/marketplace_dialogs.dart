@@ -1259,7 +1259,7 @@ class _DataTransmissionWidgetState extends State<DataTransmissionWidget> {
           });
         },
         model: file,
-        maxChunkSize: 1024 * 1024 * 10);
+        maxChunkSize: Config.config!["MAX_NUMBER_OF_BYTES_PER_DEPLOY_CHUNK"]);
 
     final response = await uploadRequest.upload(path, sessionID: sessionID)
         as StreamedResponse?;

@@ -36,7 +36,7 @@ const publicConfig = '''
     "ROOT_CONSUMER_URL": "https://kernml-consumer-3mmgxhct.uc.gateway.dev",
     "ROOT_RUN_URL": "https://kernml-run-3mmgxhct.uc.gateway.dev",
     "DHALI_PUBLIC_ADDRESS": "rstbSTpPcyxMsiXwkBxS9tFTrg2JsDNxWk",
-    "DHALI_DEPLOYMENT_COST_PER_CHUNK_DROPS": 5000,
+    "DHALI_DEPLOYMENT_COST_PER_CHUNK_DROPS": 3000,
     "DHALI_EARNINGS_PERCENTAGE_PER_INFERENCE": 20,
     "MAX_NUMBER_OF_BYTES_PER_DEPLOY_CHUNK": 10485760 
 }
