@@ -726,14 +726,14 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                                                                   ((asset.size /
                                                                               Config.config!["MAX_NUMBER_OF_BYTES_PER_DEPLOY_CHUNK"])
                                                                           .floor() +
-                                                                      1);
+                                                                      3); // TODO: Why? We add a buffer of 3 to guarantee success
                                                               final readmeDeploymentCost = Config
                                                                           .config![
                                                                       "DHALI_DEPLOYMENT_COST_PER_CHUNK_DROPS"] *
                                                                   ((readme.size /
                                                                               Config.config!["MAX_NUMBER_OF_BYTES_PER_DEPLOY_CHUNK"])
                                                                           .floor() +
-                                                                      1);
+                                                                      3); // TODO: Why? We add a buffer of 3 to guarantee success
                                                               final dhaliEarnings =
                                                                   Config.config![
                                                                       "DHALI_EARNINGS_PERCENTAGE_PER_INFERENCE"];
@@ -829,7 +829,7 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                                                                                       Map<String, String> payment = snapshot.data!;
                                                                                       return DataTransmissionWidget(
                                                                                         getUploader: ({required payment, required getRequest, required dynamic Function(double) progressStatus, required int maxChunkSize, required AssetModel model}) {
-                                                                                          return DeployUploader(payment: payment, getRequest: getRequest, progressStatus: progressStatus, model: model, maxChunkSize: Config.config!["MAX_NUMBER_OF_BYTES_PER_DEPLOY_CHUNK"], getWallet: widget.getWallet, assetEarningRate: assetEarnings);
+                                                                                          return DeployUploader(payment: payment, getRequest: getRequest, progressStatus: progressStatus, model: model, maxChunkSize: maxChunkSize, getWallet: widget.getWallet, assetEarningRate: assetEarnings);
                                                                                         },
                                                                                         payment: payment,
                                                                                         getRequest: widget.getRequest,
