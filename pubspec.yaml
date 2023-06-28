@@ -52,6 +52,7 @@ dependencies:
     url_launcher: ^6.1.10
     bip39: ^1.0.6
     uuid: ^3.0.7
+    split_view: ^3.2.1
     dhali_wallet:
       git:
         url: "https://github.com/Dhali-org/Dhali-wallet.git"
