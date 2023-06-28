@@ -33,10 +33,12 @@ class NavigationHomeScreen extends StatefulWidget {
       required this.getWallet,
       required this.setWallet,
       required this.getRequest,
-      required this.firestore});
+      required this.firestore,
+      this.queryParams});
 
   final BaseRequest Function(String method, String path) getRequest;
   final FirebaseFirestore firestore;
+  final Map<String, String>? queryParams;
 
   final DrawerIndex? drawerIndex;
   final DhaliWallet? Function() getWallet;
@@ -54,10 +56,17 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
   bool _showContinueButton = false;
   bool _walletIsLinked = false;
   bool _showWalletPrompt = true;
-  bool _tray_open = true;
+  bool _tray_open = false;
 
   @override
   void initState() {
+    if (widget.queryParams != null) {
+      final String? paramValue = widget.queryParams!['tray_open'];
+      if (paramValue != null && MediaQuery.of(context).size.width > 1200) {
+        _tray_open = true;
+      }
+    }
+
     drawerIndex == Null ? DrawerIndex.Marketplace : drawerIndex;
     screenView = getScreenView(drawerIndex);
     super.initState();

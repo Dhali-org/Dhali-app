@@ -144,10 +144,14 @@ class _MyAppState extends State<MyApp> {
             }
 
             return MaterialPageRoute(
-                builder: (context) => asset,
-                settings: RouteSettings(name: settings.name));
+                builder: (context) => asset, settings: settings);
           }
-          return null;
+
+          final Uri uri = Uri.parse(settings.name!);
+          final Map<String, String> queryParams = uri.queryParameters;
+          return MaterialPageRoute(
+              settings: settings,
+              builder: (context) => getHomeScreen(queryParams: queryParams));
         },
         title: title,
         debugShowCheckedModeBanner: false,
@@ -156,14 +160,18 @@ class _MyAppState extends State<MyApp> {
           textTheme: AppTheme.textTheme,
           platform: TargetPlatform.iOS,
         ),
-        home: HomeWithBanner(
-          child: NavigationHomeScreen(
-            getWallet: getWallet,
-            setWallet: setWallet,
-            firestore: FirebaseFirestore.instance,
-            getRequest: widget.getRequest,
-          ),
-        ));
+        home: getHomeScreen());
+  }
+
+  Widget getHomeScreen({Map<String, String>? queryParams}) {
+    return HomeWithBanner(
+      child: NavigationHomeScreen(
+          getWallet: getWallet,
+          setWallet: setWallet,
+          firestore: FirebaseFirestore.instance,
+          getRequest: widget.getRequest,
+          queryParams: queryParams),
+    );
   }
 
   DhaliWallet? getWallet() {
