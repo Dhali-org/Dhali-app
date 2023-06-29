@@ -290,7 +290,7 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
           screenView = Scaffold(
               body: Stack(children: [
             WalletHomeScreen(
-              title: "wallet",
+              title: "Wallet",
               getWallet: widget.getWallet,
               setWallet: widget.setWallet,
               appBarColor: AppTheme.dhali_blue,
