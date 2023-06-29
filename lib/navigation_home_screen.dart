@@ -1,14 +1,16 @@
 import 'dart:js' as js;
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dhali_wallet/dhali_wallet_widget.dart';
-import 'package:http/http.dart';
-import 'package:dhali/app_theme.dart';
-import 'package:dhali/marketplace/marketplace_home_screen.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:http/http.dart';
+
 import 'package:dhali/analytics/analytics.dart';
+import 'package:dhali/app_theme.dart';
+import 'package:dhali/marketplace/marketplace_home_screen.dart';
 import 'package:dhali_wallet/dhali_wallet.dart';
+import 'package:dhali_wallet/dhali_wallet_widget.dart';
 import 'package:dhali_wallet/xrpl_wallet.dart';
 import 'package:dhali_wallet/xumm_wallet.dart';
 
@@ -48,6 +50,7 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
   DrawerIndex? drawerIndex;
   bool _showContinueButton = false;
   bool _walletIsLinked = false;
+  bool _showWalletPrompt = true;
 
   @override
   void initState() {
@@ -59,6 +62,7 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
   void linkWallet() {
     setState(() {
       _walletIsLinked = true;
+      _showWalletPrompt = false;
       _showContinueButton = true;
       screenView = getScreenView(DrawerIndex.Wallet);
     });
@@ -75,6 +79,36 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
           appBar: AppBar(
             backgroundColor: AppTheme.white,
             foregroundColor: AppTheme.nearlyBlack,
+            leading: Builder(
+              builder: (BuildContext context) {
+                return Stack(
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.menu),
+                      iconSize: 35,
+                      onPressed: () {
+                        Scaffold.of(context).openDrawer();
+                      },
+                    ),
+                    if (_showWalletPrompt)
+                      Positioned(
+                        right: 5,
+                        top: 5,
+                        child: Container(
+                          padding: const EdgeInsets.all(1),
+                          child: const Icon(
+                            CupertinoIcons
+                                .exclamationmark_circle_fill, // Your notification icon
+                            color: Colors.red,
+                            size:
+                                18, // Adjust this to make your icon bigger or smaller
+                          ),
+                        ),
+                      ),
+                  ],
+                );
+              },
+            ),
           ),
           drawer: Drawer(
             backgroundColor: AppTheme.white,
@@ -111,14 +145,34 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
                   thickness: 1,
                   color: Colors.grey,
                 ),
-                ListTile(
-                  leading: const Icon(Icons.wallet, color: AppTheme.dhali_blue),
-                  title: const Text('Wallet',
-                      style: TextStyle(color: AppTheme.nearlyBlack)),
-                  onTap: () {
-                    getScreenView(DrawerIndex.Wallet);
-                    Navigator.pop(context);
-                  },
+                Stack(
+                  children: <Widget>[
+                    ListTile(
+                      leading:
+                          const Icon(Icons.wallet, color: AppTheme.dhali_blue),
+                      title: const Text('Wallet',
+                          style: TextStyle(color: AppTheme.nearlyBlack)),
+                      onTap: () {
+                        getScreenView(DrawerIndex.Wallet);
+                        Navigator.pop(context);
+                      },
+                    ),
+                    if (_showWalletPrompt)
+                      Positioned(
+                        left: 30,
+                        top: 5,
+                        child: Container(
+                          padding: const EdgeInsets.all(1),
+                          child: const Icon(
+                            CupertinoIcons
+                                .exclamationmark_circle_fill, // Your notification icon
+                            color: Colors.red,
+                            size:
+                                18, // Adjust this to make your icon bigger or smaller
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
                 ListTile(
                   leading: const Icon(Icons.token, color: AppTheme.dhali_blue),
@@ -207,8 +261,10 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
         getWallet: widget.getWallet,
         setWallet: widget.setWallet,
         getFirestore: getFirestore);
+    _showWalletPrompt = !_walletIsLinked;
     switch (drawerIndex) {
       case DrawerIndex.Wallet:
+        _showWalletPrompt = false;
         setState(() {
           SnackBar snackbar;
           snackbar = const SnackBar(
