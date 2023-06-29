@@ -14,6 +14,8 @@ import 'package:dhali/config.dart' show Config;
 import 'package:dhali/marketplace/asset_page.dart';
 import 'package:dhali/marketplace/model/marketplace_list_data.dart';
 
+import 'package:url_strategy/url_strategy.dart';
+
 Future<void> initializeApp() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
@@ -35,6 +37,7 @@ MultipartRequest Function(String method, String path) getRequestFunction =
 
 void main() async {
   await initializeApp();
+  setPathUrlStrategy();
   runApp(MyApp(getRequest: getRequestFunction));
 }
 
