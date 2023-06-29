@@ -17,7 +17,7 @@ void gtag(
     Map<String, dynamic>? parameters}) async {
   if (!hasProperty(html.window, 'gtag')) {
     _logger.w(
-        "gtag function not found in the JavaScript global context. Exiting.");
+        "gtag function not found in the JavaScript global context. The requested analytic will not be emitted.");
     return;
   }
   if (parameters == null) {
