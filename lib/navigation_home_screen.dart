@@ -1,5 +1,6 @@
 import 'dart:js' as js;
 
+import 'package:dhali/utils/display_utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -9,6 +10,7 @@ import 'package:http/http.dart';
 import 'package:dhali/analytics/analytics.dart';
 import 'package:dhali/app_theme.dart';
 import 'package:dhali/marketplace/marketplace_home_screen.dart';
+import 'package:dhali/utils/not_implemented_dialog.dart';
 import 'package:dhali_wallet/dhali_wallet.dart';
 import 'package:dhali_wallet/dhali_wallet_widget.dart';
 import 'package:dhali_wallet/xrpl_wallet.dart';
@@ -178,10 +180,16 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
                   leading: const Icon(Icons.token, color: AppTheme.dhali_blue),
                   title: const Text('My assets',
                       style: TextStyle(color: AppTheme.nearlyBlack)),
-                  onTap: () {
-                    getScreenView(DrawerIndex.Assets);
-                    Navigator.pop(context);
-                  },
+                  onTap: isDesktopResolution(context)
+                      ? () {
+                          getScreenView(DrawerIndex.Assets);
+                          Navigator.pop(context);
+                        }
+                      : () {
+                          showNotImplentedWidget(
+                              context: context,
+                              feature: "Mobile asset administration");
+                        },
                 ),
                 ListTile(
                   leading: const Icon(Icons.shop, color: AppTheme.dhali_blue),
@@ -299,30 +307,56 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
               onActivation: linkWallet,
             ),
             if (_showContinueButton)
-              Positioned(
-                bottom: 100,
-                left: 0,
-                right: 0,
-                child: Center(
-                  child: FloatingActionButton.extended(
-                    label: const Text('Continue to assets page'),
-                    onPressed: (() {
-                      gtag(
-                          command: "event",
-                          target: "AssetsScreenShownFromWalletContinue",
-                          parameters: {"walletIsLinked": _walletIsLinked});
-                      setState(() {
-                        screenView = getScreenView(DrawerIndex.Assets);
-                        _showContinueButton = false;
-                      });
-                    }),
-                    backgroundColor: AppTheme.dhali_blue,
-                    foregroundColor: AppTheme.white,
-                    hoverColor: AppTheme.dhali_blue_highlight,
-                    focusColor: AppTheme.dhali_blue_highlight,
+              if (isDesktopResolution(context))
+                Positioned(
+                  bottom: 100,
+                  left: 0,
+                  right: 0,
+                  child: Center(
+                    child: FloatingActionButton.extended(
+                      label: const Text('Continue to assets page'),
+                      onPressed: (() {
+                        gtag(
+                            command: "event",
+                            target: "AssetsScreenShownFromWalletContinue",
+                            parameters: {"walletIsLinked": _walletIsLinked});
+                        setState(() {
+                          screenView = getScreenView(DrawerIndex.Assets);
+                          _showContinueButton = false;
+                        });
+                      }),
+                      backgroundColor: AppTheme.dhali_blue,
+                      foregroundColor: AppTheme.white,
+                      hoverColor: AppTheme.dhali_blue_highlight,
+                      focusColor: AppTheme.dhali_blue_highlight,
+                    ),
                   ),
-                ),
-              )
+                )
+              else
+                Positioned(
+                  bottom: 50,
+                  left: 0,
+                  right: 0,
+                  child: Center(
+                    child: FloatingActionButton.extended(
+                      label: const Text('Continue to marketplace'),
+                      onPressed: (() {
+                        gtag(
+                            command: "event",
+                            target: "MarketplaceScreenShownFromWalletContinue",
+                            parameters: {"walletIsLinked": _walletIsLinked});
+                        setState(() {
+                          screenView = getScreenView(DrawerIndex.Marketplace);
+                          _showContinueButton = false;
+                        });
+                      }),
+                      backgroundColor: AppTheme.dhali_blue,
+                      foregroundColor: AppTheme.white,
+                      hoverColor: AppTheme.dhali_blue_highlight,
+                      focusColor: AppTheme.dhali_blue_highlight,
+                    ),
+                  ),
+                )
           ]));
         });
         break;
