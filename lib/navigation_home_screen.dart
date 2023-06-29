@@ -55,15 +55,18 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
   DrawerIndex? drawerIndex;
   bool _showContinueButton = false;
   bool _walletIsLinked = false;
-  bool _showWalletPrompt = true;
+  bool _showWalletPrompt = false;
   bool _tray_open = false;
 
   @override
   void initState() {
     if (widget.queryParams != null) {
-      final String? paramValue = widget.queryParams!['tray_open'];
-      if (paramValue != null && MediaQuery.of(context).size.width > 1200) {
+      if (widget.queryParams!['tray_open'] != null &&
+          isDesktopResolution(context)) {
         _tray_open = true;
+      }
+      if (widget.queryParams!['show_wallet_prompts'] != null) {
+        _showWalletPrompt = true;
       }
     }
 
@@ -300,7 +303,9 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
         getWallet: widget.getWallet,
         setWallet: widget.setWallet,
         getFirestore: getFirestore);
-    _showWalletPrompt = !_walletIsLinked;
+    _showWalletPrompt = widget.queryParams != null &&
+        widget.queryParams!['show_wallet_prompts'] != null &&
+        !_walletIsLinked;
     switch (drawerIndex) {
       case DrawerIndex.Wallet:
         _showWalletPrompt = false;
