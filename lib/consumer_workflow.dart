@@ -14,6 +14,8 @@ import 'package:dhali/marketplace/marketplace_dialogs.dart';
 import 'package:dhali/marketplace/model/asset_model.dart';
 import 'package:dhali/marketplace/model/marketplace_list_data.dart';
 import 'package:dhali/utils/Uploaders.dart';
+import 'package:dhali/utils/display_utils.dart';
+import 'package:dhali/utils/row_else_column.dart';
 import 'package:dhali_wallet/dhali_wallet.dart';
 
 Widget consumerJourney(
@@ -201,13 +203,15 @@ class _DownloadFileWidgetState extends State<DownloadFileWidget> {
   Widget build(BuildContext context) {
     return Container(
         child: Center(
-            child: Row(
+            child: RowElseColumn(
+      isRow: isDesktopResolution(context),
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         ElevatedButton.icon(
             style: ElevatedButton.styleFrom(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+                padding: EdgeInsets.symmetric(
+                    vertical: isDesktopResolution(context) ? 20 : 10,
+                    horizontal: isDesktopResolution(context) ? 20 : 10),
                 backgroundColor: AppTheme.grey,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(4))),
@@ -241,21 +245,23 @@ class _DownloadFileWidgetState extends State<DownloadFileWidget> {
                 ..download = 'output.txt'
                 ..dispatchEvent(html.Event.eventType('MouseEvent', 'click'));
             },
-            icon: const Icon(
+            icon: Icon(
               Icons.download,
-              size: 32,
+              size: isDesktopResolution(context) ? 32 : 16,
             ),
-            label: const Text(
+            label: Text(
               "Download result",
-              style: TextStyle(fontSize: 30),
+              style:
+                  TextStyle(fontSize: isDesktopResolution(context) ? 30 : 15),
             )),
         const SizedBox(
           width: 16,
         ),
         ElevatedButton.icon(
             style: ElevatedButton.styleFrom(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+                padding: EdgeInsets.symmetric(
+                    vertical: isDesktopResolution(context) ? 20 : 10,
+                    horizontal: isDesktopResolution(context) ? 20 : 10),
                 backgroundColor: AppTheme.grey,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(4))),
@@ -263,13 +269,14 @@ class _DownloadFileWidgetState extends State<DownloadFileWidget> {
               Navigator.of(context).pop();
               Navigator.of(context).pop();
             },
-            icon: const Icon(
+            icon: Icon(
               Icons.exit_to_app,
-              size: 32,
+              size: isDesktopResolution(context) ? 32 : 16,
             ),
-            label: const Text(
+            label: Text(
               "Exit",
-              style: TextStyle(fontSize: 30),
+              style:
+                  TextStyle(fontSize: isDesktopResolution(context) ? 30 : 15),
             ))
       ],
     )));
