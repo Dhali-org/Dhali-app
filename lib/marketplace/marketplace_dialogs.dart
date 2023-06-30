@@ -18,6 +18,8 @@ import 'package:dhali/config.dart' show Config;
 import 'package:dhali/marketplace/model/asset_model.dart';
 import 'package:dhali/utils/Uploaders.dart';
 import 'package:dhali/utils/not_implemented_dialog.dart';
+import 'package:dhali/utils/display_utils.dart';
+import 'package:dhali/utils/row_else_column.dart';
 
 class DataEndpointPair {
   DataEndpointPair({required this.data, required this.endPoint});
@@ -82,41 +84,39 @@ class _DropzoneRunWidgetState extends State<DropzoneRunWidget> {
                           ? "Selected input file: ${input!.fileName}"
                           : "No input file selected",
                       style: TextStyle(
-                          fontSize: 20,
+                          fontSize: isDesktopResolution(context) ? 20 : 10,
                           color: isHighlighted
                               ? AppTheme.nearlyWhite
                               : AppTheme.nearlyBlack),
                     ),
-                    const SizedBox(
-                      width: 16,
+                    SizedBox(
+                      width: isDesktopResolution(context) ? 16 : 5,
+                      height: isDesktopResolution(context) ? 16 : 5,
                     ),
-                    IconButton(
-                      onPressed: () async {
-                        showNotImplentedWidget(
-                            context: context,
-                            feature: "Helper: Selected input file");
-                        // TODO : Add link to documentation for docker prep
-                      },
-                      icon: const Icon(
-                        Icons.help_outline_outlined,
-                        size: 32,
+                    if (input == null)
+                      IconButton(
+                        onPressed: () async {
+                          showNotImplentedWidget(
+                              context: context,
+                              feature: "Helper: Selected input file");
+                          // TODO : Add link to documentation for docker prep
+                        },
+                        icon: Icon(
+                          Icons.help_outline_outlined,
+                          size: isDesktopResolution(context) ? 32 : 16,
+                        ),
+                      )
+                    else
+                      Icon(
+                        Icons.done_outline_rounded,
+                        color: Colors.green,
+                        size: isDesktopResolution(context) ? 80 : 40,
                       ),
-                    ),
-                    const SizedBox(
-                      width: 15,
-                    ),
-                    input != null
-                        ? const Icon(
-                            Icons.done_outline_rounded,
-                            color: Colors.green,
-                            size: 80,
-                          )
-                        : Container()
                   ],
                 ),
-                const Icon(
+                Icon(
                   Icons.cloud_upload_rounded,
-                  size: 80,
+                  size: isDesktopResolution(context) ? 80 : 40,
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -125,13 +125,14 @@ class _DropzoneRunWidgetState extends State<DropzoneRunWidget> {
                       textAlign: TextAlign.center,
                       "Drag or select your input file",
                       style: TextStyle(
-                          fontSize: 30,
+                          fontSize: isDesktopResolution(context) ? 30 : 10,
                           color: isHighlighted
                               ? AppTheme.nearlyWhite
                               : AppTheme.nearlyBlack),
                     ),
-                    const SizedBox(
-                      width: 16,
+                    SizedBox(
+                      height: isDesktopResolution(context) ? 16 : 2,
+                      width: isDesktopResolution(context) ? 16 : 2,
                     ),
                     IconButton(
                       onPressed: () async {
@@ -140,29 +141,26 @@ class _DropzoneRunWidgetState extends State<DropzoneRunWidget> {
                             feature: "Helper: Drag or select your input file");
                         // TODO : Add link to documentation for docker prep
                       },
-                      icon: const Icon(
+                      icon: Icon(
                         Icons.help_outline_outlined,
-                        size: 32,
+                        size: isDesktopResolution(context) ? 32 : 16,
                       ),
                     )
                   ],
                 ),
-                const SizedBox(
-                  height: 16,
+                SizedBox(
+                  height: isDesktopResolution(context) ? 16 : 16,
+                  width: isDesktopResolution(context) ? 32 : 16,
                 ),
-                const SizedBox(
-                  width: 16,
-                ),
-                Row(
+                RowElseColumn(
+                  isRow: isDesktopResolution(context),
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     getFileUploadButton(const Key("choose_run_input"),
                         "Choose input file", [], AppTheme.secondary),
-                    const SizedBox(
-                      width: 16,
-                    ),
-                    const SizedBox(
-                      width: 16,
+                    SizedBox(
+                      width: isDesktopResolution(context) ? 16 : 8,
+                      height: isDesktopResolution(context) ? 16 : 8,
                     ),
                     ElevatedButton.icon(
                         key: const Key("use_docker_image_button"),
@@ -181,13 +179,14 @@ class _DropzoneRunWidgetState extends State<DropzoneRunWidget> {
                                 widget.onNextClicked(input!);
                               }
                             : null,
-                        icon: const Icon(
+                        icon: Icon(
                           Icons.navigate_next_outlined,
-                          size: 32,
+                          size: isDesktopResolution(context) ? 32 : 16,
                         ),
-                        label: const Text(
+                        label: Text(
                           "Next",
-                          style: TextStyle(fontSize: 30),
+                          style: TextStyle(
+                              fontSize: isDesktopResolution(context) ? 30 : 16),
                         )),
                   ],
                 )
@@ -237,13 +236,14 @@ class _DropzoneRunWidgetState extends State<DropzoneRunWidget> {
             }
           }
         },
-        icon: const Icon(
+        icon: Icon(
           Icons.search,
-          size: 32,
+          size: isDesktopResolution(context) ? 32 : 16,
         ),
         label: Text(
           text,
-          style: const TextStyle(fontSize: 30),
+          textAlign: TextAlign.center,
+          style: TextStyle(fontSize: isDesktopResolution(context) ? 30 : 12),
         ));
   }
 
@@ -1141,15 +1141,15 @@ class _DataTransmissionWidgetState extends State<DataTransmissionWidget> {
           ? Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const SizedBox(
-                  height: 16,
+                SizedBox(
+                  height: isDesktopResolution(context) ? 16 : 8,
                 ),
                 LinearProgressIndicator(
                   value: progressBarPercentage,
                   semanticsLabel: 'Linear progress indicator',
                 ),
-                const SizedBox(
-                  height: 16,
+                SizedBox(
+                  height: isDesktopResolution(context) ? 16 : 8,
                 ),
                 deploying
                     ? Column(
@@ -1161,19 +1161,24 @@ class _DataTransmissionWidgetState extends State<DataTransmissionWidget> {
                             "Uploading '${currentFileUploading.toString()}: "
                             "file $currentFileIndexUploading of ${widget.data.length}'."
                             "\nPlease wait.",
-                            style: const TextStyle(
-                                fontSize: 30, color: AppTheme.nearlyBlack),
+                            style: TextStyle(
+                                fontSize:
+                                    isDesktopResolution(context) ? 30 : 15,
+                                color: AppTheme.nearlyBlack),
                           ),
-                          const SizedBox(height: 20),
+                          SizedBox(
+                              height: isDesktopResolution(context) ? 20 : 10),
                           const CircularProgressIndicator(),
                         ],
                       )
                     : responseCode == 200
-                        ? const Text(
-                            key: Key("upload_success_info"),
+                        ? Text(
+                            key: const Key("upload_success_info"),
                             "Your upload was successful",
                             style: TextStyle(
-                                fontSize: 30, color: AppTheme.nearlyBlack),
+                                fontSize:
+                                    isDesktopResolution(context) ? 30 : 15,
+                                color: AppTheme.nearlyBlack),
                           )
                         : Text(
                             key: const Key("upload_failed_warning"),
@@ -1181,19 +1186,24 @@ class _DataTransmissionWidgetState extends State<DataTransmissionWidget> {
                             "Upload failed"
                             "\nStatus code: ${responseCode.toString()}"
                             "\nReason: ${response!.reasonPhrase}",
-                            style: const TextStyle(
-                                fontSize: 30, color: AppTheme.nearlyBlack),
+                            style: TextStyle(
+                                fontSize:
+                                    isDesktopResolution(context) ? 30 : 15,
+                                color: AppTheme.nearlyBlack),
                           ),
-                const SizedBox(
-                  height: 16,
+                SizedBox(
+                  height: isDesktopResolution(context) ? 16 : 8,
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     ElevatedButton.icon(
                         style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 20, horizontal: 20),
+                            padding: EdgeInsets.symmetric(
+                                vertical:
+                                    isDesktopResolution(context) ? 20 : 10,
+                                horizontal:
+                                    isDesktopResolution(context) ? 20 : 10),
                             backgroundColor: AppTheme.dhali_blue,
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(4))),
@@ -1222,16 +1232,14 @@ class _DataTransmissionWidgetState extends State<DataTransmissionWidget> {
                           responseCode == 200
                               ? Icons.done_outline_rounded
                               : Icons.close_outlined,
-                          size: 32,
+                          size: isDesktopResolution(context) ? 32 : 16,
                         ),
                         label: Text(
                           key: const Key("exit_deployment_dialogs"),
                           deploying ? "Cancel" : "Exit",
-                          style: const TextStyle(fontSize: 30),
+                          style: TextStyle(
+                              fontSize: isDesktopResolution(context) ? 30 : 15),
                         )),
-                    const SizedBox(
-                      width: 32,
-                    ),
                   ],
                 )
               ],
@@ -1456,22 +1464,28 @@ class InferenceCostWidget extends StatelessWidget {
           ),
           Text(
             "Running this asset typically costs $inferenceCost drops",
-            style: const TextStyle(fontSize: 25, color: AppTheme.nearlyBlack),
+            style: TextStyle(
+                fontSize: isDesktopResolution(context) ? 25 : 12,
+                color: AppTheme.nearlyBlack),
           ),
-          const Text(
+          Text(
             "Are you sure you want to continue?",
-            style: TextStyle(fontSize: 25, color: AppTheme.nearlyBlack),
+            style: TextStyle(
+                fontSize: isDesktopResolution(context) ? 25 : 12,
+                color: AppTheme.nearlyBlack),
           ),
-          const SizedBox(
-            height: 16,
+          SizedBox(
+            height: isDesktopResolution(context) ? 16 : 8,
+            width: isDesktopResolution(context) ? 16 : 8,
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               ElevatedButton.icon(
                   style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 20, horizontal: 20),
+                      padding: EdgeInsets.symmetric(
+                          vertical: isDesktopResolution(context) ? 20 : 10,
+                          horizontal: isDesktopResolution(context) ? 20 : 10),
                       backgroundColor: AppTheme.secondary,
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(4))),
@@ -1482,21 +1496,23 @@ class InferenceCostWidget extends StatelessWidget {
                         parameters: {"from": "InferenceCostWidget"});
                     Navigator.of(context).pop();
                   },
-                  icon: const Icon(
+                  icon: Icon(
                     Icons.close_outlined,
-                    size: 32,
+                    size: isDesktopResolution(context) ? 32 : 16,
                   ),
-                  label: const Text(
+                  label: Text(
                     "No",
-                    style: TextStyle(fontSize: 30),
+                    style: TextStyle(
+                        fontSize: isDesktopResolution(context) ? 30 : 15),
                   )),
-              const SizedBox(
-                width: 16,
+              SizedBox(
+                width: isDesktopResolution(context) ? 16 : 8,
               ),
               ElevatedButton.icon(
                   style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 20, horizontal: 20),
+                      padding: EdgeInsets.symmetric(
+                          vertical: isDesktopResolution(context) ? 20 : 10,
+                          horizontal: isDesktopResolution(context) ? 20 : 10),
                       backgroundColor: AppTheme.dhali_blue,
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(4))),
@@ -1507,13 +1523,14 @@ class InferenceCostWidget extends StatelessWidget {
                         parameters: {"from": "InferenceCostWidget"});
                     yesClicked(file, inferenceCost);
                   },
-                  icon: const Icon(
+                  icon: Icon(
                     Icons.done_outline_rounded,
-                    size: 32,
+                    size: isDesktopResolution(context) ? 32 : 16,
                   ),
-                  label: const Text(
+                  label: Text(
                     "Yes",
-                    style: TextStyle(fontSize: 30),
+                    style: TextStyle(
+                        fontSize: isDesktopResolution(context) ? 30 : 15),
                   )),
               const SizedBox(
                 width: 32,
@@ -1545,7 +1562,8 @@ Widget getDialogTemplate(
             padding: EdgeInsets.zero,
             child: Center(
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 80),
+                padding: EdgeInsets.symmetric(
+                    horizontal: isDesktopResolution(context) ? 80 : 40),
                 child: child,
               ),
             ),
@@ -1553,10 +1571,10 @@ Widget getDialogTemplate(
         ),
       ),
       Positioned(
-        right: 55,
+        right: isDesktopResolution(context) ? 55 : 25,
         top: 15,
         child: IconButton(
-          icon: const Icon(Icons.close, size: 60),
+          icon: Icon(Icons.close, size: isDesktopResolution(context) ? 60 : 30),
           onPressed: () {
             gtag(command: "event", target: "DialogClosed");
             Navigator.of(context).pop();
