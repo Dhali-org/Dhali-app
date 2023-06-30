@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:split_view/split_view.dart';
 import 'package:http/http.dart';
 
 import 'package:dhali/analytics/analytics.dart';
@@ -32,10 +33,12 @@ class NavigationHomeScreen extends StatefulWidget {
       required this.getWallet,
       required this.setWallet,
       required this.getRequest,
-      required this.firestore});
+      required this.firestore,
+      this.queryParams});
 
   final BaseRequest Function(String method, String path) getRequest;
   final FirebaseFirestore firestore;
+  final Map<String, String>? queryParams;
 
   final DrawerIndex? drawerIndex;
   final DhaliWallet? Function() getWallet;
@@ -52,10 +55,21 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
   DrawerIndex? drawerIndex;
   bool _showContinueButton = false;
   bool _walletIsLinked = false;
-  bool _showWalletPrompt = true;
+  bool _showWalletPrompt = false;
+  bool _tray_open = false;
 
   @override
   void initState() {
+    if (widget.queryParams != null) {
+      if (widget.queryParams!['tray_open'] != null &&
+          isDesktopResolution(context)) {
+        _tray_open = true;
+      }
+      if (widget.queryParams!['show_wallet_prompts'] != null) {
+        _showWalletPrompt = true;
+      }
+    }
+
     drawerIndex == Null ? DrawerIndex.Marketplace : drawerIndex;
     screenView = getScreenView(drawerIndex);
     super.initState();
@@ -78,171 +92,191 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
         top: false,
         bottom: false,
         child: Scaffold(
-          appBar: AppBar(
-            backgroundColor: AppTheme.white,
-            foregroundColor: AppTheme.nearlyBlack,
-            leading: Builder(
-              builder: (BuildContext context) {
-                return Stack(
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.menu),
-                      iconSize: 35,
-                      onPressed: () {
-                        Scaffold.of(context).openDrawer();
-                      },
-                    ),
-                    if (_showWalletPrompt)
-                      Positioned(
-                        right: 5,
-                        top: 5,
-                        child: Container(
-                          padding: const EdgeInsets.all(1),
-                          child: const Icon(
-                            CupertinoIcons
-                                .exclamationmark_circle_fill, // Your notification icon
-                            color: Colors.red,
-                            size:
-                                18, // Adjust this to make your icon bigger or smaller
+          appBar: !_tray_open
+              ? AppBar(
+                  backgroundColor: AppTheme.white,
+                  foregroundColor: AppTheme.nearlyBlack,
+                  leading: Builder(
+                    builder: (BuildContext context) {
+                      return Stack(
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.menu),
+                            iconSize: 35,
+                            onPressed: () {
+                              Scaffold.of(context).openDrawer();
+                            },
                           ),
-                        ),
-                      ),
-                  ],
-                );
-              },
-            ),
-          ),
-          drawer: Drawer(
-            backgroundColor: AppTheme.white,
-            child: ListView(
-              padding: EdgeInsets.zero,
-              children: <Widget>[
-                DrawerHeader(
-                  decoration: const BoxDecoration(
-                    color: AppTheme.white,
+                          if (_showWalletPrompt)
+                            Positioned(
+                              right: 5,
+                              top: 5,
+                              child: Container(
+                                padding: const EdgeInsets.all(1),
+                                child: const Icon(
+                                  CupertinoIcons
+                                      .exclamationmark_circle_fill, // Your notification icon
+                                  color: Colors.red,
+                                  size:
+                                      18, // Adjust this to make your icon bigger or smaller
+                                ),
+                              ),
+                            ),
+                        ],
+                      );
+                    },
                   ),
-                  child: SizedBox(
-                    height: 100, // Or any other height that suits your design
-                    child: FittedBox(
-                      fit: BoxFit.contain,
-                      child: Image.asset('assets/images/dhali-logo.png'),
-                    ),
-                  ),
-                ),
-                ListTile(
-                  leading:
-                      const Icon(Icons.home_filled, color: AppTheme.dhali_blue),
-                  title: const Text('Home',
-                      style: TextStyle(color: AppTheme.nearlyBlack)),
-                  onTap: () {
-                    gtag(
-                        command: "event",
-                        target: "HomeSelected",
-                        parameters: {});
-                    _launchUrl("https://dhali.io");
-                  },
-                ),
-                const Divider(
-                  height: 20,
-                  thickness: 1,
-                  color: Colors.grey,
-                ),
-                Stack(
-                  children: <Widget>[
-                    ListTile(
-                      leading:
-                          const Icon(Icons.wallet, color: AppTheme.dhali_blue),
-                      title: const Text('Wallet',
-                          style: TextStyle(color: AppTheme.nearlyBlack)),
-                      onTap: () {
-                        getScreenView(DrawerIndex.Wallet);
-                        Navigator.pop(context);
-                      },
-                    ),
-                    if (_showWalletPrompt)
-                      Positioned(
-                        left: 30,
-                        top: 5,
-                        child: Container(
-                          padding: const EdgeInsets.all(1),
-                          child: const Icon(
-                            CupertinoIcons
-                                .exclamationmark_circle_fill, // Your notification icon
-                            color: Colors.red,
-                            size:
-                                18, // Adjust this to make your icon bigger or smaller
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
-                ListTile(
-                  leading: const Icon(Icons.token, color: AppTheme.dhali_blue),
-                  title: const Text('My assets',
-                      style: TextStyle(color: AppTheme.nearlyBlack)),
-                  onTap: isDesktopResolution(context)
-                      ? () {
-                          getScreenView(DrawerIndex.Assets);
-                          Navigator.pop(context);
-                        }
-                      : () {
-                          showNotImplentedWidget(
-                              context: context,
-                              feature: "Mobile asset administration");
-                        },
-                ),
-                ListTile(
-                  leading: const Icon(Icons.shop, color: AppTheme.dhali_blue),
-                  title: const Text('Marketplace',
-                      style: TextStyle(color: AppTheme.nearlyBlack)),
-                  onTap: () {
-                    getScreenView(DrawerIndex.Marketplace);
-                    Navigator.pop(context);
-                  },
-                ),
-                const Divider(
-                  height: 20,
-                  thickness: 1,
-                  color: Colors.grey,
-                ),
-                ListTile(
-                  leading: const Icon(Icons.book, color: AppTheme.dhali_blue),
-                  title: const Text('Docs',
-                      style: TextStyle(color: AppTheme.nearlyBlack)),
-                  onTap: () {
-                    gtag(
-                        command: "event",
-                        target: "DocsSelected",
-                        parameters: {});
-                    _launchUrl("https://dhali.io/docs");
-                  },
-                ),
-                ListTile(
-                  leading: const Icon(Icons.badge, color: AppTheme.dhali_blue),
-                  title: const Text('Licenses',
-                      style: TextStyle(color: AppTheme.nearlyBlack)),
-                  onTap: () {
-                    getScreenView(DrawerIndex.Licenses);
-                    Navigator.pop(context);
-                  },
-                ),
-                ListTile(
-                    leading:
-                        const Icon(Icons.cookie, color: AppTheme.dhali_blue),
-                    title: const Text('Cookie Consent Preferences',
-                        style: TextStyle(color: AppTheme.nearlyBlack)),
-                    onTap: () {
-                      js.context.callMethod('displayPreferenceModal');
-                    }),
-              ],
-            ),
-          ),
+                )
+              : null,
+          drawer: !_tray_open
+              ? Drawer(
+                  backgroundColor: AppTheme.white,
+                  child: getTrayElements(),
+                )
+              : null,
           backgroundColor: AppTheme.nearlyBlack,
           drawerEdgeDragWidth: 0,
-          body: screenView,
+          body: !_tray_open ? screenView : getSplitScreen(),
         ),
       ),
     );
+  }
+
+  Widget getSplitScreen() {
+    return SplitView(
+      viewMode: SplitViewMode.Horizontal,
+      gripColor: Colors.grey,
+      gripSize: 5.0,
+      controller: SplitViewController(weights: [0.15, 0.85]),
+      children: [getTrayElements(), screenView!],
+    );
+  }
+
+  Widget getTrayElements() {
+    return Container(
+        color: Colors.white,
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            DrawerHeader(
+              decoration: const BoxDecoration(
+                color: AppTheme.white,
+              ),
+              child: SizedBox(
+                height: 30, // Or any other height that suits your design
+                child: FittedBox(
+                  fit: BoxFit.contain,
+                  child: Image.asset('assets/images/dhali.png'),
+                ),
+              ),
+            ),
+            ListTile(
+              leading:
+                  const Icon(Icons.home_filled, color: AppTheme.dhali_blue),
+              title: const Text('Home',
+                  style: TextStyle(color: AppTheme.nearlyBlack)),
+              onTap: () {
+                gtag(command: "event", target: "HomeSelected", parameters: {});
+                _launchUrl("https://dhali.io");
+              },
+            ),
+            const Divider(
+              height: 20,
+              thickness: 1,
+              color: Colors.grey,
+            ),
+            Stack(
+              children: <Widget>[
+                ListTile(
+                  leading: const Icon(Icons.wallet, color: AppTheme.dhali_blue),
+                  title: const Text('Wallet',
+                      style: TextStyle(color: AppTheme.nearlyBlack)),
+                  onTap: () {
+                    getScreenView(DrawerIndex.Wallet);
+                    if (!_tray_open) {
+                      Navigator.pop(context);
+                    }
+                  },
+                ),
+                if (_showWalletPrompt)
+                  Positioned(
+                    left: 30,
+                    top: 5,
+                    child: Container(
+                      padding: const EdgeInsets.all(1),
+                      child: const Icon(
+                        CupertinoIcons
+                            .exclamationmark_circle_fill, // Your notification icon
+                        color: Colors.red,
+                        size:
+                            18, // Adjust this to make your icon bigger or smaller
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+            ListTile(
+              leading: const Icon(Icons.token, color: AppTheme.dhali_blue),
+              title: const Text('My assets',
+                  style: TextStyle(color: AppTheme.nearlyBlack)),
+              onTap: isDesktopResolution(context)
+                  ? () {
+                      getScreenView(DrawerIndex.Assets);
+                      if (!_tray_open) {
+                        Navigator.pop(context);
+                      }
+                    }
+                  : () {
+                      showNotImplentedWidget(
+                          context: context,
+                          feature: "Mobile asset administration");
+                    },
+            ),
+            ListTile(
+              leading: const Icon(Icons.shop, color: AppTheme.dhali_blue),
+              title: const Text('Marketplace',
+                  style: TextStyle(color: AppTheme.nearlyBlack)),
+              onTap: () {
+                getScreenView(DrawerIndex.Marketplace);
+                if (!_tray_open) {
+                  Navigator.pop(context);
+                }
+              },
+            ),
+            const Divider(
+              height: 20,
+              thickness: 1,
+              color: Colors.grey,
+            ),
+            ListTile(
+              leading: const Icon(Icons.book, color: AppTheme.dhali_blue),
+              title: const Text('Docs',
+                  style: TextStyle(color: AppTheme.nearlyBlack)),
+              onTap: () {
+                gtag(command: "event", target: "DocsSelected", parameters: {});
+                _launchUrl("https://dhali.io/docs");
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.badge, color: AppTheme.dhali_blue),
+              title: const Text('Licenses',
+                  style: TextStyle(color: AppTheme.nearlyBlack)),
+              onTap: () {
+                getScreenView(DrawerIndex.Licenses);
+                if (!_tray_open) {
+                  Navigator.pop(context);
+                }
+              },
+            ),
+            ListTile(
+                leading: const Icon(Icons.cookie, color: AppTheme.dhali_blue),
+                title: const Text('Cookie Consent Preferences',
+                    style: TextStyle(color: AppTheme.nearlyBlack)),
+                onTap: () {
+                  js.context.callMethod('displayPreferenceModal');
+                }),
+          ],
+        ));
   }
 
   Future<void> _launchUrl(String url) async {
@@ -269,7 +303,9 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
         getWallet: widget.getWallet,
         setWallet: widget.setWallet,
         getFirestore: getFirestore);
-    _showWalletPrompt = !_walletIsLinked;
+    _showWalletPrompt = widget.queryParams != null &&
+        widget.queryParams!['show_wallet_prompts'] != null &&
+        !_walletIsLinked;
     switch (drawerIndex) {
       case DrawerIndex.Wallet:
         _showWalletPrompt = false;

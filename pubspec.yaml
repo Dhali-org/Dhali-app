@@ -52,10 +52,12 @@ dependencies:
     url_launcher: ^6.1.10
     bip39: ^1.0.6
     uuid: ^3.0.7
+    split_view: ^3.2.1
+    url_strategy: ^0.2.0
     dhali_wallet:
       git:
         url: "https://github.com/Dhali-org/Dhali-wallet.git"
-        ref: 0.0.15
+        ref: 0.0.16
       # or
       # path: <path to local dhali directory>
 
