@@ -13,12 +13,12 @@ void showNotImplentedWidget(
             parameters: {"feature": feature});
         const String contentStart = "This is not your fault!";
         return AlertDialog(
-          title: const Text(
-            "This feature has not been implemented yet.",
-          ),
-          content: message == null
-              ? Text(contentStart)
-              : Text("$contentStart \n$message"),
-        );
+            title: const Text(
+              "This feature has not been implemented yet.",
+              textAlign: TextAlign.center,
+            ),
+            content: Text(
+                message == null ? contentStart : "$contentStart\n$message",
+                textAlign: TextAlign.center));
       });
 }
