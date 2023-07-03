@@ -229,7 +229,8 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
                   : () {
                       showNotImplentedWidget(
                           context: context,
-                          feature: "Mobile asset administration");
+                          feature: "Mobile asset administration",
+                          message: "This tab is available on desktops.");
                     },
             ),
             ListTile(

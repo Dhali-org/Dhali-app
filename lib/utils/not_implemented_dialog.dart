@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 
 import 'package:dhali/analytics/analytics.dart';
 
-void showNotImplentedWidget({required BuildContext context, String? feature}) {
+void showNotImplentedWidget(
+    {required BuildContext context, String? feature, String? message}) {
   showDialog(
       context: context,
       builder: (BuildContext _) {
@@ -10,9 +11,14 @@ void showNotImplentedWidget({required BuildContext context, String? feature}) {
             command: "event",
             target: "NotImplementedShown",
             parameters: {"feature": feature});
-        return const AlertDialog(
-          title: Text("This feature has not been implemented yet"),
-          content: Text("This is not your fault!"),
-        );
+        const String contentStart = "This is not your fault!";
+        return AlertDialog(
+            title: const Text(
+              "This feature has not been implemented yet.",
+              textAlign: TextAlign.center,
+            ),
+            content: Text(
+                message == null ? contentStart : "$contentStart\n$message",
+                textAlign: TextAlign.center));
       });
 }
