@@ -14,7 +14,7 @@ void showNotImplentedWidget(
         const String contentStart = "This is not your fault!";
         return AlertDialog(
           title: const Text(
-            "This feature has not been implemented yet",
+            "This feature has not been implemented yet.",
           ),
           content: message == null
               ? Text(contentStart)
