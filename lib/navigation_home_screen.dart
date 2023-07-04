@@ -60,13 +60,6 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
 
   @override
   void initState() {
-    if (widget.queryParams != null) {
-      final String? paramValue = widget.queryParams!['tray_open'];
-      if (paramValue != null && MediaQuery.of(context).size.width > 1200) {
-        _tray_open = true;
-      }
-    }
-
     drawerIndex == Null ? DrawerIndex.Marketplace : drawerIndex;
     screenView = getScreenView(drawerIndex);
     super.initState();
@@ -83,6 +76,10 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (isDesktopResolution(context)) {
+      _tray_open = true;
+    }
+
     return Container(
       color: AppTheme.white,
       child: SafeArea(
