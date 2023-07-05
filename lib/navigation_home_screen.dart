@@ -1,10 +1,12 @@
 import 'dart:js' as js;
 
+import 'package:dhali/config.dart';
 import 'package:dhali/utils/display_utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:logger/logger.dart';
 import 'package:split_view/split_view.dart';
 import 'package:http/http.dart';
 
@@ -55,23 +57,25 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
   DrawerIndex? drawerIndex;
   bool _showContinueButton = false;
   bool _walletIsLinked = false;
-  bool _showWalletPrompt = false;
+  bool _showWalletPrompt = true;
   bool _tray_open = false;
 
   @override
   void initState() {
-    if (widget.queryParams != null) {
-      if (widget.queryParams!['tray_open'] != null &&
-          isDesktopResolution(context)) {
-        _tray_open = true;
-      }
-      if (widget.queryParams!['show_wallet_prompts'] != null) {
-        _showWalletPrompt = true;
-      }
-    }
-
     drawerIndex == Null ? DrawerIndex.Marketplace : drawerIndex;
     screenView = getScreenView(drawerIndex);
+
+    // Hit the README server as soon as the app is opened to spin it up
+    var uri = Uri.parse(
+        "${Config.config!["ROOT_CONSUMER_URL"]}/dummy-asset/${Config.config!['GET_READMES_ROUTE']}");
+
+    if (widget.firestore.runtimeType == FirebaseFirestore) {
+      // Only hit the README server if `firestore` is not a mocked type
+      var logger = Logger();
+      logger.d("Spinning up README server");
+      get(uri);
+    }
+
     super.initState();
   }
 
@@ -86,6 +90,10 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (isDesktopResolution(context)) {
+      _tray_open = true;
+    }
+
     return Container(
       color: AppTheme.white,
       child: SafeArea(
@@ -229,7 +237,8 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
                   : () {
                       showNotImplentedWidget(
                           context: context,
-                          feature: "Mobile asset administration");
+                          feature: "Mobile asset administration",
+                          message: "This tab is available on desktops.");
                     },
             ),
             ListTile(
@@ -303,9 +312,7 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
         getWallet: widget.getWallet,
         setWallet: widget.setWallet,
         getFirestore: getFirestore);
-    _showWalletPrompt = widget.queryParams != null &&
-        widget.queryParams!['show_wallet_prompts'] != null &&
-        !_walletIsLinked;
+    _showWalletPrompt = !_walletIsLinked;
     switch (drawerIndex) {
       case DrawerIndex.Wallet:
         _showWalletPrompt = false;
