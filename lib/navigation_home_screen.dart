@@ -1,10 +1,12 @@
 import 'dart:js' as js;
 
+import 'package:dhali/config.dart';
 import 'package:dhali/utils/display_utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:logger/logger.dart';
 import 'package:split_view/split_view.dart';
 import 'package:http/http.dart';
 
@@ -62,6 +64,18 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
   void initState() {
     drawerIndex == Null ? DrawerIndex.Marketplace : drawerIndex;
     screenView = getScreenView(drawerIndex);
+
+    // Hit the README server as soon as the app is opened to spin it up
+    var uri = Uri.parse(
+        "${Config.config!["ROOT_CONSUMER_URL"]}/dummy-asset/${Config.config!['GET_READMES_ROUTE']}");
+
+    if (widget.firestore.runtimeType == FirebaseFirestore) {
+      // Only hit the README server if `firestore` is not a mocked type
+      var logger = Logger();
+      logger.d("Spinning up README server");
+      get(uri);
+    }
+
     super.initState();
   }
 
