@@ -106,7 +106,7 @@ void main() async {
 
   group('My assets', () {
     testWidgets('Only my asset visible', (WidgetTester tester) async {
-      const w = 1480;
+      const w = 1920;
       const h = 1080;
 
       when(mockWallet.address).thenReturn(creatorAccount);
@@ -143,7 +143,7 @@ void main() async {
     });
 
     testWidgets('10 or more assets visible', (WidgetTester tester) async {
-      const w = 1480;
+      const w = 1920;
       const h = 1080;
 
       when(mockWallet.address).thenReturn(creatorAccount);
@@ -249,7 +249,7 @@ void main() async {
     });
 
     testWidgets('No assets visible', (WidgetTester tester) async {
-      const w = 1480;
+      const w = 1920;
       const h = 1080;
 
       when(mockWallet.getAvailableNFTs()).thenAnswer((_) async {
@@ -298,7 +298,7 @@ void main() async {
 
     testWidgets('Assets in ledger, but not firebase',
         (WidgetTester tester) async {
-      const w = 1480;
+      const w = 1920;
       const h = 1080;
 
       const someOtherNFTkokenID = "this_is_not_in_firebase";

@@ -55,21 +55,11 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
   DrawerIndex? drawerIndex;
   bool _showContinueButton = false;
   bool _walletIsLinked = false;
-  bool _showWalletPrompt = false;
+  bool _showWalletPrompt = true;
   bool _tray_open = false;
 
   @override
   void initState() {
-    if (widget.queryParams != null) {
-      if (widget.queryParams!['tray_open'] != null &&
-          isDesktopResolution(context)) {
-        _tray_open = true;
-      }
-      if (widget.queryParams!['show_wallet_prompts'] != null) {
-        _showWalletPrompt = true;
-      }
-    }
-
     drawerIndex == Null ? DrawerIndex.Marketplace : drawerIndex;
     screenView = getScreenView(drawerIndex);
     super.initState();
@@ -86,6 +76,10 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (isDesktopResolution(context)) {
+      _tray_open = true;
+    }
+
     return Container(
       color: AppTheme.white,
       child: SafeArea(
@@ -304,9 +298,7 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
         getWallet: widget.getWallet,
         setWallet: widget.setWallet,
         getFirestore: getFirestore);
-    _showWalletPrompt = widget.queryParams != null &&
-        widget.queryParams!['show_wallet_prompts'] != null &&
-        !_walletIsLinked;
+    _showWalletPrompt = !_walletIsLinked;
     switch (drawerIndex) {
       case DrawerIndex.Wallet:
         _showWalletPrompt = false;
