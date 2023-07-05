@@ -37,7 +37,10 @@ class _AssetPageState extends State<AssetPage> {
     if (widget.getReadme == null) {
       future = get(
         uri,
-      );
+      ).timeout(
+        const Duration(seconds: 10),
+        onTimeout: () => Response("Page not found. Consider refreshing", 404),
+      ); // Set the timeout to 5 seconds.;
     } else {
       // typically executed when mocking
       future = widget.getReadme!(uri);
