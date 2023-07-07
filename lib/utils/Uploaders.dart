@@ -133,7 +133,8 @@ class RunUploader extends BaseUploader {
           } catch (e) {
             reason = "Could not parse reason";
           }
-          return StreamedResponse(const Stream.empty(), finalResponse.statusCode,
+          return StreamedResponse(
+              const Stream.empty(), finalResponse.statusCode,
               reasonPhrase: reason);
         }
         // TODO : Deal with response appropriately
@@ -243,7 +244,8 @@ class DeployUploader extends BaseUploader {
               "Chunk $i returned status code ${finalResponse.statusCode}: ${finalResponse.reasonPhrase}");
         }
         try {
-          sessionID = finalResponse.headers[Config.config!["DHALI_ID"].toString().toLowerCase()];
+          sessionID = finalResponse
+              .headers[Config.config!["DHALI_ID"].toString().toLowerCase()];
         } catch (e, stacktrace) {
           throw FormatException(
               "Unexpected response from asset deployment, with error: $e "
@@ -274,7 +276,8 @@ class DeployUploader extends BaseUploader {
             // Something went wrong!
             logger.d(finalResponse!.statusCode);
             String reason = await finalResponse.stream.bytesToString();
-            return StreamedResponse(const Stream.empty(), finalResponse.statusCode,
+            return StreamedResponse(
+                const Stream.empty(), finalResponse.statusCode,
                 reasonPhrase: reason);
           }
         }

@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:math';
 
-
 import 'package:dhali/marketplace/model/asset_model.dart';
 import 'package:dhali/utils/Uploaders.dart';
 import 'package:dhali/utils/not_implemented_dialog.dart';
@@ -142,7 +141,8 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                         },
                         body: Container(
                             color: MarketplaceAppTheme.buildLightTheme()
-                                .colorScheme.background,
+                                .colorScheme
+                                .background,
                             child: widget.assetScreenType ==
                                     AssetScreenType.MyAssets
                                 ? getFilteredAssetStreamBuilder()
@@ -423,7 +423,9 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
               padding: const EdgeInsets.only(right: 16, top: 8, bottom: 8),
               child: Container(
                 decoration: BoxDecoration(
-                  color: MarketplaceAppTheme.buildLightTheme().colorScheme.background,
+                  color: MarketplaceAppTheme.buildLightTheme()
+                      .colorScheme
+                      .background,
                   borderRadius: const BorderRadius.all(
                     Radius.circular(38.0),
                   ),
@@ -482,7 +484,8 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                   child: Icon(FontAwesomeIcons.magnifyingGlass,
                       size: 20,
                       color: MarketplaceAppTheme.buildLightTheme()
-                          .colorScheme.background),
+                          .colorScheme
+                          .background),
                 ),
               ),
             ),
@@ -502,7 +505,8 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
           child: Container(
             height: 24,
             decoration: BoxDecoration(
-              color: MarketplaceAppTheme.buildLightTheme().colorScheme.background,
+              color:
+                  MarketplaceAppTheme.buildLightTheme().colorScheme.background,
               boxShadow: <BoxShadow>[
                 BoxShadow(
                     color: Colors.grey.withOpacity(0.2),
@@ -537,7 +541,8 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                       Navigator.push<dynamic>(
                         context,
                         MaterialPageRoute<dynamic>(
-                            builder: (BuildContext context) => const FiltersScreen(),
+                            builder: (BuildContext context) =>
+                                const FiltersScreen(),
                             fullscreenDialog: true),
                       );
                     },

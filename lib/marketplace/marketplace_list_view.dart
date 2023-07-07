@@ -51,7 +51,8 @@ class MarketplaceListView extends StatelessWidget {
                           const BorderRadius.all(Radius.circular(16.0)),
                       child: Container(
                         color: MarketplaceAppTheme.buildLightTheme()
-                            .colorScheme.background,
+                            .colorScheme
+                            .background,
                         child: Padding(
                           padding: const EdgeInsets.all(15),
                           child: Column(

@@ -43,7 +43,10 @@ class MarketplaceAppTheme {
       ),
       textTheme: _buildTextTheme(base.textTheme),
       primaryTextTheme: _buildTextTheme(base.primaryTextTheme),
-      platform: TargetPlatform.iOS, colorScheme: colorScheme.copyWith(background: const Color(0xFFFFFFFF)).copyWith(error: const Color(0xFFB00020)),
+      platform: TargetPlatform.iOS,
+      colorScheme: colorScheme
+          .copyWith(background: const Color(0xFFFFFFFF))
+          .copyWith(error: const Color(0xFFB00020)),
     );
   }
 }
