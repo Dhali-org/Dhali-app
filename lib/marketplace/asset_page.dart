@@ -92,30 +92,21 @@ class _AssetPageState extends State<AssetPage> {
                             .textTheme
                             .bodyMedium!
                             .copyWith(fontSize: 18),
-                        h1: Theme.of(context)
-                            .textTheme
-                            .displayLarge!
-                            .copyWith(fontSize: 30),
-                        h2: Theme.of(context)
-                            .textTheme
-                            .displayMedium!
-                            .copyWith(fontSize: 26),
-                        h3: Theme.of(context)
-                            .textTheme
-                            .displaySmall!
-                            .copyWith(fontSize: 22),
+                        h1: Theme.of(context).textTheme.displayLarge!.copyWith(
+                            fontSize: 30, fontWeight: FontWeight.bold),
+                        h2: Theme.of(context).textTheme.displayMedium!.copyWith(
+                            fontSize: 26, fontWeight: FontWeight.bold),
+                        h3: Theme.of(context).textTheme.displaySmall!.copyWith(
+                            fontSize: 22, fontWeight: FontWeight.bold),
                         h4: Theme.of(context)
                             .textTheme
                             .headlineMedium!
-                            .copyWith(fontSize: 18),
-                        h5: Theme.of(context)
-                            .textTheme
-                            .headlineSmall!
-                            .copyWith(fontSize: 16),
-                        h6: Theme.of(context)
-                            .textTheme
-                            .titleLarge!
-                            .copyWith(fontSize: 14),
+                            .copyWith(
+                                fontSize: 18, fontWeight: FontWeight.bold),
+                        h5: Theme.of(context).textTheme.headlineSmall!.copyWith(
+                            fontSize: 16, fontWeight: FontWeight.bold),
+                        h6: Theme.of(context).textTheme.titleLarge!.copyWith(
+                            fontSize: 14, fontWeight: FontWeight.bold),
                         code: Theme.of(context).textTheme.bodyMedium!.copyWith(
                               fontSize: 18,
                               backgroundColor: Colors.grey[200],
