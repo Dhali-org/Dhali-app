@@ -25,6 +25,7 @@
         "SCALE": "scale"
     },
     "GET_READMES_ROUTE": "readme",
+    "GET_WARMUP_ROUTE": "warmup",
     "POST_DEPLOY_README_ROUTE": "readme",
     "POST_RUN_INFERENCE_ROUTE": "run",
     "POST_DEPLOY_ASSET_ROUTE": "asset",
