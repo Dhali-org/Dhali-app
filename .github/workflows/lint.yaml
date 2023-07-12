@@ -2,6 +2,21 @@ name: lint
 on: [pull_request]
 
 jobs:
+  dart-format:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: dart-lang/setup-dart@v1
+    - uses: subosito/flutter-action@v2
+      with:
+        channel: 'stable'
+    - name: Install dependencies
+      run: flutter pub get
+    - name: Check Project Formatting
+      id: dart_format
+      run: |
+        dart format --set-exit-if-changed . || (echo "Some files are not formatted correctly. Please format your files using 'dart format .' before committing." && exit 1)
+
   dart-fix:
     runs-on: ubuntu-latest
     steps:
