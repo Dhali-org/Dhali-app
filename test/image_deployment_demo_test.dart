@@ -232,7 +232,7 @@ void main() async {
     });
     when(mockWallet.preparePayment(
             destinationAddress: "rstbSTpPcyxMsiXwkBxS9tFTrg2JsDNxWk",
-            authAmount: "18000",
+            authAmount: "12000",
             channelDescriptor: anyNamed("channelDescriptor")))
         .thenAnswer((_) {
       return Future.value({"key": "value"});

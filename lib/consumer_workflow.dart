@@ -111,7 +111,8 @@ Dialog run(
       .then((value) async {
     if (value.exists) {
       double cost = (value.data()![Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]
-                  ["EXPECTED_INFERENCE_COST_PER_MS"]] *
+                  ["AVERAGE_INFERENCE_TIME_MS"]] *
+              Config.config!["DHALI_CPU_INFERENCE_COST_PER_MS"] *
               1.4)
           .ceil(); // TODO : Ensure this
       // factor is effectively
