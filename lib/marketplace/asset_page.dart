@@ -7,8 +7,9 @@ import 'package:flutter_markdown_selectionarea/flutter_markdown_selectionarea.da
 import 'package:http/http.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import 'package:dhali/marketplace/model/marketplace_list_data.dart';
+import 'package:dhali/analytics/analytics.dart';
 import 'package:dhali/config.dart' show Config;
+import 'package:dhali/marketplace/model/marketplace_list_data.dart';
 
 class AssetPage extends StatefulWidget {
   const AssetPage(
@@ -45,6 +46,12 @@ class _AssetPageState extends State<AssetPage> {
       // typically executed when mocking
       future = widget.getReadme!(uri);
     }
+
+    gtag(command: "event", target: "AssetSelected", parameters: {
+      "uuid": widget.asset.assetID,
+      "name": widget.asset.assetName
+    });
+
     return Scaffold(
         appBar: AppBar(
           centerTitle: false,
