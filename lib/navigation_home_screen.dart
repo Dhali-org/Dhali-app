@@ -80,6 +80,16 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
   }
 
   void linkWallet() {
+    final String walletType = widget.getWallet() is XRPLWallet
+        ? "XRPL"
+        : widget.getWallet() is XummWallet
+            ? "Xumm"
+            : "Unknown";
+
+    gtag(command: "event", target: "walletLinked", parameters: {
+      "type": walletType,
+    });
+
     setState(() {
       _walletIsLinked = true;
       _showWalletPrompt = false;
