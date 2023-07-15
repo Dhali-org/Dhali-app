@@ -118,7 +118,7 @@ void main() async {
       await firebaseMockInstance
           .collection("public_minted_nfts")
           .doc(theAssetID)
-          .set({"cost_per_ms": 1000});
+          .set({"average_inference_time_ms": 1000});
       var docId = const Uuid().v5(Uuid.NAMESPACE_URL, "CHANNEL_ID_STRING");
       await firebaseMockInstance
           .collection("public_claim_info")
@@ -190,7 +190,7 @@ void main() async {
       await firebaseMockInstance
           .collection("public_minted_nfts")
           .doc(theAssetID)
-          .set({"cost_per_ms": 1000});
+          .set({"average_inference_time_ms": 1000});
       var docId = const Uuid().v5(Uuid.NAMESPACE_URL, "CHANNEL_ID_STRING");
       await firebaseMockInstance
           .collection("public_claim_info")

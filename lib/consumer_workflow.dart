@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:universal_io/io.dart';
 import 'package:uuid/uuid.dart';
+import 'package:http/http.dart' as http;
 
 import 'package:dhali/analytics/analytics.dart';
 import 'package:dhali/app_theme.dart';
@@ -31,6 +32,15 @@ Widget consumerJourney(
       content: Text("Please link a wallet using the Wallet page"),
     );
   }
+
+  if (getFirestore().runtimeType == FirebaseFirestore) {
+    // Only hit the Warmup the asset if `firestore` is not a mocked type
+    var runUrlSplit = runURL.split("/");
+    var warmUrl =
+        '${runUrlSplit.sublist(0, runUrlSplit.length - 1).join("/")}/warmup';
+    http.get(Uri.parse(warmUrl));
+  }
+
   return Dialog(
     backgroundColor: Colors.transparent,
     child: DropzoneRunWidget(
@@ -101,7 +111,8 @@ Dialog run(
       .then((value) async {
     if (value.exists) {
       double cost = (value.data()![Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]
-                  ["EXPECTED_INFERENCE_COST_PER_MS"]] *
+                  ["AVERAGE_INFERENCE_TIME_MS"]] *
+              Config.config!["DHALI_CPU_INFERENCE_COST_PER_MS"] *
               1.4)
           .ceil(); // TODO : Ensure this
       // factor is effectively
