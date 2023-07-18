@@ -18,7 +18,10 @@ void showPopupTextWithLink(
               TextSpan(text: text),
               TextSpan(
                 text: urlText,
-                style: const TextStyle(color: Colors.blue),
+                style: const TextStyle(
+                  color: Colors.blue,
+                  decoration: TextDecoration.underline,
+                ),
                 recognizer: TapGestureRecognizer()
                   ..onTap = () async {
                     if (await canLaunchUrlString(url)) {

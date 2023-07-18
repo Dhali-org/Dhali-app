@@ -337,9 +337,10 @@ class _DropzoneDeployWidgetState extends State<DropzoneDeployWidget> {
                             parameters: {"forAction": "Asset upload"});
                         showPopupTextWithLink(
                             text:
-                                "Please provide a docker image file, in '.tar' format.  For instructions on how to create one, please refer to ",
-                            urlText: "the documentation.",
-                            url: "https://dhali.io/docs/#/?id=ai-creators",
+                                "Please provide a docker image file in '.tar' format.  For instructions, see",
+                            urlText: "here.",
+                            url:
+                                "https://dhali.io/docs/#/?id=creating-dhali-assets",
                             context: context);
                       },
                       icon: const Icon(
@@ -384,9 +385,10 @@ class _DropzoneDeployWidgetState extends State<DropzoneDeployWidget> {
                             parameters: {"forAction": "README.md upload"});
                         showPopupTextWithLink(
                             text:
-                                "Please provide a 'README.md' file documenting your asset.  For more information on asset creation, please refer to ",
-                            urlText: "the documentation.",
-                            url: "https://dhali.io/docs/#/?id=ai-creators",
+                                "Please provide a 'README.md' file documenting your asset.  For more information, see ",
+                            urlText: "here.",
+                            url:
+                                "https://dhali.io/docs/#/?id=creating-dhali-assets",
                             context: context);
                       },
                       icon: const Icon(
