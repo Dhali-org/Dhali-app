@@ -114,7 +114,7 @@ void imageDeploymentDemo(
   await tester.tap(find.text("My assets"));
   await tester.pumpAndSettle();
 
-  await tester.tap(find.text('Add new asset', skipOffstage: false));
+  await tester.tap(find.text('Monetise my asset', skipOffstage: false));
   await tester.pumpAndSettle();
 
   await selectAssets(tester, mockRequester, mockFirebaseFirestore);
@@ -342,7 +342,7 @@ void main() async {
       await tester.tap(find.text("My assets"));
       await tester.pumpAndSettle();
 
-      await tester.tap(find.text('Add new asset', skipOffstage: false));
+      await tester.tap(find.text('Monetise my asset', skipOffstage: false));
       await tester.pumpAndSettle();
 
       await selectAssets(tester, mockRequester, firebaseMockInstance);
