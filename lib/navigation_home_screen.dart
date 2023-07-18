@@ -347,7 +347,6 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
           });
 
           Future(() => ScaffoldMessenger.of(context).showSnackBar(snackbar));
-          if (_showContinueButton) {}
           screenView = Scaffold(
               body: Stack(children: [
             WalletHomeScreen(
@@ -367,7 +366,7 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
                   right: 0,
                   child: Center(
                     child: FloatingActionButton.extended(
-                      label: const Text('Continue to assets page'),
+                      label: const Text('Continue to "My Assets"'),
                       onPressed: (() {
                         gtag(
                             command: "event",

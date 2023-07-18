@@ -60,7 +60,6 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
           .getFirestore()!
           .collection(Config.config!["MINTED_NFTS_COLLECTION_NAME"])
           .limit(20)
-          // TODO .where("FILTERRED_BY_NFT", isEqualTo: "classic address")
           .snapshots();
     } else {
       stream = widget
@@ -111,14 +110,6 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                 },
                 child: Column(
                   children: <Widget>[
-                    widget.assetScreenType == AssetScreenType.MyAssets &&
-                            widget.getWallet() == null
-                        ? const Text(
-                            "Please link a wallet using the Wallet page",
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 25),
-                          )
-                        : Container(),
                     Expanded(
                       child: NestedScrollView(
                         controller: _scrollController,
@@ -146,7 +137,31 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                                 .background,
                             child: widget.assetScreenType ==
                                     AssetScreenType.MyAssets
-                                ? getFilteredAssetStreamBuilder()
+                                ? widget.getWallet() == null
+                                    ? const Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                            Text(
+                                              "Link a wallet through the Wallet"
+                                              " page\n and start earning!",
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 25,
+                                                  color: Colors.grey),
+                                            ),
+                                            SizedBox(height: 50),
+                                            Image(
+                                              opacity:
+                                                  AlwaysStoppedAnimation(0.2),
+                                              height: 220,
+                                              width: 220,
+                                              image: AssetImage(
+                                                  'assets/images/broken_link.png'),
+                                            )
+                                          ])
+                                    : getFilteredAssetStreamBuilder()
                                 : getAssetStreamBuilder(
                                     assetStream: widget
                                         .getFirestore()!
@@ -236,12 +251,26 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                             .snapshots());
                   }
                 } else {
-                  return const Text(
-                    key: Key("my_asset_not_found"),
-                    "Your wallet has no assets",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
-                  );
+                  return const Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Monetise your first asset to start earning!",
+                          key: Key("my_asset_not_found"),
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 25,
+                              color: Colors.grey),
+                        ),
+                        Image(
+                          opacity: AlwaysStoppedAnimation(.5),
+                          height: 320,
+                          width: 320,
+                          image: AssetImage(
+                              'assets/images/light_empty_wallet.png'),
+                        )
+                      ]);
                 }
               }
             },
@@ -875,7 +904,7 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
           foregroundColor: AppTheme.white,
           hoverColor: AppTheme.dhali_blue_highlight,
           focusColor: AppTheme.dhali_blue_highlight,
-          label: const Text('Add new asset'),
+          label: const Text('Monetise my asset'),
           icon: const Icon(Icons.add),
         );
         break;
