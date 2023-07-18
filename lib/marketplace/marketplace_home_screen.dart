@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:dhali/analytics/analytics.dart';
 import 'package:dhali/marketplace/model/asset_model.dart';
 import 'package:dhali/utils/Uploaders.dart';
 import 'package:dhali/utils/not_implemented_dialog.dart';
@@ -682,6 +683,7 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
       case AssetScreenType.MyAssets:
         actionButton = FloatingActionButton.extended(
           onPressed: () {
+            gtag(command: "event", target: "AddNewAssetClicked");
             showDialog(
                 context: context,
                 builder: (BuildContext _) {
