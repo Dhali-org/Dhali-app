@@ -73,6 +73,7 @@ Dialog costDialog(
   return Dialog(
       backgroundColor: Colors.transparent,
       child: InferenceCostWidget(
+        step: 1, steps: 1,
         file: input,
         inferenceCost:
             assetDescriptor.pricePerRun, // TODO : Get this number dynamically
