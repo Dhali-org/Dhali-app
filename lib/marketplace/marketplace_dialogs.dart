@@ -4,7 +4,6 @@ import 'dart:convert';
 import "package:universal_html/html.dart" as html;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dhali/utils/show_popup_text_with_link.dart';
-import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dropzone/flutter_dropzone.dart';
@@ -1805,7 +1804,7 @@ Widget getDialogTemplate(
             alignment: Alignment.bottomCenter,
             child: Text(
               "Step $step of $steps",
-              style: TextStyle(fontWeight: FontWeight.bold),
+              style: const TextStyle(fontWeight: FontWeight.bold),
             ),
           ),
           const SizedBox(

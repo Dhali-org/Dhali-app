@@ -72,7 +72,7 @@ Future<void> displayCosts(
   expect(find.text("421%"), findsOneWidget); // 100 + 301 + 20
   expect(find.text("Are you sure you want to deploy?"), findsOneWidget);
   expect(find.text("Yes"), findsOneWidget);
-  expect(find.byKey(Key("DeploymentCostWidgetBack")), findsOneWidget);
+  expect(find.byKey(const Key("DeploymentCostWidgetBack")), findsOneWidget);
 }
 
 Future<void> setEarnings(
