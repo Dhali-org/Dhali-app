@@ -184,6 +184,7 @@ class _DropzoneRunWidgetState extends State<DropzoneRunWidget> {
                           size: isDesktopResolution(context) ? 32 : 16,
                         ),
                         label: Text(
+                          key: const Key("DropZoneRunNext"),
                           "Next",
                           style: TextStyle(
                               fontSize: isDesktopResolution(context) ? 30 : 16),
@@ -261,6 +262,98 @@ class _DropzoneRunWidgetState extends State<DropzoneRunWidget> {
     setState(() {
       isHighlighted = false;
     });
+  }
+}
+
+class AssetNameWidget extends StatefulWidget {
+  final ValueChanged<AssetModel> onDroppedFile;
+  final Function(String) onNextClicked;
+
+  const AssetNameWidget(
+      {Key? key, required this.onDroppedFile, required this.onNextClicked})
+      : super(key: key);
+  @override
+  _AssetNameWidgetState createState() => _AssetNameWidgetState();
+}
+
+class _AssetNameWidgetState extends State<AssetNameWidget> {
+  final textController = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return getDialogTemplate(
+      child: Stack(
+        children: [
+          Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                TextField(
+                  key: const Key('asset_name_input_field'),
+                  onChanged: (value) => {
+                    setState(
+                      () {},
+                    )
+                  },
+                  controller: textController,
+                  maxLength: 64,
+                  decoration: const InputDecoration(
+                    labelStyle: TextStyle(fontSize: 20),
+                    helperStyle: TextStyle(
+                        color: Colors.black, fontWeight: FontWeight.bold),
+                    helperText: "What your asset will be called",
+                    labelText: "Asset name",
+                    hintText: "Enter the name you'd like for your asset "
+                        "(a-z, 0-9, -, .)",
+                  ),
+                  keyboardType: TextInputType.text,
+                  inputFormatters: <TextInputFormatter>[
+                    FilteringTextInputFormatter.allow(RegExp("([a-z0-9-]+)"))
+                  ],
+                ),
+                const SizedBox(
+                  width: 16,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ElevatedButton.icon(
+                        key: const Key("use_docker_image_button"),
+                        style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 20, horizontal: 20),
+                            backgroundColor: AppTheme.dhali_blue,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(4))),
+                        onPressed: textController.text != ""
+                            ? () async {
+                                gtag(
+                                    command: "event",
+                                    target: "NextClicked",
+                                    parameters: {
+                                      "from": "DropZoneDeployWidget"
+                                    });
+                                widget.onNextClicked(textController.text);
+                              }
+                            : null,
+                        icon: const Icon(
+                          Icons.navigate_next_outlined,
+                          size: 32,
+                        ),
+                        label: const Text(
+                          key: Key("AssetNameNext"),
+                          "Next",
+                          style: TextStyle(fontSize: 30),
+                        )),
+                  ],
+                )
+              ],
+            ),
+          ),
+        ],
+      ),
+      context: context,
+    );
   }
 }
 
@@ -430,30 +523,6 @@ class _DropzoneDeployWidgetState extends State<DropzoneDeployWidget> {
                 const SizedBox(
                   height: 16,
                 ),
-                TextField(
-                  key: const Key('asset_name_input_field'),
-                  onChanged: (value) => setState(() {
-                    if (assetFile != null) {
-                      assetFile!.modelName = textController.text;
-                      readmeFile!.modelName = textController.text;
-                    }
-                  }),
-                  controller: textController,
-                  maxLength: 64,
-                  decoration: const InputDecoration(
-                    labelStyle: TextStyle(fontSize: 20),
-                    helperStyle: TextStyle(
-                        color: Colors.black, fontWeight: FontWeight.bold),
-                    helperText: "What your asset will be called",
-                    labelText: "Asset name",
-                    hintText: "Enter the name you'd like for your asset "
-                        "(a-z, 0-9, -, .)",
-                  ),
-                  keyboardType: TextInputType.text,
-                  inputFormatters: <TextInputFormatter>[
-                    FilteringTextInputFormatter.allow(RegExp("([a-z0-9-]+)"))
-                  ],
-                ),
                 const SizedBox(
                   width: 16,
                 ),
@@ -487,9 +556,7 @@ class _DropzoneDeployWidgetState extends State<DropzoneDeployWidget> {
                             backgroundColor: AppTheme.dhali_blue,
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(4))),
-                        onPressed: assetFile != null &&
-                                readmeFile != null &&
-                                textController.text != ""
+                        onPressed: assetFile != null && readmeFile != null
                             ? () async {
                                 gtag(
                                     command: "event",
@@ -505,6 +572,7 @@ class _DropzoneDeployWidgetState extends State<DropzoneDeployWidget> {
                           size: 32,
                         ),
                         label: const Text(
+                          key: Key("DropZoneDeployNext"),
                           "Next",
                           style: TextStyle(fontSize: 30),
                         )),
@@ -678,6 +746,7 @@ class _ImageScanningWidgetState extends State<ImageScanningWidget> {
               size: 32,
             ),
             label: const Text(
+              key: Key("ImageScanningNext"),
               "Next",
               style: TextStyle(fontSize: 30),
             ),
@@ -796,7 +865,7 @@ class _ImageCostWidgetState extends State<ImageCostWidget> {
                         target: "NextClicked",
                         parameters: {"from": "ImageCostWidget"});
                     widget.onNextClicked(double.tryParse(controller
-                            .text)!); // != null because input "digitsOnly"
+                        .text)!); // != null because input "digitsOnly"
                   }
                 : null,
             icon: const Icon(
@@ -804,6 +873,7 @@ class _ImageCostWidgetState extends State<ImageCostWidget> {
               size: 32,
             ),
             label: const Text(
+              key: Key("ImageCostNext"),
               "Next",
               style: TextStyle(fontSize: 30),
             ),
