@@ -726,15 +726,18 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                   return Dialog(
                     backgroundColor: Colors.transparent,
                     child: AssetNameWidget(
+                        step: 1,
+                        steps: 4,
                         onDroppedFile: ((file) {}),
                         onNextClicked: (name) {
-                          Navigator.of(context).pop();
                           showDialog(
                               context: context,
                               builder: (BuildContext _) {
                                 return Dialog(
                                     backgroundColor: Colors.transparent,
                                     child: ImageCostWidget(
+                                      step: 2,
+                                      steps: 4,
                                       defaultEarningsPerInference: 20,
                                       onNextClicked: (assetEarnings) {
                                         showDialog(
@@ -744,14 +747,14 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                                                   backgroundColor:
                                                       Colors.transparent,
                                                   child: DropzoneDeployWidget(
+                                                      step: 3,
+                                                      steps: 4,
                                                       onDroppedFile:
                                                           ((file) {}),
                                                       onNextClicked:
                                                           (asset, readme) {
                                                         asset.modelName = name;
                                                         readme.modelName = name;
-                                                        Navigator.of(context)
-                                                            .pop();
                                                         showDialog(
                                                             context: context,
                                                             builder:
@@ -762,10 +765,10 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                                                                       Colors
                                                                           .transparent,
                                                                   child: ImageScanningWidget(
+                                                                      step: 3,
+                                                                      steps: 4,
                                                                       file: asset,
                                                                       onNextClicked: (asset) {
-                                                                        Navigator.of(context)
-                                                                            .pop();
                                                                         showDialog(
                                                                             context:
                                                                                 context,
@@ -778,6 +781,8 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                                                                               return Dialog(
                                                                                   backgroundColor: Colors.transparent,
                                                                                   child: DeploymentCostWidget(
+                                                                                    step: 4,
+                                                                                    steps: 4,
                                                                                     file: asset,
                                                                                     deploymentCost: deploymentCost,
                                                                                     assetEarnings: assetEarnings,

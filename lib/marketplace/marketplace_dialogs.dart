@@ -32,9 +32,11 @@ class DropzoneRunWidget extends StatefulWidget {
   final ValueChanged<AssetModel> onDroppedFile;
   final Function(AssetModel) onNextClicked;
 
-  const DropzoneRunWidget(
-      {Key? key, required this.onDroppedFile, required this.onNextClicked})
-      : super(key: key);
+  const DropzoneRunWidget({
+    Key? key,
+    required this.onDroppedFile,
+    required this.onNextClicked,
+  }) : super(key: key);
   @override
   _DropzoneRunWidgetState createState() => _DropzoneRunWidgetState();
 }
@@ -268,9 +270,15 @@ class _DropzoneRunWidgetState extends State<DropzoneRunWidget> {
 class AssetNameWidget extends StatefulWidget {
   final ValueChanged<AssetModel> onDroppedFile;
   final Function(String) onNextClicked;
+  final int step;
+  final int steps;
 
   const AssetNameWidget(
-      {Key? key, required this.onDroppedFile, required this.onNextClicked})
+      {Key? key,
+      required this.onDroppedFile,
+      required this.onNextClicked,
+      required this.step,
+      required this.steps})
       : super(key: key);
   @override
   _AssetNameWidgetState createState() => _AssetNameWidgetState();
@@ -282,6 +290,8 @@ class _AssetNameWidgetState extends State<AssetNameWidget> {
   @override
   Widget build(BuildContext context) {
     return getDialogTemplate(
+      step: widget.step,
+      steps: widget.steps,
       child: Stack(
         children: [
           Center(
@@ -317,6 +327,32 @@ class _AssetNameWidgetState extends State<AssetNameWidget> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
+                    ElevatedButton.icon(
+                        style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 20, horizontal: 20),
+                            backgroundColor: AppTheme.secondary,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(4))),
+                        onPressed: () async {
+                          gtag(
+                              command: "event",
+                              target: "BackClicked",
+                              parameters: {"from": "AssetNameWidget"});
+                          Navigator.of(context).pop();
+                        },
+                        icon: const Icon(
+                          Icons.arrow_back,
+                          size: 32,
+                        ),
+                        label: const Text(
+                          key: Key("AssetNameBack"),
+                          "Back",
+                          style: TextStyle(fontSize: 30),
+                        )),
+                    const SizedBox(
+                      width: 16,
+                    ),
                     ElevatedButton.icon(
                         key: const Key("use_docker_image_button"),
                         style: ElevatedButton.styleFrom(
@@ -360,9 +396,15 @@ class _AssetNameWidgetState extends State<AssetNameWidget> {
 class DropzoneDeployWidget extends StatefulWidget {
   final ValueChanged<AssetModel> onDroppedFile;
   final Function(AssetModel, AssetModel) onNextClicked;
+  final int step;
+  final int steps;
 
   const DropzoneDeployWidget(
-      {Key? key, required this.onDroppedFile, required this.onNextClicked})
+      {Key? key,
+      required this.onDroppedFile,
+      required this.onNextClicked,
+      required this.step,
+      required this.steps})
       : super(key: key);
   @override
   _DropzoneDeployWidgetState createState() => _DropzoneDeployWidgetState();
@@ -378,6 +420,8 @@ class _DropzoneDeployWidgetState extends State<DropzoneDeployWidget> {
   @override
   Widget build(BuildContext context) {
     return getDialogTemplate(
+      step: widget.step,
+      steps: widget.steps,
       child: Stack(
         children: [
           Container(
@@ -529,6 +573,32 @@ class _DropzoneDeployWidgetState extends State<DropzoneDeployWidget> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
+                    ElevatedButton.icon(
+                        style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 20, horizontal: 20),
+                            backgroundColor: AppTheme.secondary,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(4))),
+                        onPressed: () async {
+                          gtag(
+                              command: "event",
+                              target: "BackClicked",
+                              parameters: {"from": "DropZoneDeployWidget"});
+                          Navigator.of(context).pop();
+                        },
+                        icon: const Icon(
+                          Icons.arrow_back,
+                          size: 32,
+                        ),
+                        label: const Text(
+                          key: Key("DropZoneDeployBack"),
+                          "Back",
+                          style: TextStyle(fontSize: 30),
+                        )),
+                    const SizedBox(
+                      width: 16,
+                    ),
                     getFileUploadButton(
                         const Key("choose_docker_image_button"),
                         "Choose .tar file",
@@ -658,9 +728,15 @@ class _DropzoneDeployWidgetState extends State<DropzoneDeployWidget> {
 class ImageScanningWidget extends StatefulWidget {
   final AssetModel file;
   final ValueChanged<AssetModel> onNextClicked;
+  final int step;
+  final int steps;
 
   const ImageScanningWidget(
-      {Key? key, required this.file, required this.onNextClicked})
+      {Key? key,
+      required this.file,
+      required this.onNextClicked,
+      required this.step,
+      required this.steps})
       : super(key: key);
   @override
   _ImageScanningWidgetState createState() => _ImageScanningWidgetState();
@@ -675,6 +751,8 @@ class _ImageScanningWidgetState extends State<ImageScanningWidget> {
   Widget build(BuildContext context) {
     if (!scanSuccess) scanImage(widget.file);
     return getDialogTemplate(
+      step: widget.step,
+      steps: widget.steps,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -725,32 +803,60 @@ class _ImageScanningWidgetState extends State<ImageScanningWidget> {
           const SizedBox(
             height: 16,
           ),
-          ElevatedButton.icon(
-            style: ElevatedButton.styleFrom(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
-                backgroundColor: AppTheme.dhali_blue,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(4))),
-            onPressed: scanSuccess
-                ? () {
-                    gtag(
-                        command: "event",
-                        target: "NextClicked",
-                        parameters: {"from": "ImageScanWidget"});
-                    widget.onNextClicked(widget.file);
-                  }
-                : null,
-            icon: const Icon(
-              Icons.navigate_next_outlined,
-              size: 32,
+          Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+            ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 20, horizontal: 20),
+                    backgroundColor: AppTheme.secondary,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(4))),
+                onPressed: () async {
+                  gtag(
+                      command: "event",
+                      target: "BackClicked",
+                      parameters: {"from": "DeploymentCostWidget"});
+                  Navigator.of(context).pop();
+                },
+                icon: const Icon(
+                  Icons.arrow_back,
+                  size: 32,
+                ),
+                label: const Text(
+                  key: Key("ImageScanningBack"),
+                  "Back",
+                  style: TextStyle(fontSize: 30),
+                )),
+            const SizedBox(
+              width: 16,
             ),
-            label: const Text(
-              key: Key("ImageScanningNext"),
-              "Next",
-              style: TextStyle(fontSize: 30),
-            ),
-          ),
+            ElevatedButton.icon(
+              style: ElevatedButton.styleFrom(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+                  backgroundColor: AppTheme.dhali_blue,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(4))),
+              onPressed: scanSuccess
+                  ? () {
+                      gtag(
+                          command: "event",
+                          target: "NextClicked",
+                          parameters: {"from": "ImageScanWidget"});
+                      widget.onNextClicked(widget.file);
+                    }
+                  : null,
+              icon: const Icon(
+                Icons.navigate_next_outlined,
+                size: 32,
+              ),
+              label: const Text(
+                key: Key("ImageScanningNext"),
+                "Next",
+                style: TextStyle(fontSize: 30),
+              ),
+            )
+          ]),
         ],
       ),
       context: context,
@@ -786,9 +892,15 @@ class _ImageScanningWidgetState extends State<ImageScanningWidget> {
 class ImageCostWidget extends StatefulWidget {
   final Function(double) onNextClicked;
   final int? defaultEarningsPerInference;
+  final int step;
+  final int steps;
 
   const ImageCostWidget(
-      {Key? key, required this.onNextClicked, this.defaultEarningsPerInference})
+      {Key? key,
+      required this.onNextClicked,
+      this.defaultEarningsPerInference,
+      required this.step,
+      required this.steps})
       : super(key: key);
   @override
   _ImageCostWidgetState createState() => _ImageCostWidgetState();
@@ -809,6 +921,8 @@ class _ImageCostWidgetState extends State<ImageCostWidget> {
   @override
   Widget build(BuildContext context) {
     return getDialogTemplate(
+      step: widget.step,
+      steps: widget.steps,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -851,33 +965,64 @@ class _ImageCostWidgetState extends State<ImageCostWidget> {
           const SizedBox(
             height: 16,
           ),
-          ElevatedButton.icon(
-            style: ElevatedButton.styleFrom(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
-                backgroundColor: AppTheme.dhali_blue,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(4))),
-            onPressed: controller.text.isNotEmpty
-                ? () {
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 20, horizontal: 20),
+                      backgroundColor: AppTheme.secondary,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(4))),
+                  onPressed: () async {
                     gtag(
                         command: "event",
-                        target: "NextClicked",
-                        parameters: {"from": "ImageCostWidget"});
-                    widget.onNextClicked(double.tryParse(controller
-                        .text)!); // != null because input "digitsOnly"
-                  }
-                : null,
-            icon: const Icon(
-              Icons.navigate_next_outlined,
-              size: 32,
-            ),
-            label: const Text(
-              key: Key("ImageCostNext"),
-              "Next",
-              style: TextStyle(fontSize: 30),
-            ),
-          ),
+                        target: "BackClicked",
+                        parameters: {"from": "DeploymentCostWidget"});
+                    Navigator.of(context).pop();
+                  },
+                  icon: const Icon(
+                    Icons.arrow_back,
+                    size: 32,
+                  ),
+                  label: const Text(
+                    key: Key("ImageCostBack"),
+                    "Back",
+                    style: TextStyle(fontSize: 30),
+                  )),
+              const SizedBox(
+                width: 16,
+              ),
+              ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 20, horizontal: 20),
+                    backgroundColor: AppTheme.dhali_blue,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(4))),
+                onPressed: controller.text.isNotEmpty
+                    ? () {
+                        gtag(
+                            command: "event",
+                            target: "NextClicked",
+                            parameters: {"from": "ImageCostWidget"});
+                        widget.onNextClicked(double.tryParse(controller
+                            .text)!); // != null because input "digitsOnly"
+                      }
+                    : null,
+                icon: const Icon(
+                  Icons.navigate_next_outlined,
+                  size: 32,
+                ),
+                label: const Text(
+                  key: Key("ImageCostNext"),
+                  "Next",
+                  style: TextStyle(fontSize: 30),
+                ),
+              ),
+            ],
+          )
         ],
       ),
       context: context,
@@ -892,7 +1037,9 @@ class DeploymentCostWidget extends StatelessWidget {
       required this.assetEarnings,
       required this.dhaliEarnings,
       required this.deploymentCost,
-      required this.yesClicked})
+      required this.yesClicked,
+      required this.step,
+      required this.steps})
       : super(key: key);
 
   final Function(AssetModel, double) yesClicked;
@@ -900,10 +1047,14 @@ class DeploymentCostWidget extends StatelessWidget {
   final double deploymentCost;
   final double assetEarnings;
   final double dhaliEarnings;
+  final int step;
+  final int steps;
 
   @override
   Widget build(BuildContext context) {
     return getDialogTemplate(
+      step: step,
+      steps: steps,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -1097,6 +1248,7 @@ class DeploymentCostWidget extends StatelessWidget {
                     size: 32,
                   ),
                   label: const Text(
+                    key: Key("DeploymentCostWidgetBack"),
                     "Back",
                     style: TextStyle(fontSize: 30),
                   )),
@@ -1148,15 +1300,15 @@ class DataTransmissionWidget extends StatefulWidget {
 
   final Map<String, String> payment;
 
-  const DataTransmissionWidget(
-      {Key? key,
-      required this.data,
-      required this.onNextClicked,
-      required this.getRequest,
-      required this.payment,
-      required this.getUploader,
-      required this.getOnSuccessWidget})
-      : super(key: key);
+  const DataTransmissionWidget({
+    Key? key,
+    required this.data,
+    required this.onNextClicked,
+    required this.getRequest,
+    required this.payment,
+    required this.getUploader,
+    required this.getOnSuccessWidget,
+  }) : super(key: key);
 
   @override
   _DataTransmissionWidgetState createState() => _DataTransmissionWidgetState();
@@ -1511,16 +1663,22 @@ class InferenceCostWidget extends StatelessWidget {
       {Key? key,
       required this.file,
       required this.inferenceCost,
-      required this.yesClicked})
+      required this.yesClicked,
+      required this.step,
+      required this.steps})
       : super(key: key);
 
   final Function(AssetModel, double) yesClicked;
   final AssetModel file;
   final double inferenceCost;
+  final int step;
+  final int steps;
 
   @override
   Widget build(BuildContext context) {
     return getDialogTemplate(
+      step: step,
+      steps: steps,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -1610,7 +1768,10 @@ class InferenceCostWidget extends StatelessWidget {
 }
 
 Widget getDialogTemplate(
-    {required Widget child, required BuildContext context}) {
+    {required Widget child,
+    required BuildContext context,
+    int? step,
+    int? steps}) {
   return Stack(
     children: [
       ClipRRect(
@@ -1618,19 +1779,11 @@ Widget getDialogTemplate(
         child: Container(
           padding: const EdgeInsets.all(15),
           color: AppTheme.nearlyWhite,
-          child: DottedBorder(
-            dashPattern: const [10, 10],
-            radius: const Radius.circular(20),
-            strokeWidth: 6,
-            borderType: BorderType.RRect,
-            color: AppTheme.nearlyBlack,
-            padding: EdgeInsets.zero,
-            child: Center(
-              child: Container(
-                padding: EdgeInsets.symmetric(
-                    horizontal: isDesktopResolution(context) ? 80 : 40),
-                child: child,
-              ),
+          child: Center(
+            child: Container(
+              padding: EdgeInsets.symmetric(
+                  horizontal: isDesktopResolution(context) ? 80 : 40),
+              child: child,
             ),
           ),
         ),
@@ -1646,6 +1799,19 @@ Widget getDialogTemplate(
           },
         ),
       ),
+      if (step != null && steps != null)
+        Column(mainAxisAlignment: MainAxisAlignment.end, children: [
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Text(
+              "Step $step of $steps",
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ),
+          const SizedBox(
+            height: 20,
+          )
+        ]),
     ],
   );
 }
