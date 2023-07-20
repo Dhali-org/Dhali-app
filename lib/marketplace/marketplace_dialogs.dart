@@ -337,7 +337,7 @@ class _DropzoneDeployWidgetState extends State<DropzoneDeployWidget> {
                             parameters: {"forAction": "Asset upload"});
                         showPopupTextWithLink(
                             text:
-                                "Please provide a docker image file in '.tar' format.  For instructions, see",
+                                "Please provide a docker image file in '.tar' format.  For instructions, see ",
                             urlText: "here.",
                             url:
                                 "https://dhali.io/docs/#/?id=creating-dhali-assets",
