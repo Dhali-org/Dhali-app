@@ -30,29 +30,17 @@ Future<void> selectAssets(
     FakeFirebaseFirestore mockFirebaseFirestore) async {
   expect(find.text("Choose .tar file"), findsOneWidget);
   expect(find.text("Choose .md file"), findsOneWidget);
-  expect(find.text("Next"), findsOneWidget);
+  expect(find.byKey(const Key("DropZoneDeployNext")), findsOneWidget);
   expect(find.text("Drag or select your files"), findsOneWidget);
   expect(find.text("No .tar docker image asset selected"), findsOneWidget);
   expect(find.text("No .md asset description selected"), findsOneWidget);
-  expect(find.text("What your asset will be called"), findsOneWidget);
   expect(find.byIcon(Icons.cloud_upload_rounded), findsOneWidget);
   expect(find.byIcon(Icons.help_outline_outlined), findsNWidgets(2));
   expect(find.byType(DropzoneView), findsOneWidget);
 
   await tester.tap(find.byType(DropzoneView));
-  await tester.tap(find.text("Asset name"));
   await tester.pumpAndSettle();
 
-  expect(
-      find.text("Enter the name you'd like for your asset "
-          "(a-z, 0-9, -, .)"),
-      findsOneWidget);
-
-  await tester.enterText(
-      find.byKey(const Key("asset_name_input_field")), theInputAssetName);
-  await tester.pumpAndSettle(const Duration(seconds: 5));
-
-  expect(find.text(theAssetName), findsOneWidget);
   await tester.pumpAndSettle();
 
   await tester.tap(find.byKey(const Key("choose_docker_image_button")));
@@ -84,7 +72,7 @@ Future<void> displayCosts(
   expect(find.text("421%"), findsOneWidget); // 100 + 301 + 20
   expect(find.text("Are you sure you want to deploy?"), findsOneWidget);
   expect(find.text("Yes"), findsOneWidget);
-  expect(find.text("Back"), findsOneWidget);
+  expect(find.byKey(Key("DeploymentCostWidgetBack")), findsOneWidget);
 }
 
 Future<void> setEarnings(
@@ -117,21 +105,40 @@ void imageDeploymentDemo(
   await tester.tap(find.text('Monetise my asset', skipOffstage: false));
   await tester.pumpAndSettle();
 
-  await selectAssets(tester, mockRequester, mockFirebaseFirestore);
+  expect(find.text("What your asset will be called"), findsOneWidget);
+  expect(find.text("Step 1 of 4"), findsOneWidget);
 
-  await tester.tap(find.text("Next"));
-  await tester.pumpAndSettle(const Duration(seconds: 4));
-
-  expect(find.text("Your image was successfully scanned."), findsOneWidget);
-
-  await tester.tap(find.text("Next"));
+  await tester.tap(find.text("Asset name"));
+  expect(
+      find.text("Enter the name you'd like for your asset "
+          "(a-z, 0-9, -, .)"),
+      findsOneWidget);
+  await tester.enterText(
+      find.byKey(const Key("asset_name_input_field")), theInputAssetName);
+  await tester.pumpAndSettle(const Duration(seconds: 5));
+  expect(find.text(theAssetName), findsOneWidget);
+  await tester.tap(find.byKey(const Key("AssetNameNext")));
   await tester.pumpAndSettle();
 
+  expect(find.text("Step 2 of 4"), findsOneWidget);
   await setEarnings(tester, mockRequester, mockFirebaseFirestore);
 
-  await tester.tap(find.text("Next"));
+  await tester.tap(find.byKey(const Key("ImageCostNext")));
   await tester.pumpAndSettle();
 
+  expect(find.text("Step 3 of 4"), findsOneWidget);
+  await selectAssets(tester, mockRequester, mockFirebaseFirestore);
+
+  await tester.tap(find.byKey(const Key("DropZoneDeployNext")));
+  await tester.pumpAndSettle(const Duration(seconds: 4));
+
+  expect(find.text("Step 3 of 4"), findsNWidgets(2));
+  expect(find.text("Your image was successfully scanned."), findsOneWidget);
+
+  await tester.tap(find.byKey(const Key("ImageScanningNext")));
+  await tester.pumpAndSettle();
+
+  expect(find.text("Step 4 of 4"), findsOneWidget);
   await displayCosts(tester, mockRequester, mockFirebaseFirestore);
 
   await tester.tap(find.text("Yes"));
@@ -345,19 +352,32 @@ void main() async {
       await tester.tap(find.text('Monetise my asset', skipOffstage: false));
       await tester.pumpAndSettle();
 
+      expect(find.text("What your asset will be called"), findsOneWidget);
+
+      await tester.tap(find.text("Asset name"));
+      expect(
+          find.text("Enter the name you'd like for your asset "
+              "(a-z, 0-9, -, .)"),
+          findsOneWidget);
+      await tester.enterText(
+          find.byKey(const Key("asset_name_input_field")), theInputAssetName);
+      await tester.pumpAndSettle(const Duration(seconds: 5));
+      expect(find.text(theAssetName), findsOneWidget);
+      await tester.tap(find.byKey(const Key("AssetNameNext")));
+      await tester.pumpAndSettle();
+      await setEarnings(tester, mockRequester, firebaseMockInstance);
+
+      await tester.tap(find.byKey(const Key("ImageCostNext")));
+      await tester.pumpAndSettle();
+
       await selectAssets(tester, mockRequester, firebaseMockInstance);
 
-      await tester.tap(find.text("Next"));
+      await tester.tap(find.byKey(const Key("DropZoneDeployNext")));
       await tester.pumpAndSettle(const Duration(seconds: 4));
 
       expect(find.text("Your image was successfully scanned."), findsOneWidget);
 
-      await tester.tap(find.text("Next"));
-      await tester.pumpAndSettle();
-
-      await setEarnings(tester, mockRequester, firebaseMockInstance);
-
-      await tester.tap(find.text("Next"));
+      await tester.tap(find.byKey(const Key("ImageScanningNext")));
       await tester.pumpAndSettle();
 
       await displayCosts(tester, mockRequester, firebaseMockInstance);
