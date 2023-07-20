@@ -723,21 +723,19 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                           Text("Please link a wallet using the Wallet page"),
                     );
                   }
-
                   return Dialog(
                     backgroundColor: Colors.transparent,
-                    child: DropzoneDeployWidget(
-                      onDroppedFile: ((file) {}),
-                      onNextClicked: (asset, readme) {
-                        Navigator.of(context).pop();
+                    child: ImageCostWidget(
+                      defaultEarningsPerInference: 20,
+                      onNextClicked: (assetEarnings) {
                         showDialog(
                             context: context,
                             builder: (BuildContext _) {
                               return Dialog(
                                   backgroundColor: Colors.transparent,
-                                  child: ImageScanningWidget(
-                                      file: asset,
-                                      onNextClicked: (asset) {
+                                  child: DropzoneDeployWidget(
+                                      onDroppedFile: ((file) {}),
+                                      onNextClicked: (asset, readme) {
                                         Navigator.of(context).pop();
                                         showDialog(
                                             context: context,
@@ -745,12 +743,11 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                                               return Dialog(
                                                   backgroundColor:
                                                       Colors.transparent,
-                                                  child: ImageCostWidget(
-                                                      defaultEarningsPerInference:
-                                                          20,
+                                                  child: ImageScanningWidget(
                                                       file: asset,
-                                                      onNextClicked: (asset,
-                                                          assetEarnings) {
+                                                      onNextClicked: (asset) {
+                                                        Navigator.of(context)
+                                                            .pop();
                                                         showDialog(
                                                             context: context,
                                                             builder:

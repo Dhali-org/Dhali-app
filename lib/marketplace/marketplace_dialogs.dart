@@ -715,16 +715,11 @@ class _ImageScanningWidgetState extends State<ImageScanningWidget> {
 }
 
 class ImageCostWidget extends StatefulWidget {
-  final AssetModel file;
-
-  final Function(AssetModel, double) onNextClicked;
+  final Function(double) onNextClicked;
   final int? defaultEarningsPerInference;
 
   const ImageCostWidget(
-      {Key? key,
-      required this.file,
-      required this.onNextClicked,
-      this.defaultEarningsPerInference})
+      {Key? key, required this.onNextClicked, this.defaultEarningsPerInference})
       : super(key: key);
   @override
   _ImageCostWidgetState createState() => _ImageCostWidgetState();
@@ -800,9 +795,7 @@ class _ImageCostWidgetState extends State<ImageCostWidget> {
                         command: "event",
                         target: "NextClicked",
                         parameters: {"from": "ImageCostWidget"});
-                    widget.onNextClicked(
-                        widget.file,
-                        double.tryParse(controller
+                    widget.onNextClicked(double.tryParse(controller
                             .text)!); // != null because input "digitsOnly"
                   }
                 : null,
