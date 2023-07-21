@@ -1766,6 +1766,104 @@ class InferenceCostWidget extends StatelessWidget {
   }
 }
 
+class BountyForm extends StatefulWidget {
+  const BountyForm({
+    Key? key,
+    required this.getFirestore,
+  }) : super(key: key);
+
+  final FirebaseFirestore? Function() getFirestore;
+
+  @override
+  _BountyFormState createState() => _BountyFormState();
+}
+
+class _BountyFormState extends State<BountyForm> {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final TextEditingController _controller1 = TextEditingController();
+  final TextEditingController _controller2 = TextEditingController();
+  @override
+  void initState() {
+    super.initState();
+    _controller2.text = """# Description
+
+<Provide a description of the asset.>
+
+# Asset input
+
+<Provide a description of the desired inputs for the asset.>
+
+# Asset output
+
+<Provide a description of how results fromm my asset are structured.>""";
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Form(
+      key: _formKey,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: <Widget>[
+          SizedBox(height: 10),
+          TextFormField(
+            controller: _controller1,
+            maxLength: 64,
+            decoration: InputDecoration(
+              border: OutlineInputBorder(),
+              labelText: 'Bounty title',
+            ),
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Please enter some text';
+              }
+              return null;
+            },
+          ),
+          SizedBox(height: 10), // add some spacing
+          Expanded(
+            child: TextFormField(
+              controller: _controller2,
+              keyboardType: TextInputType.multiline,
+              maxLines: null,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'Bounty description',
+              ),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter some text';
+                }
+                return null;
+              },
+            ),
+          ),
+          SizedBox(height: 10), // add some spacing
+          Align(
+            alignment: Alignment.bottomRight,
+            child: ElevatedButton(
+              onPressed: () {
+                if (_formKey.currentState!.validate()) {
+                  print("Submit button pressed");
+                  widget
+                      .getFirestore()!
+                      .collection(Config.config!["BOUNTIES_COLLECTION_NAME"])
+                      .doc()
+                      .set({
+                    "title": _controller1.text,
+                    "content": _controller2.text
+                  });
+                }
+              },
+              child: Text('Submit'),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 Widget getDialogTemplate(
     {required Widget child,
     required BuildContext context,

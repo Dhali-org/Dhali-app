@@ -11,6 +11,7 @@
         "EARNING_RATE": "asset_earning_rate"
     },
     "MINTED_NFTS_COLLECTION_NAME": "public_minted_nfts",
+    "BOUNTIES_COLLECTION_NAME": "bounties",
     "PAYMENT_CLAIM_KEYS": {
         "ACCOUNT": "account",
         "DESTINATION_ACCOUNT": "destination_account",

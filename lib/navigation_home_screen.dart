@@ -24,6 +24,7 @@ import 'package:url_launcher/url_launcher.dart';
 enum DrawerIndex {
   Wallet,
   Assets,
+  Bounties,
   Marketplace,
   Licenses,
 }
@@ -191,17 +192,17 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
             Material(
                 type: MaterialType.transparency,
                 child: ListTile(
-              leading:
-                  const Icon(Icons.home_filled, color: AppTheme.dhali_blue),
-              title: const Text('Home',
-                  style: TextStyle(color: AppTheme.nearlyBlack)),
-              onTap: () {
+                  leading:
+                      const Icon(Icons.home_filled, color: AppTheme.dhali_blue),
+                  title: const Text('Home',
+                      style: TextStyle(color: AppTheme.nearlyBlack)),
+                  onTap: () {
                     gtag(
                         command: "event",
                         target: "HomeSelected",
                         parameters: {});
-                _launchUrl("https://dhali.io");
-              },
+                    _launchUrl("https://dhali.io");
+                  },
                 )),
             const Divider(
               height: 20,
@@ -217,15 +218,15 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
                       selectedTileColor: AppTheme.light_grey,
                       leading:
                           const Icon(Icons.wallet, color: AppTheme.dhali_blue),
-                  title: const Text('Wallet',
-                      style: TextStyle(color: AppTheme.nearlyBlack)),
-                  onTap: () {
+                      title: const Text('Wallet',
+                          style: TextStyle(color: AppTheme.nearlyBlack)),
+                      onTap: () {
                         drawerIndex = DrawerIndex.Wallet;
-                    getScreenView(DrawerIndex.Wallet);
-                    if (!_tray_open) {
-                      Navigator.pop(context);
-                    }
-                  },
+                        getScreenView(DrawerIndex.Wallet);
+                        if (!_tray_open) {
+                          Navigator.pop(context);
+                        }
+                      },
                     )),
                 if (_showWalletPrompt)
                   Positioned(
@@ -249,39 +250,55 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
                 child: ListTile(
                   selected: DrawerIndex.Assets == drawerIndex,
                   selectedTileColor: AppTheme.light_grey,
-              leading: const Icon(Icons.token, color: AppTheme.dhali_blue),
-              title: const Text('My assets',
-                  style: TextStyle(color: AppTheme.nearlyBlack)),
-              onTap: isDesktopResolution(context)
-                  ? () {
+                  leading: const Icon(Icons.token, color: AppTheme.dhali_blue),
+                  title: const Text('My assets',
+                      style: TextStyle(color: AppTheme.nearlyBlack)),
+                  onTap: isDesktopResolution(context)
+                      ? () {
                           drawerIndex = DrawerIndex.Assets;
-                      getScreenView(DrawerIndex.Assets);
-                      if (!_tray_open) {
-                        Navigator.pop(context);
-                      }
-                    }
-                  : () {
-                      showNotImplentedWidget(
-                          context: context,
-                          feature: "Mobile asset administration",
-                          message: "This tab is available on desktops.");
-                    },
+                          getScreenView(DrawerIndex.Assets);
+                          if (!_tray_open) {
+                            Navigator.pop(context);
+                          }
+                        }
+                      : () {
+                          showNotImplentedWidget(
+                              context: context,
+                              feature: "Mobile asset administration",
+                              message: "This tab is available on desktops.");
+                        },
                 )),
             Material(
                 type: MaterialType.transparency,
                 child: ListTile(
                   selected: DrawerIndex.Marketplace == drawerIndex,
                   selectedTileColor: AppTheme.light_grey,
-              leading: const Icon(Icons.shop, color: AppTheme.dhali_blue),
-              title: const Text('Marketplace',
-                  style: TextStyle(color: AppTheme.nearlyBlack)),
-              onTap: () {
+                  leading: const Icon(Icons.shop, color: AppTheme.dhali_blue),
+                  title: const Text('Marketplace',
+                      style: TextStyle(color: AppTheme.nearlyBlack)),
+                  onTap: () {
                     drawerIndex = DrawerIndex.Marketplace;
-                getScreenView(DrawerIndex.Marketplace);
-                if (!_tray_open) {
-                  Navigator.pop(context);
-                }
-              },
+                    getScreenView(DrawerIndex.Marketplace);
+                    if (!_tray_open) {
+                      Navigator.pop(context);
+                    }
+                  },
+                )),
+            Material(
+                type: MaterialType.transparency,
+                child: ListTile(
+                  selected: DrawerIndex.Bounties == drawerIndex,
+                  selectedTileColor: AppTheme.light_grey,
+                  leading: const Icon(Icons.bolt, color: AppTheme.dhali_blue),
+                  title: const Text('Bounties',
+                      style: TextStyle(color: AppTheme.nearlyBlack)),
+                  onTap: () {
+                    drawerIndex = DrawerIndex.Bounties;
+                    getScreenView(DrawerIndex.Bounties);
+                    if (!_tray_open) {
+                      Navigator.pop(context);
+                    }
+                  },
                 )),
             const Divider(
               height: 20,
@@ -291,31 +308,31 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
             Material(
                 type: MaterialType.transparency,
                 child: ListTile(
-              leading: const Icon(Icons.book, color: AppTheme.dhali_blue),
-              title: const Text('Docs',
-                  style: TextStyle(color: AppTheme.nearlyBlack)),
-              onTap: () {
+                  leading: const Icon(Icons.book, color: AppTheme.dhali_blue),
+                  title: const Text('Docs',
+                      style: TextStyle(color: AppTheme.nearlyBlack)),
+                  onTap: () {
                     gtag(
                         command: "event",
                         target: "DocsSelected",
                         parameters: {});
-                _launchUrl("https://dhali.io/docs");
-              },
+                    _launchUrl("https://dhali.io/docs");
+                  },
                 )),
             Material(
                 type: MaterialType.transparency,
                 child: ListTile(
                   selectedTileColor: Colors.grey,
-              leading: const Icon(Icons.badge, color: AppTheme.dhali_blue),
-              title: const Text('Licenses',
-                  style: TextStyle(color: AppTheme.nearlyBlack)),
-              onTap: () {
+                  leading: const Icon(Icons.badge, color: AppTheme.dhali_blue),
+                  title: const Text('Licenses',
+                      style: TextStyle(color: AppTheme.nearlyBlack)),
+                  onTap: () {
                     drawerIndex = DrawerIndex.Licenses;
                     getScreenView(drawerIndex);
-                if (!_tray_open) {
-                  Navigator.pop(context);
-                }
-              },
+                    if (!_tray_open) {
+                      Navigator.pop(context);
+                    }
+                  },
                 )),
             Material(
                 type: MaterialType.transparency,
@@ -323,10 +340,10 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
                     selectedTileColor: Colors.grey,
                     leading:
                         const Icon(Icons.cookie, color: AppTheme.dhali_blue),
-                title: const Text('Cookie Consent Preferences',
-                    style: TextStyle(color: AppTheme.nearlyBlack)),
-                onTap: () {
-                  js.context.callMethod('displayPreferenceModal');
+                    title: const Text('Cookie Consent Preferences',
+                        style: TextStyle(color: AppTheme.nearlyBlack)),
+                    onTap: () {
+                      js.context.callMethod('displayPreferenceModal');
                     })),
           ],
         ));
@@ -476,6 +493,23 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
               getWallet: widget.getWallet,
               setWallet: widget.setWallet,
               getFirestore: getFirestore);
+        });
+        break;
+      case DrawerIndex.Bounties:
+        gtag(
+            command: "event",
+            target: "BountiesScreenShown",
+            parameters: {"walletIsLinked": _walletIsLinked});
+
+        setState(() {
+          screenView = MarketplaceHomeScreen(
+            key: const Key("Bounties"), // Key used to force State rebuild
+            getRequest: widget.getRequest,
+            assetScreenType: AssetScreenType.Bounties,
+            getWallet: widget.getWallet,
+            setWallet: widget.setWallet,
+            getFirestore: getFirestore,
+          );
         });
         break;
       case DrawerIndex.Licenses:
