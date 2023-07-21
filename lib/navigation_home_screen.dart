@@ -62,7 +62,7 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
 
   @override
   void initState() {
-    drawerIndex == Null ? DrawerIndex.Marketplace : drawerIndex;
+    drawerIndex = drawerIndex ?? DrawerIndex.Marketplace;
     screenView = getScreenView(drawerIndex);
 
     // Hit the README server as soon as the app is opened to spin it up
@@ -188,16 +188,21 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
                 ),
               ),
             ),
-            ListTile(
+            Material(
+                type: MaterialType.transparency,
+                child: ListTile(
               leading:
                   const Icon(Icons.home_filled, color: AppTheme.dhali_blue),
               title: const Text('Home',
                   style: TextStyle(color: AppTheme.nearlyBlack)),
               onTap: () {
-                gtag(command: "event", target: "HomeSelected", parameters: {});
+                    gtag(
+                        command: "event",
+                        target: "HomeSelected",
+                        parameters: {});
                 _launchUrl("https://dhali.io");
               },
-            ),
+                )),
             const Divider(
               height: 20,
               thickness: 1,
@@ -205,17 +210,23 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
             ),
             Stack(
               children: <Widget>[
-                ListTile(
-                  leading: const Icon(Icons.wallet, color: AppTheme.dhali_blue),
+                Material(
+                    type: MaterialType.transparency,
+                    child: ListTile(
+                      selected: DrawerIndex.Wallet == drawerIndex,
+                      selectedTileColor: AppTheme.light_grey,
+                      leading:
+                          const Icon(Icons.wallet, color: AppTheme.dhali_blue),
                   title: const Text('Wallet',
                       style: TextStyle(color: AppTheme.nearlyBlack)),
                   onTap: () {
+                        drawerIndex = DrawerIndex.Wallet;
                     getScreenView(DrawerIndex.Wallet);
                     if (!_tray_open) {
                       Navigator.pop(context);
                     }
                   },
-                ),
+                    )),
                 if (_showWalletPrompt)
                   Positioned(
                     left: 30,
@@ -233,12 +244,17 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
                   ),
               ],
             ),
-            ListTile(
+            Material(
+                type: MaterialType.transparency,
+                child: ListTile(
+                  selected: DrawerIndex.Assets == drawerIndex,
+                  selectedTileColor: AppTheme.light_grey,
               leading: const Icon(Icons.token, color: AppTheme.dhali_blue),
               title: const Text('My assets',
                   style: TextStyle(color: AppTheme.nearlyBlack)),
               onTap: isDesktopResolution(context)
                   ? () {
+                          drawerIndex = DrawerIndex.Assets;
                       getScreenView(DrawerIndex.Assets);
                       if (!_tray_open) {
                         Navigator.pop(context);
@@ -250,50 +266,68 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
                           feature: "Mobile asset administration",
                           message: "This tab is available on desktops.");
                     },
-            ),
-            ListTile(
+                )),
+            Material(
+                type: MaterialType.transparency,
+                child: ListTile(
+                  selected: DrawerIndex.Marketplace == drawerIndex,
+                  selectedTileColor: AppTheme.light_grey,
               leading: const Icon(Icons.shop, color: AppTheme.dhali_blue),
               title: const Text('Marketplace',
                   style: TextStyle(color: AppTheme.nearlyBlack)),
               onTap: () {
+                    drawerIndex = DrawerIndex.Marketplace;
                 getScreenView(DrawerIndex.Marketplace);
                 if (!_tray_open) {
                   Navigator.pop(context);
                 }
               },
-            ),
+                )),
             const Divider(
               height: 20,
               thickness: 1,
               color: Colors.grey,
             ),
-            ListTile(
+            Material(
+                type: MaterialType.transparency,
+                child: ListTile(
               leading: const Icon(Icons.book, color: AppTheme.dhali_blue),
               title: const Text('Docs',
                   style: TextStyle(color: AppTheme.nearlyBlack)),
               onTap: () {
-                gtag(command: "event", target: "DocsSelected", parameters: {});
+                    gtag(
+                        command: "event",
+                        target: "DocsSelected",
+                        parameters: {});
                 _launchUrl("https://dhali.io/docs");
               },
-            ),
-            ListTile(
+                )),
+            Material(
+                type: MaterialType.transparency,
+                child: ListTile(
+                  selectedTileColor: Colors.grey,
               leading: const Icon(Icons.badge, color: AppTheme.dhali_blue),
               title: const Text('Licenses',
                   style: TextStyle(color: AppTheme.nearlyBlack)),
               onTap: () {
-                getScreenView(DrawerIndex.Licenses);
+                    drawerIndex = DrawerIndex.Licenses;
+                    getScreenView(drawerIndex);
                 if (!_tray_open) {
                   Navigator.pop(context);
                 }
               },
-            ),
-            ListTile(
-                leading: const Icon(Icons.cookie, color: AppTheme.dhali_blue),
+                )),
+            Material(
+                type: MaterialType.transparency,
+                child: ListTile(
+                    selectedTileColor: Colors.grey,
+                    leading:
+                        const Icon(Icons.cookie, color: AppTheme.dhali_blue),
                 title: const Text('Cookie Consent Preferences',
                     style: TextStyle(color: AppTheme.nearlyBlack)),
                 onTap: () {
                   js.context.callMethod('displayPreferenceModal');
-                }),
+                    })),
           ],
         ));
   }
