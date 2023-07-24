@@ -114,7 +114,14 @@ Dialog run(
       double cost = (value.data()![Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]
                   ["AVERAGE_INFERENCE_TIME_MS"]] *
               Config.config!["DHALI_CPU_INFERENCE_COST_PER_MS"] *
-              1.4)
+              (1 +
+                  (Config.config!["DHALI_EARNINGS_PERCENTAGE_PER_INFERENCE"]
+                          as double) /
+                      100 +
+                  (Config.config!["DHALI_EARNINGS_PERCENTAGE_PER_INFERENCE"]
+                          as double) /
+                      100) *
+              3)
           .ceil(); // TODO : Ensure this
       // factor is effectively
       // dealt with

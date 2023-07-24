@@ -1685,7 +1685,7 @@ class InferenceCostWidget extends StatelessWidget {
             height: 16,
           ),
           Text(
-            "Running this asset typically costs $inferenceCost drops",
+            "Running this asset typically costs ${(inferenceCost / 1000000).toStringAsFixed(4)} XRP",
             style: TextStyle(
                 fontSize: isDesktopResolution(context) ? 25 : 12,
                 color: AppTheme.nearlyBlack),
