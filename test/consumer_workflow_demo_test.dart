@@ -30,7 +30,7 @@ const String creatorAccount = "A random classic address";
 const String dhaliAccount = "${creatorAccount}diff";
 const double inferenceTime = 1.0;
 const List<String> categories = ["A category"];
-const double cost = 1;
+const double cost = 1000000;
 const numSuccessfulRequests = 10.0;
 const endpointUrl = "a random url";
 
@@ -67,7 +67,7 @@ Future<void> imageConsumptionDemo(WidgetTester tester) async {
   expect(find.text("Selected input file: test.tar"), findsOneWidget);
   await tester.tap(find.text("Next"));
   await tester.pumpAndSettle();
-  expect(find.text("Running this asset typically costs $cost drops"),
+  expect(find.text("Running this asset typically costs 1.0000 XRP"),
       findsOneWidget);
   expect(find.text("Are you sure you want to continue?"), findsOneWidget);
   expect(find.text("Yes"), findsOneWidget);
