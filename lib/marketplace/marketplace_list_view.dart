@@ -107,7 +107,7 @@ class MarketplaceListView extends StatelessWidget {
                                   Expanded(
                                     flex: 2,
                                     child: Text(
-                                      ' ${marketplaceData!.pricePerRun.ceil()} drops/run',
+                                      ' ${(marketplaceData!.pricePerRun / 1000000).toStringAsFixed(4)} XRP/run',
                                       textAlign: TextAlign.left,
                                       style: const TextStyle(
                                         fontWeight: FontWeight.w600,

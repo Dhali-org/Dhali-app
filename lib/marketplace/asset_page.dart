@@ -169,7 +169,7 @@ class _AssetPageState extends State<AssetPage> {
                                       TextStyle(fontWeight: FontWeight.bold)),
                               TextSpan(
                                   text:
-                                      '~${widget.asset.pricePerRun.ceil()} drops/run'),
+                                      '~${(widget.asset.pricePerRun / 1000000).toStringAsFixed(4)} XRP/run'),
                             ],
                           ),
                         ),
