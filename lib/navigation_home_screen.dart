@@ -408,6 +408,7 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
                             target: "AssetsScreenShownFromWalletContinue",
                             parameters: {"walletIsLinked": _walletIsLinked});
                         setState(() {
+                          this.drawerIndex = DrawerIndex.Assets;
                           screenView = getScreenView(DrawerIndex.Assets);
                           _showContinueButton = false;
                         });
@@ -433,6 +434,7 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
                             target: "MarketplaceScreenShownFromWalletContinue",
                             parameters: {"walletIsLinked": _walletIsLinked});
                         setState(() {
+                          this.drawerIndex = DrawerIndex.Marketplace;
                           screenView = getScreenView(DrawerIndex.Marketplace);
                           _showContinueButton = false;
                         });
