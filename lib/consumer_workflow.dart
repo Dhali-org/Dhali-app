@@ -27,6 +27,10 @@ Widget consumerJourney(
     required FirebaseFirestore? Function() getFirestore,
     required BaseRequest Function(String method, String path) getRequest}) {
   if (getWallet() == null) {
+    gtag(
+        command: "event",
+        target: "RunWalletInactive",
+        parameters: {"url": runURL});
     return const AlertDialog(
       title: Text("Unable to proceed"),
       content: Text("Please link a wallet using the Wallet page"),
@@ -193,12 +197,15 @@ Dialog run(
                 getRequest: getRequest,
                 data: [DataEndpointPair(data: input, endPoint: runURL)],
                 onNextClicked: (asset) {},
-                getOnSuccessWidget: (context, response) => response != null
-                    ? DownloadFileWidget(
+                getOnSuccessWidget: (context, response) {
+                  if (response != null) {
+                    return DownloadFileWidget(
                         key: const Key("download_file"),
                         response: response,
-                        runURL: runURL)
-                    : null);
+                        runURL: runURL);
+                  }
+                  return null;
+                });
           }
           return Container();
         },
