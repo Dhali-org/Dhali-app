@@ -62,7 +62,7 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
 
   @override
   void initState() {
-    drawerIndex = drawerIndex ?? DrawerIndex.Marketplace;
+    drawerIndex = drawerIndex ?? DrawerIndex.Wallet;
     screenView = getScreenView(drawerIndex);
 
     // Hit the README server as soon as the app is opened to spin it up
