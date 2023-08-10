@@ -231,16 +231,16 @@ void main() async {
       await tester.drag(
           find.byKey(const Key('asset_grid_view')), const Offset(0.0, -1000));
       await tester.pump();
-      for (int i = 15; i < 32; ++i) {
+      for (int i = 15; i < 26; ++i) {
         expect(
           find.text("$theAssetName-$i"),
           findsOneWidget,
         );
       }
       await tester.drag(
-          find.byKey(const Key('asset_grid_view')), const Offset(0.0, -200));
+          find.byKey(const Key('asset_grid_view')), const Offset(0.0, -500));
       await tester.pump();
-      for (int i = 32; i < numAssets; ++i) {
+      for (int i = 26; i < numAssets; ++i) {
         expect(
           find.text("$theAssetName-$i"),
           findsOneWidget,

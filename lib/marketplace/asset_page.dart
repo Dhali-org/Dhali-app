@@ -77,9 +77,9 @@ class _AssetPageState extends State<AssetPage> {
         body: Container(
             decoration: BoxDecoration(
               borderRadius: const BorderRadius.all(Radius.circular(20)),
-              border: Border.all(width: 5),
+              border: Border.all(width: 2),
             ),
-            margin: const EdgeInsets.all(20),
+            margin: const EdgeInsets.all(5),
             alignment: Alignment.center,
             child: FutureBuilder(
                 builder:
