@@ -66,7 +66,7 @@ class MarketplaceListView extends StatelessWidget {
                                     marketplaceData!.assetName,
                                     style: const TextStyle(
                                       fontWeight: FontWeight.w600,
-                                      fontSize: 50,
+                                      fontSize: 25,
                                     ),
                                   )),
                               const Spacer(),

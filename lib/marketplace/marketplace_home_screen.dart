@@ -319,7 +319,7 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
       padding: const EdgeInsets.only(top: 8),
       scrollDirection: Axis.vertical,
       gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-          maxCrossAxisExtent: 600, childAspectRatio: 3),
+          maxCrossAxisExtent: 600, childAspectRatio: 2.5),
       itemBuilder: (BuildContext context, int index) {
         final int count = docs.length > 10 ? 10 : docs.length;
         final Animation<double> animation = Tween<double>(begin: 0.0, end: 1.0)
