@@ -65,7 +65,7 @@ class _AssetPageState extends State<AssetPage> {
               Text(
                 widget.asset.assetCategories.isNotEmpty
                     ? "Categories: ${widget.asset.assetCategories}"
-                    : "Categories: NONE",
+                    : "",
                 key: const Key("categories_in_asset_page"),
                 style: const TextStyle(color: Colors.black, fontSize: 20),
               ),

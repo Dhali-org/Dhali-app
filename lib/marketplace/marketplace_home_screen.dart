@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:dhali/analytics/analytics.dart';
 import 'package:dhali/marketplace/model/asset_model.dart';
 import 'package:dhali/utils/Uploaders.dart';
+import 'package:dhali/utils/display_utils.dart';
 import 'package:dhali/utils/not_implemented_dialog.dart';
 import 'package:dhali_wallet/dhali_wallet.dart';
 import 'package:dhali_wallet/xrpl_wallet.dart';
@@ -93,11 +94,12 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
           floatingActionButtonLocation: widget.getWallet() != null
               ? FloatingActionButtonLocation.centerFloat
               : null,
-          floatingActionButton: widget.getWallet() != null
-              ? Padding(
-                  padding: const EdgeInsets.only(bottom: 50.0),
-                  child: getFloatingActionButton(widget.assetScreenType))
-              : null,
+          floatingActionButton:
+              widget.getWallet() != null && isDesktopResolution(context)
+                  ? Padding(
+                      padding: const EdgeInsets.only(bottom: 50.0),
+                      child: getFloatingActionButton(widget.assetScreenType))
+                  : null,
           body: Stack(
             children: <Widget>[
               InkWell(
