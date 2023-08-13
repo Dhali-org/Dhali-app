@@ -120,15 +120,25 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                             SliverList(
                               delegate: SliverChildBuilderDelegate(
                                   (BuildContext context, int index) {
-                                return getSearchBarUI();
+                                return Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 16, right: 16, top: 8, bottom: 8),
+                                    child: Row(
+                                        // mainAxisAlignment:
+                                        //     MainAxisAlignment.center,
+                                        children: <Widget>[
+                                          Text(
+                                            widget.assetScreenType ==
+                                                    AssetScreenType.MyAssets
+                                                ? "My assets"
+                                                : "The marketplace",
+                                            style: const TextStyle(
+                                                color: Colors.black,
+                                                fontSize: 28,
+                                                fontWeight: FontWeight.bold),
+                                          )
+                                        ]));
                               }, childCount: 1),
-                            ),
-                            SliverPersistentHeader(
-                              pinned: true,
-                              floating: true,
-                              delegate: ContestTabHeader(
-                                getFilterBarUI(),
-                              ),
                             ),
                           ];
                         },
