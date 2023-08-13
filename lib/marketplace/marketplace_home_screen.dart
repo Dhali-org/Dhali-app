@@ -94,12 +94,11 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
           floatingActionButtonLocation: widget.getWallet() != null
               ? FloatingActionButtonLocation.centerFloat
               : null,
-          floatingActionButton:
-              widget.getWallet() != null && isDesktopResolution(context)
-                  ? Padding(
-                      padding: const EdgeInsets.only(bottom: 50.0),
-                      child: getFloatingActionButton(widget.assetScreenType))
-                  : null,
+          floatingActionButton: widget.getWallet() != null
+              ? Padding(
+                  padding: const EdgeInsets.only(bottom: 50.0),
+                  child: getFloatingActionButton(widget.assetScreenType))
+              : null,
           body: Stack(
             children: <Widget>[
               InkWell(
@@ -723,6 +722,14 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                       title: Text("Unable to proceed"),
                       content:
                           Text("Please link a wallet using the Wallet page"),
+                    );
+                  }
+                  if (isDesktopResolution(context) == false) {
+                    gtag(command: "event", target: "AddingAssetFromMobile");
+                    return const AlertDialog(
+                      title: Text("Unable to proceed"),
+                      content: Text(
+                          "Please access the marketplace through your desktop"),
                     );
                   }
                   return Dialog(
