@@ -60,7 +60,7 @@ class _AssetPageState extends State<AssetPage> {
             children: [
               Text(
                 widget.asset.assetName,
-                style: const TextStyle(color: Colors.black, fontSize: 28),
+                style: const TextStyle(color: Colors.black, fontSize: 18),
               ),
               Text(
                 widget.asset.assetCategories.isNotEmpty
