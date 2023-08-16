@@ -87,6 +87,7 @@ Dialog costDialog(
               builder: (BuildContext context) {
                 return run(
                     context: context,
+                    assetDescriptor: assetDescriptor,
                     runURL: runURL,
                     input: input,
                     getFirestore: getFirestore,
@@ -99,6 +100,7 @@ Dialog costDialog(
 
 Dialog run(
     {required BuildContext context,
+    required MarketplaceListData assetDescriptor,
     required AssetModel input,
     required String runURL,
     required DhaliWallet? Function() getWallet,
@@ -106,12 +108,9 @@ Dialog run(
     required BaseRequest Function(String method, String path) getRequest}) {
   String dest = Config.config!["DHALI_PUBLIC_ADDRESS"];
 
-  var runUrlSplit = runURL.split("/");
-  String assetUuid = runUrlSplit[runUrlSplit.length - 2];
-
   var payment = getFirestore()!
       .collection(Config.config!["MINTED_NFTS_COLLECTION_NAME"])
-      .doc(assetUuid)
+      .doc(assetDescriptor.assetID)
       .get()
       .then((value) async {
     if (value.exists) {
