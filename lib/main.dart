@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:dhali_wallet/dhali_wallet.dart';
+import 'package:dhali_wallet/xumm_wallet.dart';
 import 'package:http/http.dart';
 import 'package:dhali/app_theme.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +14,7 @@ import 'package:dhali/config.dart' show Config;
 
 import 'package:dhali/marketplace/asset_page.dart';
 import 'package:dhali/marketplace/model/marketplace_list_data.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> initializeApp() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -84,6 +86,17 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    SharedPreferences.getInstance().then((value) {
+      if (value.getString('wallet') == "XUMM") {
+        String? address = value.getString('address');
+        if (address != null) {
+          DhaliWallet wallet = XummWallet(address,
+              getFirestore: () => FirebaseFirestore.instance);
+          setWallet(wallet);
+        }
+      }
+    });
+
     const title = "Dhali Marketplace";
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
@@ -178,10 +191,15 @@ class _MyAppState extends State<MyApp> {
     return _wallet;
   }
 
-  void setWallet(DhaliWallet? wallet) {
+  void setWallet(DhaliWallet? wallet) async {
     setState(() {
       _wallet = wallet;
     });
+    if (wallet != null && wallet.runtimeType is XummWallet) {
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('address', wallet.address);
+      await prefs.setString('wallet', "XUMM");
+    }
   }
 }
 
