@@ -226,21 +226,19 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
                         }
                       },
                     )),
-                if (_showWalletPrompt)
-                  Positioned(
-                    left: 30,
-                    top: 5,
-                    child: Container(
-                      padding: const EdgeInsets.all(1),
-                      child: const Icon(
-                        CupertinoIcons
-                            .exclamationmark_circle_fill, // Your notification icon
-                        color: Colors.red,
-                        size:
-                            18, // Adjust this to make your icon bigger or smaller
-                      ),
+                Positioned(
+                  left: 30,
+                  top: 5,
+                  child: Container(
+                    padding: const EdgeInsets.all(1),
+                    child: Icon(
+                      CupertinoIcons.circle_filled, // Your notification icon
+                      color: _walletIsLinked ? Colors.green : Colors.red,
+                      size:
+                          18, // Adjust this to make your icon bigger or smaller
                     ),
                   ),
+                ),
               ],
             ),
             Material(
