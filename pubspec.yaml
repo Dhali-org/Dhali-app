@@ -56,7 +56,7 @@ dependencies:
     dhali_wallet:
       git:
         url: "https://github.com/Dhali-org/Dhali-wallet.git"
-        ref: 0.0.23
+        ref: 0.0.27
       # or
       # path: <path to local dhali directory>
 
