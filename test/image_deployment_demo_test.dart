@@ -64,7 +64,7 @@ Future<void> displayCosts(
   expect(find.text("What?"), findsNWidgets(2));
   expect(find.text("When?"), findsNWidgets(2));
   expect(find.text("Cost: XRP"), findsNWidgets(1));
-  expect(find.text("Cost: percentage of compute costs"), findsNWidgets(1));
+  expect(find.text("Cost:"), findsNWidgets(1));
   expect(find.text("If you continue, the above costs will be applied."),
       findsOneWidget);
   expect(find.text("301%"), findsOneWidget);
@@ -105,7 +105,7 @@ void imageDeploymentDemo(
   await tester.tap(find.text('Monetise my asset', skipOffstage: false));
   await tester.pumpAndSettle();
 
-  expect(find.text("What your asset will be called"), findsOneWidget);
+  expect(find.text("What will your asset be called?"), findsOneWidget);
   expect(find.text("Step 1 of 4"), findsOneWidget);
 
   await tester.tap(find.text("Asset name"));
@@ -352,7 +352,7 @@ void main() async {
       await tester.tap(find.text('Monetise my asset', skipOffstage: false));
       await tester.pumpAndSettle();
 
-      expect(find.text("What your asset will be called"), findsOneWidget);
+      expect(find.text("What will your asset be called?"), findsOneWidget);
 
       await tester.tap(find.text("Asset name"));
       expect(
