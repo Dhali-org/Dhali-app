@@ -268,7 +268,7 @@ class _DropzoneRunWidgetState extends State<DropzoneRunWidget> {
 
 class AssetNameWidget extends StatefulWidget {
   final ValueChanged<AssetModel> onDroppedFile;
-  final Function(String) onNextClicked;
+  final Function(String, HostingChoice) onNextClicked;
   final int step;
   final int steps;
 
@@ -286,6 +286,8 @@ class AssetNameWidget extends StatefulWidget {
 class _AssetNameWidgetState extends State<AssetNameWidget> {
   final textController = TextEditingController();
 
+  HostingChoice _choice = HostingChoice.hostedByDhali;
+
   @override
   Widget build(BuildContext context) {
     return getDialogTemplate(
@@ -297,6 +299,11 @@ class _AssetNameWidgetState extends State<AssetNameWidget> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                const Text(
+                  "What will your asset be called?",
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.start,
+                ),
                 TextField(
                   key: const Key('asset_name_input_field'),
                   onChanged: (value) => {
@@ -307,10 +314,9 @@ class _AssetNameWidgetState extends State<AssetNameWidget> {
                   controller: textController,
                   maxLength: 64,
                   decoration: const InputDecoration(
-                    labelStyle: TextStyle(fontSize: 20),
+                    labelStyle: TextStyle(fontSize: 18),
                     helperStyle: TextStyle(
                         color: Colors.black, fontWeight: FontWeight.bold),
-                    helperText: "What your asset will be called",
                     labelText: "Asset name",
                     hintText: "Enter the name you'd like for your asset "
                         "(a-z, 0-9, -, .)",
@@ -321,7 +327,16 @@ class _AssetNameWidgetState extends State<AssetNameWidget> {
                   ],
                 ),
                 const SizedBox(
-                  width: 16,
+                  height: 25,
+                ),
+                const Text("How will your asset be hosted?",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    textAlign: TextAlign.start),
+                HostingRadio(
+                  onChoiceSelected: (choice) {
+                    _choice = choice;
+                  },
+                  initialChoice: _choice,
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -329,7 +344,7 @@ class _AssetNameWidgetState extends State<AssetNameWidget> {
                     ElevatedButton.icon(
                         style: ElevatedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(
-                                vertical: 20, horizontal: 20),
+                                vertical: 10, horizontal: 10),
                             backgroundColor: AppTheme.secondary,
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(4))),
@@ -340,14 +355,15 @@ class _AssetNameWidgetState extends State<AssetNameWidget> {
                               parameters: {"from": "AssetNameWidget"});
                           Navigator.of(context).pop();
                         },
-                        icon: const Icon(
+                        icon: Icon(
                           Icons.arrow_back,
-                          size: 32,
+                          size: isDesktopResolution(context) ? 25 : 12,
                         ),
-                        label: const Text(
-                          key: Key("AssetNameBack"),
+                        label: Text(
+                          key: const Key("AssetNameBack"),
                           "Back",
-                          style: TextStyle(fontSize: 30),
+                          style: TextStyle(
+                              fontSize: isDesktopResolution(context) ? 25 : 12),
                         )),
                     const SizedBox(
                       width: 16,
@@ -356,7 +372,7 @@ class _AssetNameWidgetState extends State<AssetNameWidget> {
                         key: const Key("use_docker_image_button"),
                         style: ElevatedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(
-                                vertical: 20, horizontal: 20),
+                                vertical: 10, horizontal: 10),
                             backgroundColor: AppTheme.dhali_blue,
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(4))),
@@ -368,17 +384,19 @@ class _AssetNameWidgetState extends State<AssetNameWidget> {
                                     parameters: {
                                       "from": "DropZoneDeployWidget"
                                     });
-                                widget.onNextClicked(textController.text);
+                                widget.onNextClicked(
+                                    textController.text, _choice);
                               }
                             : null,
-                        icon: const Icon(
+                        icon: Icon(
                           Icons.navigate_next_outlined,
-                          size: 32,
+                          size: isDesktopResolution(context) ? 25 : 12,
                         ),
-                        label: const Text(
-                          key: Key("AssetNameNext"),
+                        label: Text(
+                          key: const Key("AssetNameNext"),
                           "Next",
-                          style: TextStyle(fontSize: 30),
+                          style: TextStyle(
+                              fontSize: isDesktopResolution(context) ? 25 : 12),
                         )),
                   ],
                 )
@@ -391,6 +409,60 @@ class _AssetNameWidgetState extends State<AssetNameWidget> {
     );
   }
 }
+
+class HostingRadio extends StatefulWidget {
+  final Function(HostingChoice) onChoiceSelected;
+  final HostingChoice initialChoice;
+
+  const HostingRadio(
+      {super.key, required this.onChoiceSelected, required this.initialChoice});
+  @override
+  _HostingRadioState createState() => _HostingRadioState();
+}
+
+class _HostingRadioState extends State<HostingRadio> {
+  HostingChoice? _choice;
+
+  @override
+  void initState() {
+    _choice = widget.initialChoice;
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        RadioListTile<HostingChoice>(
+          title: const Text('Self hosted'),
+          value: HostingChoice.selfHosted,
+          groupValue: _choice,
+          onChanged: (HostingChoice? value) {
+            setState(() {
+              _choice = value;
+            });
+          },
+        ),
+        RadioListTile<HostingChoice>(
+          title: const Text('Hosted by Dhali'),
+          value: HostingChoice.hostedByDhali,
+          groupValue: _choice,
+          onChanged: (HostingChoice? value) {
+            setState(() {
+              _choice = value;
+              if (_choice != null) {
+                widget.onChoiceSelected(_choice!);
+              }
+            });
+          },
+        )
+      ],
+    );
+  }
+}
+
+enum HostingChoice { selfHosted, hostedByDhali }
 
 class DropzoneDeployWidget extends StatefulWidget {
   final ValueChanged<AssetModel> onDroppedFile;
@@ -457,7 +529,7 @@ class _DropzoneDeployWidgetState extends State<DropzoneDeployWidget> {
                           ? "Selected asset file: ${assetFile!.fileName}"
                           : "No .tar docker image asset selected",
                       style: TextStyle(
-                          fontSize: 20,
+                          fontSize: isDesktopResolution(context) ? 25 : 12,
                           color: isHighlighted
                               ? AppTheme.nearlyWhite
                               : AppTheme.nearlyBlack),
@@ -481,7 +553,7 @@ class _DropzoneDeployWidgetState extends State<DropzoneDeployWidget> {
                       },
                       icon: const Icon(
                         Icons.help_outline_outlined,
-                        size: 32,
+                        size: 30,
                       ),
                     ),
                     const SizedBox(
@@ -491,7 +563,7 @@ class _DropzoneDeployWidgetState extends State<DropzoneDeployWidget> {
                         ? const Icon(
                             Icons.done_outline_rounded,
                             color: Colors.green,
-                            size: 80,
+                            size: 30,
                           )
                         : Container()
                   ],
@@ -505,7 +577,7 @@ class _DropzoneDeployWidgetState extends State<DropzoneDeployWidget> {
                           ? "Selected markdown file: ${readmeFile!.fileName}"
                           : "No .md asset description selected",
                       style: TextStyle(
-                          fontSize: 20,
+                          fontSize: isDesktopResolution(context) ? 25 : 12,
                           color: isHighlighted
                               ? AppTheme.nearlyWhite
                               : AppTheme.nearlyBlack),
@@ -529,7 +601,7 @@ class _DropzoneDeployWidgetState extends State<DropzoneDeployWidget> {
                       },
                       icon: const Icon(
                         Icons.help_outline_outlined,
-                        size: 32,
+                        size: 30,
                       ),
                     ),
                     const SizedBox(
@@ -539,7 +611,7 @@ class _DropzoneDeployWidgetState extends State<DropzoneDeployWidget> {
                         ? const Icon(
                             Icons.done_outline_rounded,
                             color: Colors.green,
-                            size: 80,
+                            size: 30,
                           )
                         : Container()
                   ],
@@ -556,7 +628,7 @@ class _DropzoneDeployWidgetState extends State<DropzoneDeployWidget> {
                       textAlign: TextAlign.center,
                       "Drag or select your files",
                       style: TextStyle(
-                          fontSize: 30,
+                          fontSize: isDesktopResolution(context) ? 25 : 12,
                           color: isHighlighted
                               ? AppTheme.nearlyWhite
                               : AppTheme.nearlyBlack),
@@ -569,13 +641,14 @@ class _DropzoneDeployWidgetState extends State<DropzoneDeployWidget> {
                 const SizedBox(
                   width: 16,
                 ),
-                Row(
+                RowElseColumn(
+                  isRow: isDesktopResolution(context),
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     ElevatedButton.icon(
                         style: ElevatedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(
-                                vertical: 20, horizontal: 20),
+                                vertical: 10, horizontal: 10),
                             backgroundColor: AppTheme.secondary,
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(4))),
@@ -586,14 +659,15 @@ class _DropzoneDeployWidgetState extends State<DropzoneDeployWidget> {
                               parameters: {"from": "DropZoneDeployWidget"});
                           Navigator.of(context).pop();
                         },
-                        icon: const Icon(
+                        icon: Icon(
                           Icons.arrow_back,
-                          size: 32,
+                          size: isDesktopResolution(context) ? 25 : 12,
                         ),
-                        label: const Text(
-                          key: Key("DropZoneDeployBack"),
+                        label: Text(
+                          key: const Key("DropZoneDeployBack"),
                           "Back",
-                          style: TextStyle(fontSize: 30),
+                          style: TextStyle(
+                              fontSize: isDesktopResolution(context) ? 25 : 12),
                         )),
                     const SizedBox(
                       width: 16,
@@ -621,7 +695,7 @@ class _DropzoneDeployWidgetState extends State<DropzoneDeployWidget> {
                         key: const Key("use_docker_image_button"),
                         style: ElevatedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(
-                                vertical: 20, horizontal: 20),
+                                vertical: 10, horizontal: 10),
                             backgroundColor: AppTheme.dhali_blue,
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(4))),
@@ -636,14 +710,15 @@ class _DropzoneDeployWidgetState extends State<DropzoneDeployWidget> {
                                 widget.onNextClicked(assetFile!, readmeFile!);
                               }
                             : null,
-                        icon: const Icon(
+                        icon: Icon(
                           Icons.navigate_next_outlined,
-                          size: 32,
+                          size: isDesktopResolution(context) ? 25 : 12,
                         ),
-                        label: const Text(
-                          key: Key("DropZoneDeployNext"),
+                        label: Text(
+                          key: const Key("DropZoneDeployNext"),
                           "Next",
-                          style: TextStyle(fontSize: 30),
+                          style: TextStyle(
+                              fontSize: isDesktopResolution(context) ? 25 : 12),
                         )),
                   ],
                 )
@@ -661,7 +736,7 @@ class _DropzoneDeployWidgetState extends State<DropzoneDeployWidget> {
     return ElevatedButton.icon(
         key: key,
         style: ElevatedButton.styleFrom(
-            padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
             backgroundColor: color,
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(4))),
@@ -686,13 +761,13 @@ class _DropzoneDeployWidgetState extends State<DropzoneDeployWidget> {
                 [1, 2, 3, 4, 5, 6, 7], "test.tar", {"type": mime[0]}));
           }
         },
-        icon: const Icon(
+        icon: Icon(
           Icons.search,
-          size: 32,
+          size: isDesktopResolution(context) ? 25 : 12,
         ),
         label: Text(
           text,
-          style: const TextStyle(fontSize: 30),
+          style: TextStyle(fontSize: isDesktopResolution(context) ? 25 : 12),
         ));
   }
 
@@ -782,22 +857,25 @@ class _ImageScanningWidgetState extends State<ImageScanningWidget> {
                   textAlign: TextAlign.center,
                   "Scanning '${widget.file.fileName}'. \nThis may take a "
                   "minute or two. Please wait.",
-                  style: const TextStyle(
-                      fontSize: 30, color: AppTheme.nearlyBlack),
+                  style: TextStyle(
+                      fontSize: isDesktopResolution(context) ? 25 : 12,
+                      color: AppTheme.nearlyBlack),
                 )
               : scanSuccess
-                  ? const Text(
+                  ? Text(
                       "Your image was successfully scanned.",
-                      style:
-                          TextStyle(fontSize: 30, color: AppTheme.nearlyBlack),
+                      style: TextStyle(
+                          fontSize: isDesktopResolution(context) ? 25 : 12,
+                          color: AppTheme.nearlyBlack),
                     )
-                  : const Text(
+                  : Text(
                       textAlign: TextAlign.center,
                       "Image invalid: "
                       "\nFollow the guide for preparing your "
                       "image <here>.",
-                      style:
-                          TextStyle(fontSize: 30, color: AppTheme.nearlyBlack),
+                      style: TextStyle(
+                          fontSize: isDesktopResolution(context) ? 25 : 12,
+                          color: AppTheme.nearlyBlack),
                     ),
           const SizedBox(
             height: 16,
@@ -806,7 +884,7 @@ class _ImageScanningWidgetState extends State<ImageScanningWidget> {
             ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(
-                        vertical: 20, horizontal: 20),
+                        vertical: 10, horizontal: 10),
                     backgroundColor: AppTheme.secondary,
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(4))),
@@ -817,14 +895,15 @@ class _ImageScanningWidgetState extends State<ImageScanningWidget> {
                       parameters: {"from": "DeploymentCostWidget"});
                   Navigator.of(context).pop();
                 },
-                icon: const Icon(
+                icon: Icon(
                   Icons.arrow_back,
-                  size: 32,
+                  size: isDesktopResolution(context) ? 25 : 12,
                 ),
-                label: const Text(
-                  key: Key("ImageScanningBack"),
+                label: Text(
+                  key: const Key("ImageScanningBack"),
                   "Back",
-                  style: TextStyle(fontSize: 30),
+                  style: TextStyle(
+                      fontSize: isDesktopResolution(context) ? 25 : 12),
                 )),
             const SizedBox(
               width: 16,
@@ -832,7 +911,7 @@ class _ImageScanningWidgetState extends State<ImageScanningWidget> {
             ElevatedButton.icon(
               style: ElevatedButton.styleFrom(
                   padding:
-                      const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+                      const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
                   backgroundColor: AppTheme.dhali_blue,
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(4))),
@@ -845,14 +924,15 @@ class _ImageScanningWidgetState extends State<ImageScanningWidget> {
                       widget.onNextClicked(widget.file);
                     }
                   : null,
-              icon: const Icon(
+              icon: Icon(
                 Icons.navigate_next_outlined,
-                size: 32,
+                size: isDesktopResolution(context) ? 25 : 12,
               ),
-              label: const Text(
-                key: Key("ImageScanningNext"),
+              label: Text(
+                key: const Key("ImageScanningNext"),
                 "Next",
-                style: TextStyle(fontSize: 30),
+                style:
+                    TextStyle(fontSize: isDesktopResolution(context) ? 25 : 12),
               ),
             )
           ]),
@@ -926,19 +1006,19 @@ class _ImageCostWidgetState extends State<ImageCostWidget> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           const Text(
-            textAlign: TextAlign.center,
             "Set your earning rate per inference.",
-            style: TextStyle(fontSize: 30, color: AppTheme.nearlyBlack),
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            textAlign: TextAlign.start,
           ),
           const Text(
             textAlign: TextAlign.center,
             "\nKeep this small to encourage usage.\n",
-            style: TextStyle(fontSize: 20, color: AppTheme.nearlyBlack),
+            style: TextStyle(fontSize: 12),
           ),
           const Text(
             textAlign: TextAlign.center,
             "Example: If running your asset costs Dhali \$1 in compute costs per inference, by setting 20 below you will earn \$0.20 per inference.",
-            style: TextStyle(fontSize: 20, color: AppTheme.nearlyBlack),
+            style: TextStyle(fontSize: 12, color: AppTheme.nearlyBlack),
           ),
           const SizedBox(
             height: 16,
@@ -970,7 +1050,7 @@ class _ImageCostWidgetState extends State<ImageCostWidget> {
               ElevatedButton.icon(
                   style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(
-                          vertical: 20, horizontal: 20),
+                          vertical: 10, horizontal: 10),
                       backgroundColor: AppTheme.secondary,
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(4))),
@@ -981,14 +1061,16 @@ class _ImageCostWidgetState extends State<ImageCostWidget> {
                         parameters: {"from": "DeploymentCostWidget"});
                     Navigator.of(context).pop();
                   },
-                  icon: const Icon(
+                  icon: Icon(
                     Icons.arrow_back,
-                    size: 32,
+                    size: isDesktopResolution(context) ? 25 : 12,
                   ),
-                  label: const Text(
-                    key: Key("ImageCostBack"),
+                  label: Text(
+                    key: const Key("ImageCostBack"),
                     "Back",
-                    style: TextStyle(fontSize: 30),
+                    style: TextStyle(
+                      fontSize: isDesktopResolution(context) ? 25 : 12,
+                    ),
                   )),
               const SizedBox(
                 width: 16,
@@ -996,7 +1078,7 @@ class _ImageCostWidgetState extends State<ImageCostWidget> {
               ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(
-                        vertical: 20, horizontal: 20),
+                        vertical: 10, horizontal: 10),
                     backgroundColor: AppTheme.dhali_blue,
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(4))),
@@ -1010,14 +1092,16 @@ class _ImageCostWidgetState extends State<ImageCostWidget> {
                             .text)!); // != null because input "digitsOnly"
                       }
                     : null,
-                icon: const Icon(
+                icon: Icon(
                   Icons.navigate_next_outlined,
-                  size: 32,
+                  size: isDesktopResolution(context) ? 25 : 12,
                 ),
-                label: const Text(
-                  key: Key("ImageCostNext"),
+                label: Text(
+                  key: const Key("ImageCostNext"),
                   "Next",
-                  style: TextStyle(fontSize: 30),
+                  style: TextStyle(
+                    fontSize: isDesktopResolution(context) ? 25 : 12,
+                  ),
                 ),
               ),
             ],
@@ -1060,17 +1144,19 @@ class DeploymentCostWidget extends StatelessWidget {
           const SizedBox(
             height: 16,
           ),
-          const Text(
+          Text(
             "Here is a break down of the asset's costs:",
-            style: TextStyle(fontSize: 25, color: AppTheme.nearlyBlack),
+            style: TextStyle(
+                fontSize: isDesktopResolution(context) ? 25 : 12,
+                color: AppTheme.nearlyBlack),
           ),
           const SizedBox(
             height: 16,
           ),
-          const Text(
+          Text(
             "Paid by you:",
             style: TextStyle(
-                fontSize: 30,
+                fontSize: isDesktopResolution(context) ? 25 : 12,
                 color: AppTheme.nearlyBlack,
                 fontWeight: FontWeight.bold),
           ),
@@ -1087,21 +1173,28 @@ class DeploymentCostWidget extends StatelessWidget {
                 children: <Widget>[
                   Container(
                       padding: const EdgeInsets.all(10),
-                      child: const Text(
+                      child: Text(
                         "What?",
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: isDesktopResolution(context) ? 25 : 12,
+                        ),
                       )),
                   Container(
                       padding: const EdgeInsets.all(10),
-                      child: const Text(
+                      child: Text(
                         "When?",
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: isDesktopResolution(context) ? 25 : 12),
                       )),
                   Container(
                       padding: const EdgeInsets.all(10),
-                      child: const Text(
+                      child: Text(
                         "Cost: XRP",
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: isDesktopResolution(context) ? 25 : 12),
                       )),
                 ],
               ),
@@ -1109,14 +1202,22 @@ class DeploymentCostWidget extends StatelessWidget {
                 children: <Widget>[
                   Container(
                       padding: const EdgeInsets.all(10),
-                      child: const Text("Deployment cost")),
+                      child: Text("Deployment cost",
+                          style: TextStyle(
+                              fontSize:
+                                  isDesktopResolution(context) ? 25 : 12))),
                   Container(
                       padding: const EdgeInsets.all(10),
-                      child: const Text("Now")),
+                      child: Text("Now",
+                          style: TextStyle(
+                              fontSize:
+                                  isDesktopResolution(context) ? 25 : 12))),
                   Container(
                       padding: const EdgeInsets.all(10),
-                      child:
-                          Text((deploymentCost / 1000000).toStringAsFixed(4))),
+                      child: Text((deploymentCost / 1000000).toStringAsFixed(4),
+                          style: TextStyle(
+                              fontSize:
+                                  isDesktopResolution(context) ? 25 : 12))),
                 ],
               ),
             ],
@@ -1124,11 +1225,11 @@ class DeploymentCostWidget extends StatelessWidget {
           const SizedBox(
             height: 16,
           ),
-          const Text(
+          Text(
             "Paid by the user of your asset:",
             textAlign: TextAlign.left,
             style: TextStyle(
-                fontSize: 30,
+                fontSize: isDesktopResolution(context) ? 25 : 12,
                 color: AppTheme.nearlyBlack,
                 fontWeight: FontWeight.bold),
           ),
@@ -1145,21 +1246,27 @@ class DeploymentCostWidget extends StatelessWidget {
                 children: <Widget>[
                   Container(
                       padding: const EdgeInsets.all(10),
-                      child: const Text(
+                      child: Text(
                         "What?",
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: isDesktopResolution(context) ? 25 : 12),
                       )),
                   Container(
                       padding: const EdgeInsets.all(10),
-                      child: const Text(
+                      child: Text(
                         "When?",
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: isDesktopResolution(context) ? 25 : 12),
                       )),
                   Container(
                       padding: const EdgeInsets.all(10),
-                      child: const Text(
-                        "Cost: percentage of compute costs",
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                      child: Text(
+                        "Cost:",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: isDesktopResolution(context) ? 25 : 12),
                       )),
                 ],
               ),
@@ -1207,10 +1314,12 @@ class DeploymentCostWidget extends StatelessWidget {
           const SizedBox(
             height: 16,
           ),
-          const Text(
+          Text(
             "If you continue, the above costs will be applied.",
             textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 25, color: AppTheme.nearlyBlack),
+            style: TextStyle(
+                fontSize: isDesktopResolution(context) ? 25 : 12,
+                color: AppTheme.nearlyBlack),
           ),
           const SizedBox(
             height: 16,
@@ -1218,9 +1327,11 @@ class DeploymentCostWidget extends StatelessWidget {
           const SizedBox(
             height: 16,
           ),
-          const Text(
+          Text(
             "Are you sure you want to deploy?",
-            style: TextStyle(fontSize: 25, color: AppTheme.nearlyBlack),
+            style: TextStyle(
+                fontSize: isDesktopResolution(context) ? 25 : 12,
+                color: AppTheme.nearlyBlack),
           ),
           const SizedBox(
             height: 16,
@@ -1231,7 +1342,7 @@ class DeploymentCostWidget extends StatelessWidget {
               ElevatedButton.icon(
                   style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(
-                          vertical: 20, horizontal: 20),
+                          vertical: 10, horizontal: 10),
                       backgroundColor: AppTheme.secondary,
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(4))),
@@ -1242,14 +1353,15 @@ class DeploymentCostWidget extends StatelessWidget {
                         parameters: {"from": "DeploymentCostWidget"});
                     Navigator.of(context).pop();
                   },
-                  icon: const Icon(
+                  icon: Icon(
                     Icons.arrow_back,
-                    size: 32,
+                    size: isDesktopResolution(context) ? 25 : 12,
                   ),
-                  label: const Text(
-                    key: Key("DeploymentCostWidgetBack"),
+                  label: Text(
+                    key: const Key("DeploymentCostWidgetBack"),
                     "Back",
-                    style: TextStyle(fontSize: 30),
+                    style: TextStyle(
+                        fontSize: isDesktopResolution(context) ? 25 : 12),
                   )),
               const SizedBox(
                 width: 16,
@@ -1257,7 +1369,7 @@ class DeploymentCostWidget extends StatelessWidget {
               ElevatedButton.icon(
                   style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(
-                          vertical: 20, horizontal: 20),
+                          vertical: 10, horizontal: 10),
                       backgroundColor: AppTheme.dhali_blue,
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(4))),
@@ -1268,13 +1380,14 @@ class DeploymentCostWidget extends StatelessWidget {
                         parameters: {"from": "DeploymentCostWidget"});
                     yesClicked(file, assetEarnings);
                   },
-                  icon: const Icon(
+                  icon: Icon(
                     Icons.done_outline_rounded,
-                    size: 32,
+                    size: isDesktopResolution(context) ? 25 : 12,
                   ),
-                  label: const Text(
+                  label: Text(
                     "Yes",
-                    style: TextStyle(fontSize: 30),
+                    style: TextStyle(
+                        fontSize: isDesktopResolution(context) ? 25 : 12),
                   )),
               const SizedBox(
                 width: 32,
