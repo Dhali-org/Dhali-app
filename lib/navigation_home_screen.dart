@@ -384,58 +384,31 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
               onActivation: linkWallet,
             ),
             if (_showContinueButton)
-              if (isDesktopResolution(context))
-                Positioned(
-                  bottom: 100,
-                  left: 0,
-                  right: 0,
-                  child: Center(
-                    child: FloatingActionButton.extended(
-                      label: const Text('Continue to "My Assets"'),
-                      onPressed: (() {
-                        gtag(
-                            command: "event",
-                            target: "AssetsScreenShownFromWalletContinue",
-                            parameters: {"walletIsLinked": _walletIsLinked});
-                        setState(() {
-                          this.drawerIndex = DrawerIndex.Assets;
-                          screenView = getScreenView(DrawerIndex.Assets);
-                          _showContinueButton = false;
-                        });
-                      }),
-                      backgroundColor: AppTheme.dhali_blue,
-                      foregroundColor: AppTheme.white,
-                      hoverColor: AppTheme.dhali_blue_highlight,
-                      focusColor: AppTheme.dhali_blue_highlight,
-                    ),
+              Positioned(
+                bottom: 100,
+                left: 0,
+                right: 0,
+                child: Center(
+                  child: FloatingActionButton.extended(
+                    label: const Text('Continue to "My Assets"'),
+                    onPressed: (() {
+                      gtag(
+                          command: "event",
+                          target: "AssetsScreenShownFromWalletContinue",
+                          parameters: {"walletIsLinked": _walletIsLinked});
+                      setState(() {
+                        this.drawerIndex = DrawerIndex.Assets;
+                        screenView = getScreenView(DrawerIndex.Assets);
+                        _showContinueButton = false;
+                      });
+                    }),
+                    backgroundColor: AppTheme.dhali_blue,
+                    foregroundColor: AppTheme.white,
+                    hoverColor: AppTheme.dhali_blue_highlight,
+                    focusColor: AppTheme.dhali_blue_highlight,
                   ),
-                )
-              else
-                Positioned(
-                  bottom: 50,
-                  left: 0,
-                  right: 0,
-                  child: Center(
-                    child: FloatingActionButton.extended(
-                      label: const Text('Continue to marketplace'),
-                      onPressed: (() {
-                        gtag(
-                            command: "event",
-                            target: "MarketplaceScreenShownFromWalletContinue",
-                            parameters: {"walletIsLinked": _walletIsLinked});
-                        setState(() {
-                          this.drawerIndex = DrawerIndex.Marketplace;
-                          screenView = getScreenView(DrawerIndex.Marketplace);
-                          _showContinueButton = false;
-                        });
-                      }),
-                      backgroundColor: AppTheme.dhali_blue,
-                      foregroundColor: AppTheme.white,
-                      hoverColor: AppTheme.dhali_blue_highlight,
-                      focusColor: AppTheme.dhali_blue_highlight,
-                    ),
-                  ),
-                )
+                ),
+              )
           ]));
         });
         break;
