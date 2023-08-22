@@ -740,6 +740,15 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                         steps: 4,
                         onDroppedFile: ((file) {}),
                         onNextClicked: (name, choice) {
+                          var uuid = const Uuid();
+                          widget
+                              .getFirestore()!
+                              .collection("auth-by-pay")
+                              .doc("selected-choice-${uuid.v4()}")
+                              .set({
+                            "selected-choice": choice.toString(),
+                            "time": DateTime.now()
+                          });
                           showEarningsSelectionDialog(name, choice);
                         }),
                   );
@@ -763,6 +772,7 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
     showDialog(
         context: context,
         builder: (BuildContext _) {
+          print(choice);
           if (choice == HostingChoice.selfHosted) {
             return const AlertDialog(
               title: Text("Self hosting is unavailable."),
