@@ -429,34 +429,37 @@ class _HostingRadioState extends State<HostingRadio> {
     super.initState();
   }
 
+  setChoice(HostingChoice? choice) {
+    setState(() {
+      _choice = choice;
+      if (_choice != null) {
+        widget.onChoiceSelected(_choice!);
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         RadioListTile<HostingChoice>(
-          title: const Text('Self hosted'),
-          value: HostingChoice.selfHosted,
-          groupValue: _choice,
-          onChanged: (HostingChoice? value) {
-            setState(() {
-              _choice = value;
-            });
-          },
-        ),
-        RadioListTile<HostingChoice>(
           title: const Text('Hosted by Dhali'),
           value: HostingChoice.hostedByDhali,
           groupValue: _choice,
           onChanged: (HostingChoice? value) {
-            setState(() {
-              _choice = value;
-              if (_choice != null) {
-                widget.onChoiceSelected(_choice!);
-              }
-            });
+            setChoice(value);
           },
-        )
+        ),
+        RadioListTile<HostingChoice>(
+          key: const Key("self_hosted-radio_button"),
+          title: const Text('Self hosted'),
+          value: HostingChoice.selfHosted,
+          groupValue: _choice,
+          onChanged: (HostingChoice? value) {
+            setChoice(value);
+          },
+        ),
       ],
     );
   }

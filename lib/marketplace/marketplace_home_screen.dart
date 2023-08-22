@@ -763,6 +763,7 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
     showDialog(
         context: context,
         builder: (BuildContext _) {
+          print(choice);
           if (choice == HostingChoice.selfHosted) {
             return const AlertDialog(
               title: Text("Self hosting is unavailable."),
