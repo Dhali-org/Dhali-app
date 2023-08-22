@@ -315,6 +315,65 @@ void main() async {
           tester, mockRequester, firebaseMockInstance, responseCode);
     });
 
+    testWidgets('Select self hosted journey deployment',
+        (WidgetTester tester) async {
+      const w = 1920;
+      const h = 1080;
+      var mockRequester = MockMultipartRequest();
+      int responseCode = 200;
+
+      when(mockRequester.send()).thenAnswer((_) async => StreamedResponse(
+              const Stream.empty(), responseCode, headers: {
+            Config.config!["DHALI_ID"].toString().toLowerCase(): theDhaliAssetID
+          }));
+      when(mockRequester.headers).thenAnswer((_) => {});
+      final dpi = tester.binding.window.devicePixelRatio;
+      tester.binding.window.physicalSizeTestValue = Size(w * dpi, h * dpi);
+
+      await tester.pumpWidget(MaterialApp(
+        title: "Dhali",
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+          textTheme: AppTheme.textTheme,
+          platform: TargetPlatform.iOS,
+        ),
+        home: NavigationHomeScreen(
+            firestore: firebaseMockInstance,
+            getWallet: () => mockWallet,
+            setWallet: (wallet) => {},
+            getRequest: (String method, String path) => mockRequester),
+      ));
+
+      await tester.pumpAndSettle();
+
+      await utils.dragOutDrawer(tester);
+
+      await tester.tap(find.text("My assets"));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Monetise my asset', skipOffstage: false));
+      await tester.pumpAndSettle();
+
+      expect(find.text("What will your asset be called?"), findsOneWidget);
+      expect(find.text("Step 1 of 4"), findsOneWidget);
+
+      await tester.tap(find.text("Asset name"));
+      expect(
+          find.text("Enter the name you'd like for your asset "
+              "(a-z, 0-9, -, .)"),
+          findsOneWidget);
+      await tester.enterText(
+          find.byKey(const Key("asset_name_input_field")), theInputAssetName);
+      await tester.pumpAndSettle(const Duration(seconds: 5));
+      expect(find.text(theAssetName), findsOneWidget);
+      await tester.tap(find.byKey(const Key("self_hosted-radio_button")));
+      await tester.tap(find.byKey(const Key("AssetNameNext")));
+      await tester.pumpAndSettle();
+
+      expect(find.text("Self hosting is unavailable."), findsOneWidget);
+    });
+
     testWidgets('Cancel image deployment', (WidgetTester tester) async {
       const w = 1920;
       const h = 1080;
