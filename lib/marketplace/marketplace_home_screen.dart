@@ -129,7 +129,7 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                                           Text(
                                             widget.assetScreenType ==
                                                     AssetScreenType.MyAssets
-                                                ? "My assets"
+                                                ? "My APIs"
                                                 : "The marketplace",
                                             style: const TextStyle(
                                                 color: Colors.black,
@@ -758,7 +758,7 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
           foregroundColor: AppTheme.white,
           hoverColor: AppTheme.dhali_blue_highlight,
           focusColor: AppTheme.dhali_blue_highlight,
-          label: const Text('Monetise my asset'),
+          label: const Text('Monetise my API'),
           icon: const Icon(Icons.add),
         );
         break;
@@ -1016,7 +1016,7 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
         title = "Marketplace";
         break;
       case AssetScreenType.MyAssets:
-        title = "My Assets";
+        title = "My APIs";
         break;
       default:
         break;

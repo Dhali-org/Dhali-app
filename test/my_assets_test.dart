@@ -104,7 +104,7 @@ void main() async {
     });
   });
 
-  group('My assets', () {
+  group('My APIs', () {
     testWidgets('Only my asset visible', (WidgetTester tester) async {
       const w = 1920;
       const h = 1080;
@@ -132,7 +132,7 @@ void main() async {
       await tester.pumpAndSettle();
 
       await utils.dragOutDrawer(tester);
-      await tester.tap(find.text("My assets"));
+      await tester.tap(find.text("My APIs"));
       await tester.pump();
       expect(find.byKey(const Key("loading_asset_key")), findsOneWidget);
       await tester.pumpAndSettle();
@@ -218,7 +218,7 @@ void main() async {
       await tester.pumpAndSettle();
 
       await utils.dragOutDrawer(tester);
-      await tester.tap(find.text("My assets"));
+      await tester.tap(find.text("My APIs"));
       await tester.pump();
       expect(find.byKey(const Key("loading_asset_key")), findsOneWidget);
       await tester.pumpAndSettle();
@@ -286,7 +286,7 @@ void main() async {
       await tester.pumpAndSettle();
 
       await utils.dragOutDrawer(tester);
-      await tester.tap(find.text("My assets"));
+      await tester.tap(find.text("My APIs"));
       await tester.pump();
       expect(find.byKey(const Key("loading_asset_key")), findsOneWidget);
       await tester.pumpAndSettle();
@@ -348,7 +348,7 @@ void main() async {
       await tester.pumpAndSettle();
 
       await utils.dragOutDrawer(tester);
-      await tester.tap(find.text("My assets"));
+      await tester.tap(find.text("My APIs"));
       await tester.pump();
       expect(find.byKey(const Key("loading_asset_key")), findsOneWidget);
       await tester.pumpAndSettle();

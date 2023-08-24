@@ -8,7 +8,8 @@
         "EXPECTED_INFERENCE_COST_PER_MS": "cost_per_ms",
         "ASSET_NAME": "name",
         "NFTOKEN_ID": "NFTokenId",
-        "EARNING_RATE": "asset_earning_rate"
+        "EARNING_RATE": "asset_earning_rate",
+        "CANONICAL_API": "canonical_api"
     },
     "MINTED_NFTS_COLLECTION_NAME": "public_minted_nfts",
     "PAYMENT_CLAIM_KEYS": {

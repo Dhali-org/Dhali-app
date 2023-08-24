@@ -49,6 +49,6 @@ Future<void> dragOutDrawer(WidgetTester tester) async {
   await tester.pumpAndSettle();
 
   expect(find.text("Marketplace"), findsOneWidget);
-  expect(find.text("My assets"), findsOneWidget);
+  expect(find.text("My APIs"), findsOneWidget);
   expect(find.text("Wallet"), findsOneWidget);
 }
