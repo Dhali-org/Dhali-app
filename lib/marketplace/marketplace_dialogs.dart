@@ -1277,23 +1277,48 @@ class DeploymentCostWidget extends StatelessWidget {
                 children: <Widget>[
                   Container(
                       padding: const EdgeInsets.all(10),
-                      child: const Text("Dhali's earnings")),
+                      child: Text(
+                        "Dhali's earnings",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: isDesktopResolution(context) ? 25 : 12),
+                      )),
                   Container(
                       padding: const EdgeInsets.all(10),
-                      child: const Text("When asset is used")),
+                      child: Text(
+                        "When asset is used",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: isDesktopResolution(context) ? 25 : 12),
+                      )),
                   Container(
                       padding: const EdgeInsets.all(10),
-                      child: Text("$dhaliEarnings%")),
+                      child: Text(
+                        "$dhaliEarnings%",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: isDesktopResolution(context) ? 25 : 12),
+                      )),
                 ],
               ),
               TableRow(
                 children: <Widget>[
                   Container(
                       padding: const EdgeInsets.all(10),
-                      child: const Text("Your earnings")),
+                      child: Text(
+                        "Your earnings",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: isDesktopResolution(context) ? 25 : 12),
+                      )),
                   Container(
                       padding: const EdgeInsets.all(10),
-                      child: const Text("When asset is used")),
+                      child: Text(
+                        "When asset is used",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: isDesktopResolution(context) ? 25 : 12),
+                      )),
                   Container(
                       padding: const EdgeInsets.all(10),
                       child: Text("$assetEarnings%")),
@@ -1303,13 +1328,28 @@ class DeploymentCostWidget extends StatelessWidget {
                 children: <Widget>[
                   Container(
                       padding: const EdgeInsets.all(10),
-                      child: const Text("Total cost per inference")),
+                      child: Text(
+                        "Total cost per inference",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: isDesktopResolution(context) ? 25 : 12),
+                      )),
                   Container(
                       padding: const EdgeInsets.all(10),
-                      child: const Text("When asset is used")),
+                      child: Text(
+                        "When asset is used",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: isDesktopResolution(context) ? 25 : 12),
+                      )),
                   Container(
                       padding: const EdgeInsets.all(10),
-                      child: Text("${100 + dhaliEarnings + assetEarnings}%")),
+                      child: Text(
+                        "${100 + dhaliEarnings + assetEarnings}%",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: isDesktopResolution(context) ? 25 : 12),
+                      )),
                 ],
               ),
             ],
