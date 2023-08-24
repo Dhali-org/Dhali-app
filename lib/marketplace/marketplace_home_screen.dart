@@ -265,7 +265,7 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          "Monetise your first asset to start earning!",
+                          "Monetise your first API to start earning!",
                           key: Key("my_asset_not_found"),
                           textAlign: TextAlign.center,
                           style: TextStyle(
