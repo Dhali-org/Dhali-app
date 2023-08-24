@@ -1280,7 +1280,6 @@ class DeploymentCostWidget extends StatelessWidget {
                       child: Text(
                         "Dhali's earnings",
                         style: TextStyle(
-                            fontWeight: FontWeight.bold,
                             fontSize: isDesktopResolution(context) ? 25 : 12),
                       )),
                   Container(
@@ -1288,7 +1287,6 @@ class DeploymentCostWidget extends StatelessWidget {
                       child: Text(
                         "When asset is used",
                         style: TextStyle(
-                            fontWeight: FontWeight.bold,
                             fontSize: isDesktopResolution(context) ? 25 : 12),
                       )),
                   Container(
@@ -1296,7 +1294,6 @@ class DeploymentCostWidget extends StatelessWidget {
                       child: Text(
                         "$dhaliEarnings%",
                         style: TextStyle(
-                            fontWeight: FontWeight.bold,
                             fontSize: isDesktopResolution(context) ? 25 : 12),
                       )),
                 ],
@@ -1308,7 +1305,6 @@ class DeploymentCostWidget extends StatelessWidget {
                       child: Text(
                         "Your earnings",
                         style: TextStyle(
-                            fontWeight: FontWeight.bold,
                             fontSize: isDesktopResolution(context) ? 25 : 12),
                       )),
                   Container(
@@ -1316,12 +1312,15 @@ class DeploymentCostWidget extends StatelessWidget {
                       child: Text(
                         "When asset is used",
                         style: TextStyle(
-                            fontWeight: FontWeight.bold,
                             fontSize: isDesktopResolution(context) ? 25 : 12),
                       )),
                   Container(
                       padding: const EdgeInsets.all(10),
-                      child: Text("$assetEarnings%")),
+                      child: Text(
+                        "$assetEarnings%",
+                        style: TextStyle(
+                            fontSize: isDesktopResolution(context) ? 25 : 12),
+                      )),
                 ],
               ),
               TableRow(
@@ -1331,7 +1330,6 @@ class DeploymentCostWidget extends StatelessWidget {
                       child: Text(
                         "Total cost per inference",
                         style: TextStyle(
-                            fontWeight: FontWeight.bold,
                             fontSize: isDesktopResolution(context) ? 25 : 12),
                       )),
                   Container(
@@ -1339,7 +1337,6 @@ class DeploymentCostWidget extends StatelessWidget {
                       child: Text(
                         "When asset is used",
                         style: TextStyle(
-                            fontWeight: FontWeight.bold,
                             fontSize: isDesktopResolution(context) ? 25 : 12),
                       )),
                   Container(
@@ -1347,7 +1344,6 @@ class DeploymentCostWidget extends StatelessWidget {
                       child: Text(
                         "${100 + dhaliEarnings + assetEarnings}%",
                         style: TextStyle(
-                            fontWeight: FontWeight.bold,
                             fontSize: isDesktopResolution(context) ? 25 : 12),
                       )),
                 ],
