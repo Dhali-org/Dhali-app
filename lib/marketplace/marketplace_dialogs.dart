@@ -300,7 +300,7 @@ class _AssetNameWidgetState extends State<AssetNameWidget> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const Text(
-                  "What will your asset be called?",
+                  "What will your API be called?",
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   textAlign: TextAlign.start,
                 ),
@@ -329,7 +329,7 @@ class _AssetNameWidgetState extends State<AssetNameWidget> {
                 const SizedBox(
                   height: 25,
                 ),
-                const Text("How will your asset be hosted?",
+                const Text("How will your API be hosted?",
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     textAlign: TextAlign.start),
                 HostingRadio(
@@ -1020,7 +1020,7 @@ class _ImageCostWidgetState extends State<ImageCostWidget> {
           ),
           const Text(
             textAlign: TextAlign.center,
-            "Example: If running your asset costs Dhali \$1 in compute costs per inference, by setting 20 below you will earn \$0.20 per inference.",
+            "Example: If running your API costs Dhali \$1 in compute costs per inference, by setting 20 below you will earn \$0.20 per inference.",
             style: TextStyle(fontSize: 12, color: AppTheme.nearlyBlack),
           ),
           const SizedBox(

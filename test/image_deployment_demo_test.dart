@@ -83,7 +83,7 @@ Future<void> setEarnings(
   expect(find.text("\nKeep this small to encourage usage.\n"), findsOneWidget);
   expect(
       find.text(
-          "Example: If running your asset costs Dhali \$1 in compute costs per inference, by setting 20 below you will earn \$0.20 per inference."),
+          "Example: If running your API costs Dhali \$1 in compute costs per inference, by setting 20 below you will earn \$0.20 per inference."),
       findsOneWidget);
 
   await tester.enterText(find.byKey(const Key("percentage_earnings_input")),
@@ -105,7 +105,7 @@ void imageDeploymentDemo(
   await tester.tap(find.text('Monetise my API', skipOffstage: false));
   await tester.pumpAndSettle();
 
-  expect(find.text("What will your asset be called?"), findsOneWidget);
+  expect(find.text("What will your API be called?"), findsOneWidget);
   expect(find.text("Step 1 of 4"), findsOneWidget);
 
   await tester.tap(find.text("Asset name"));
@@ -355,7 +355,7 @@ void main() async {
       await tester.tap(find.text('Monetise my API', skipOffstage: false));
       await tester.pumpAndSettle();
 
-      expect(find.text("What will your asset be called?"), findsOneWidget);
+      expect(find.text("What will your API be called?"), findsOneWidget);
       expect(find.text("Step 1 of 4"), findsOneWidget);
 
       await tester.tap(find.text("Asset name"));
@@ -411,7 +411,7 @@ void main() async {
       await tester.tap(find.text('Monetise my API', skipOffstage: false));
       await tester.pumpAndSettle();
 
-      expect(find.text("What will your asset be called?"), findsOneWidget);
+      expect(find.text("What will your API be called?"), findsOneWidget);
 
       await tester.tap(find.text("Asset name"));
       expect(
