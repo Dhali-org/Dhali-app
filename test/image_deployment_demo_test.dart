@@ -99,10 +99,10 @@ void imageDeploymentDemo(
     int responseCode) async {
   await utils.dragOutDrawer(tester);
 
-  await tester.tap(find.text("My assets"));
+  await tester.tap(find.text("My APIs"));
   await tester.pumpAndSettle();
 
-  await tester.tap(find.text('Monetise my asset', skipOffstage: false));
+  await tester.tap(find.text('Monetise my API', skipOffstage: false));
   await tester.pumpAndSettle();
 
   expect(find.text("What will your asset be called?"), findsOneWidget);
@@ -349,10 +349,10 @@ void main() async {
 
       await utils.dragOutDrawer(tester);
 
-      await tester.tap(find.text("My assets"));
+      await tester.tap(find.text("My APIs"));
       await tester.pumpAndSettle();
 
-      await tester.tap(find.text('Monetise my asset', skipOffstage: false));
+      await tester.tap(find.text('Monetise my API', skipOffstage: false));
       await tester.pumpAndSettle();
 
       expect(find.text("What will your asset be called?"), findsOneWidget);
@@ -405,10 +405,10 @@ void main() async {
 
       await utils.dragOutDrawer(tester);
 
-      await tester.tap(find.text("My assets"));
+      await tester.tap(find.text("My APIs"));
       await tester.pumpAndSettle();
 
-      await tester.tap(find.text('Monetise my asset', skipOffstage: false));
+      await tester.tap(find.text('Monetise my API', skipOffstage: false));
       await tester.pumpAndSettle();
 
       expect(find.text("What will your asset be called?"), findsOneWidget);

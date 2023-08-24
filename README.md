@@ -24,7 +24,7 @@ flutter run
 * Once the GUI has opened, you will be able to do the following by navigating the left-hand drawer:
     * Marketplace: Explore the marketplace, which contains all available Dhali solutions.
     * Wallet: Activate your wallet using a BIP39 compatable collection of words.
-    * My Assets: View and deploy your own assets.
+    * My APIs: View and deploy your own assets.
 
 
 ### Run with a local backend

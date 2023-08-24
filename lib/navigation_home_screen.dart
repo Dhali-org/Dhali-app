@@ -247,7 +247,7 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
                   selected: DrawerIndex.Assets == drawerIndex,
                   selectedTileColor: AppTheme.light_purple,
                   leading: const Icon(Icons.token, color: AppTheme.dhali_blue),
-                  title: const Text('My assets',
+                  title: const Text('My APIs',
                       style: TextStyle(color: AppTheme.nearlyBlack)),
                   onTap: () {
                     drawerIndex = DrawerIndex.Assets;
@@ -390,7 +390,7 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
                 right: 0,
                 child: Center(
                   child: FloatingActionButton.extended(
-                    label: const Text('Continue to "My Assets"'),
+                    label: const Text('Continue to "My APIs"'),
                     onPressed: (() {
                       gtag(
                           command: "event",
@@ -420,7 +420,7 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
 
         setState(() {
           screenView = MarketplaceHomeScreen(
-            key: const Key("My Assets"), // Key used to force State rebuild
+            key: const Key("My APIs"), // Key used to force State rebuild
             getRequest: widget.getRequest,
             assetScreenType: AssetScreenType.MyAssets,
             getWallet: widget.getWallet,
