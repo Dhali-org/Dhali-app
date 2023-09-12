@@ -131,7 +131,7 @@ class _MyAppState extends State<MyApp> {
                       numberOfSuccessfullRequests: snapshot.data![
                           Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]
                               ["NUMBER_OF_SUCCESSFUL_REQUESTS"]],
-                      pricePerRun: snapshot.data![Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]["EXPECTED_INFERENCE_COST_PER_MS"]]);
+                      pricePerRun: snapshot.data![Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]["EXPECTED_INFERENCE_COST"]]);
                   return AssetPage(
                     asset: element,
                     getFirestore: () => FirebaseFirestore.instance,

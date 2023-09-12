@@ -158,8 +158,8 @@ void imageDeploymentDemo(
         .set({
       Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]
           ["NUMBER_OF_SUCCESSFUL_REQUESTS"]: 0,
-      Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]
-          ["EXPECTED_INFERENCE_COST_PER_MS"]: 20,
+      Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]["EXPECTED_INFERENCE_COST"]:
+          20,
       Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]["AVERAGE_INFERENCE_TIME_MS"]:
           20,
       Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]["ASSET_CREATOR_ACCOUNT"]:

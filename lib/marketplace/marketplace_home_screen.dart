@@ -353,7 +353,7 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                 Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]
                     ["NUMBER_OF_SUCCESSFUL_REQUESTS"]],
             pricePerRun: elementData[Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]
-                ["EXPECTED_INFERENCE_COST_PER_MS"]]);
+                ["EXPECTED_INFERENCE_COST"]]);
         return MarketplaceListView(
           callback: displayAsset,
           marketplaceData: element,

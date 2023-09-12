@@ -10,7 +10,7 @@ const publicConfig = '''
         "AVERAGE_INFERENCE_TIME_MS": "average_inference_time_ms", 
         "CATEGORY": "category", 
         "ENDPOINT_URL": "endpoint_url",
-        "EXPECTED_INFERENCE_COST_PER_MS": "cost_per_ms",
+        "EXPECTED_INFERENCE_COST": "cost_per_ms",
         "ASSET_NAME": "name",
         "NFTOKEN_ID": "NFTokenId"
     },
