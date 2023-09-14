@@ -52,8 +52,8 @@ void main() async {
           inferenceTime,
       Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]["CATEGORY"]: categories,
       Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]["ENDPOINT_URL"]: endpointUrl,
-      Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]
-          ["EXPECTED_INFERENCE_COST_PER_MS"]: cost,
+      Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]["EXPECTED_INFERENCE_COST"]:
+          cost,
       Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]["ASSET_NAME"]: theAssetName,
       Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]["NFTOKEN_ID"]: NFTokenID
     });
@@ -70,8 +70,8 @@ void main() async {
           inferenceTime,
       Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]["CATEGORY"]: categories,
       Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]["ENDPOINT_URL"]: endpointUrl,
-      Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]
-          ["EXPECTED_INFERENCE_COST_PER_MS"]: cost,
+      Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]["EXPECTED_INFERENCE_COST"]:
+          cost,
       Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]["ASSET_NAME"]:
           theOtherAssetName,
       Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]["NFTOKEN_ID"]:
@@ -176,7 +176,7 @@ void main() async {
           Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]["ENDPOINT_URL"]:
               endpointUrl,
           Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]
-              ["EXPECTED_INFERENCE_COST_PER_MS"]: cost,
+              ["EXPECTED_INFERENCE_COST"]: cost,
           Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]["ASSET_NAME"]:
               "$theAssetName-$i",
           Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]["NFTOKEN_ID"]:
