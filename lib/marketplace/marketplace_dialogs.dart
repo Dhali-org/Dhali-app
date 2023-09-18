@@ -1483,11 +1483,21 @@ class _DataTransmissionWidgetState extends State<DataTransmissionWidget> {
 
     var logger = Logger();
 
+    bool shouldContinue = true;
+
     Future.forEach(widget.data, (element) async {
+      if (!shouldContinue) {
+        return; // Skip the rest of the iterations if flag is set
+      }
+
       var castedElement = element as DataEndpointPair;
       response = await uploader(
           castedElement.data, widget.payment, castedElement.endPoint,
           sessionID: sessionID);
+      if (response == null ||
+          (response!.statusCode != 200 && response!.statusCode != 308)) {
+        shouldContinue = false;
+      }
       try {
         sessionID = response!
             .headers[Config.config!["DHALI_ID"].toString().toLowerCase()];

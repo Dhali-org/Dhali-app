@@ -220,7 +220,8 @@ class DeployUploader extends BaseUploader {
           "chainID": "xrpl", // TODO : Add user input for this
           "walletID": getWallet()!.address,
           "labels": "",
-          "assetEarningRate": "$assetEarningRate"
+          "assetEarningRate": "$assetEarningRate",
+          "assetEarningType": "per_second"
         };
 
         if (request.runtimeType == http.MultipartRequest) {
