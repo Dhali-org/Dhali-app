@@ -10,9 +10,12 @@ const publicConfig = '''
         "AVERAGE_INFERENCE_TIME_MS": "average_inference_time_ms", 
         "CATEGORY": "category", 
         "ENDPOINT_URL": "endpoint_url",
-        "EXPECTED_INFERENCE_COST": "cost_per_ms",
+        "EXPECTED_INFERENCE_COST": "average_cost",
         "ASSET_NAME": "name",
-        "NFTOKEN_ID": "NFTokenId"
+        "NFTOKEN_ID": "NFTokenId",
+        "EARNING_RATE": "asset_earning_rate",
+        "EARNING_TYPE": "asset_earning_type",
+        "CANONICAL_API": "canonical_api"
     },
     "MINTED_NFTS_COLLECTION_NAME": "public_minted_nfts",
     "PAYMENT_CLAIM_KEYS": {
@@ -29,6 +32,7 @@ const publicConfig = '''
         "SCALE": "scale"
     },
     "GET_READMES_ROUTE": "readme",
+    "GET_WARMUP_ROUTE": "warmup",
     "POST_DEPLOY_README_ROUTE": "readme",
     "POST_RUN_INFERENCE_ROUTE": "run",
     "POST_DEPLOY_ASSET_ROUTE": "asset",
@@ -39,7 +43,8 @@ const publicConfig = '''
     "DHALI_DEPLOYMENT_COST_PER_CHUNK_DROPS": 2000,
     "DHALI_CPU_INFERENCE_COST_PER_MS": 0.1,
     "DHALI_EARNINGS_PERCENTAGE_PER_INFERENCE": 20,
-    "MAX_NUMBER_OF_BYTES_PER_DEPLOY_CHUNK": 10485760 
+    "MAX_NUMBER_OF_BYTES_PER_DEPLOY_CHUNK": 10485760,
+    "PAYMENT_CLAIM_BUFFER": 30
 }
 ''';
 
