@@ -199,7 +199,7 @@ class _AssetPageState extends State<AssetPage> {
                                       TextStyle(fontWeight: FontWeight.bold)),
                               TextSpan(
                                   text:
-                                      '${Config.config!["ROOT_RUN_URL"]}/${widget.asset.assetID}/run'),
+                                      '${Config.config!["ROOT_RUN_URL"]}/${widget.asset.assetID}/run/'),
                             ],
                           ),
                         )
@@ -222,7 +222,7 @@ class _AssetPageState extends State<AssetPage> {
                                   getFirestore: widget.getFirestore,
                                   context: context,
                                   runURL:
-                                      "${Config.config!["ROOT_RUN_URL"]}/${widget.asset.assetID}/run",
+                                      "${Config.config!["ROOT_RUN_URL"]}/${widget.asset.assetID}/run/",
                                   getWallet: widget.getWallet,
                                   getRequest: widget.getRequest);
                             })

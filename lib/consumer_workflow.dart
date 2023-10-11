@@ -124,7 +124,8 @@ Dialog run(
                   (Config.config!["DHALI_EARNINGS_PERCENTAGE_PER_INFERENCE"]
                           as double) /
                       100) *
-              3)
+              Config.config!["PAYMENT_CLAIM_BUFFER"] *
+              1.4)
           .ceil(); // TODO : Ensure this
       // factor is effectively
       // dealt with
