@@ -21,82 +21,142 @@ import 'package:dhali/config.dart' show Config;
 import 'utils.dart' as utils;
 
 const String theInputAssetName = "a_badl3y_n@med-asset";
+const String theAPIURL = "a_random url with-spaces_n@med-asset";
+const String theAPIKey = "a_random key@arbitrary-c4ars";
 const String theAssetName = "abadl3ynmed-asset";
 const String theDhaliAssetID = "a-session-id";
 
-Future<void> selectAssets(
+enum FileType { readme, dockerImage }
+
+Future<void> selectFile(
     WidgetTester tester,
-    MockMultipartRequest mockRequester,
-    FakeFirebaseFirestore mockFirebaseFirestore) async {
-  expect(find.text("Choose .tar file"), findsOneWidget);
-  expect(find.text("Choose .md file"), findsOneWidget);
-  expect(find.byKey(const Key("DropZoneDeployNext")), findsOneWidget);
-  expect(find.text("Drag or select your files"), findsOneWidget);
-  expect(find.text("No .tar docker image asset selected"), findsOneWidget);
-  expect(find.text("No .md asset description selected"), findsOneWidget);
-  expect(find.byIcon(Icons.cloud_upload_rounded), findsOneWidget);
-  expect(find.byIcon(Icons.help_outline_outlined), findsNWidgets(2));
-  expect(find.byType(DropzoneView), findsOneWidget);
+    FakeFirebaseFirestore mockFirebaseFirestore,
+    FileType fileType,
+    int dialogNumber) async {
+  expect(find.text("Select"), findsNWidgets(dialogNumber));
+  if (fileType == FileType.dockerImage) {
+    expect(find.byKey(const Key("DockerDropZoneDeployNext")), findsOneWidget);
+  } else if (fileType == FileType.readme) {
+    expect(find.byKey(const Key("ReadmeDropZoneDeployNext")), findsOneWidget);
+  }
 
-  await tester.tap(find.byType(DropzoneView));
+  expect(find.text("Drag or select your file"), findsNWidgets(dialogNumber));
+  if (fileType == FileType.dockerImage) {
+    expect(find.text("No .tar docker image asset selected"), findsOneWidget);
+  } else if (fileType == FileType.readme) {
+    expect(find.text("No README selected"), findsOneWidget);
+  }
+  expect(find.byIcon(Icons.cloud_upload_rounded), findsNWidgets(dialogNumber));
+  expect(find.byIcon(Icons.help_outline_outlined), findsNWidgets(dialogNumber));
+  expect(find.byType(DropzoneView), findsNWidgets(dialogNumber));
+
   await tester.pumpAndSettle();
 
-  await tester.pumpAndSettle();
-
-  await tester.tap(find.byKey(const Key("choose_docker_image_button")));
-
-  await tester.pumpAndSettle();
-
-  await tester.tap(find.byKey(const Key("choose_readme_button")));
+  if (fileType == FileType.dockerImage) {
+    await tester.tap(find.byKey(const Key("choose_docker_image_button")));
+  } else if (fileType == FileType.readme) {
+    await tester.tap(find.byKey(const Key("choose_readme_button")));
+  }
 
   await tester.pumpAndSettle();
 }
 
 Future<void> displayCosts(
-    WidgetTester tester,
-    MockMultipartRequest mockRequester,
-    FakeFirebaseFirestore mockFirebaseFirestore) async {
-  expect(
-      find.text("Here is a break down of the asset's costs:"), findsOneWidget);
+    WidgetTester tester, FakeFirebaseFirestore mockFirebaseFirestore) async {
+  expect(find.text("Here is a break down of the charges:"), findsOneWidget);
   expect(find.text("Paid by you:"), findsOneWidget);
   expect(find.text("Paid by the user of your asset:"), findsOneWidget);
 
   expect(find.text("What?"), findsNWidgets(2));
   expect(find.text("When?"), findsNWidgets(2));
-  expect(find.text("Cost: XRP"), findsNWidgets(1));
-  expect(find.text("Cost:"), findsNWidgets(1));
-  expect(find.text("If you continue, the above costs will be applied."),
-      findsOneWidget);
-  expect(find.text("301%"), findsOneWidget);
-  expect(find.text("20%"), findsOneWidget);
-  expect(find.text("421%"), findsOneWidget); // 100 + 301 + 20
+  expect(find.text("Cost (XRP):"), findsNWidgets(2));
+  expect(find.text("60.40000 per second"), findsOneWidget);
+  expect(find.text("302.00000 per second"), findsOneWidget);
+  expect(find.text("362.40000 per second"), findsOneWidget);
   expect(find.text("Are you sure you want to deploy?"), findsOneWidget);
   expect(find.text("Yes"), findsOneWidget);
   expect(find.byKey(const Key("DeploymentCostWidgetBack")), findsOneWidget);
 }
 
-Future<void> setEarnings(
-    WidgetTester tester,
-    MockMultipartRequest mockRequester,
-    FakeFirebaseFirestore mockFirebaseFirestore) async {
-  expect(find.text("Set your earning rate per inference."), findsOneWidget);
+Future<void> setEarningsPerRequest(
+    WidgetTester tester, FakeFirebaseFirestore mockFirebaseFirestore) async {
+  expect(find.text("How much would you like to earn?"), findsOneWidget);
   expect(find.text("\nKeep this small to encourage usage.\n"), findsOneWidget);
-  expect(
-      find.text(
-          "Example: If running your API costs Dhali \$1 in compute costs per inference, by setting 20 below you will earn \$0.20 per inference."),
-      findsOneWidget);
+  expect(find.text("Per second"), findsOneWidget);
+  expect(find.text("Per request"), findsOneWidget);
+  expect(find.text("0.001"), findsOneWidget);
+  expect(find.text("   XRP  "), findsOneWidget);
+  expect(find.text("Your API earns you 0.001 XRP per second"), findsOneWidget);
 
-  await tester.enterText(find.byKey(const Key("percentage_earnings_input")),
-      "a_badl3y_f0rmatted_Str1ng");
+  await tester.enterText(
+      find.byKey(const Key("percentage_earnings_input")), "302");
   await tester.pumpAndSettle();
-  expect(find.text("301"), findsOneWidget);
+
+  expect(find.text("302"), findsOneWidget);
+  expect(find.text("Your API earns you 302 XRP per second"), findsOneWidget);
+
+  await tester.tap(find.byKey(const Key('Per request')));
+  await tester.pumpAndSettle();
+  expect(find.text("Your API earns you 302 XRP per request"), findsOneWidget);
+
+  await tester.tap(find.byKey(const Key('Per second')));
+  await tester.pumpAndSettle();
+  expect(find.text("Your API earns you 302 XRP per second"), findsOneWidget);
 }
 
-void imageDeploymentDemo(
-    WidgetTester tester,
-    MockMultipartRequest mockRequester,
-    FakeFirebaseFirestore mockFirebaseFirestore,
-    int responseCode) async {
+Future<void> selectImage(
+  WidgetTester tester,
+  FakeFirebaseFirestore mockFirebaseFirestore,
+) async {
+  await selectFile(tester, mockFirebaseFirestore, FileType.dockerImage, 1);
+  await tester.tap(find.byKey(const Key("DockerDropZoneDeployNext")));
+  await tester.pumpAndSettle(const Duration(seconds: 4));
+
+  expect(find.text("Step 3 of 5"), findsNWidgets(2));
+  expect(find.text("Your image was successfully scanned."), findsOneWidget);
+
+  await tester.tap(find.byKey(const Key("ImageScanningNext")));
+  await tester.pumpAndSettle();
+}
+
+Future<void> selectAPICredentials(
+  WidgetTester tester,
+  FakeFirebaseFirestore mockFirebaseFirestore,
+) async {
+  expect(find.text("Step 3 of 5"), findsNWidgets(1));
+  expect(find.text("What are your APIs details?"), findsOneWidget);
+  expect(find.text("API base URL:"), findsOneWidget);
+  expect(find.text("Consider a custom service account for this.\n"),
+      findsOneWidget);
+  expect(find.text("API bearer token:"), findsOneWidget);
+
+  expect(
+      find.text("Requests will have the header \n\n"
+          "'Authorization: Bearer ...'"),
+      findsOneWidget);
+
+  expect(find.text(theAPIURL.replaceAll(" ", "")), findsNothing);
+  expect(find.text(theAPIKey), findsNothing);
+
+  await tester.enterText(find.byKey(const Key("api_base_url")), theAPIURL);
+  await tester.enterText(find.byKey(const Key("api_key")), theAPIKey);
+  await tester.pumpAndSettle();
+
+  // No spaces should be present
+  expect(find.text(theAPIURL.replaceAll(" ", "")), findsOneWidget);
+
+  // Anything goes
+  expect(find.text(theAPIKey), findsOneWidget);
+
+  expect(find.byKey(const Key("APICredentialsBack")), findsOneWidget);
+  expect(find.byKey(const Key("APICredentialsNext")), findsOneWidget);
+  await tester.tap(find.byKey(const Key("APICredentialsNext")));
+  await tester.pumpAndSettle();
+}
+
+void deploymentDemo(WidgetTester tester,
+    FakeFirebaseFirestore mockFirebaseFirestore, int responseCode,
+    {bool isSelfHosted = false}) async {
   await utils.dragOutDrawer(tester);
 
   await tester.tap(find.text("My APIs"));
@@ -106,9 +166,33 @@ void imageDeploymentDemo(
   await tester.pumpAndSettle();
 
   expect(find.text("What will your API be called?"), findsOneWidget);
-  expect(find.text("Step 1 of 4"), findsOneWidget);
+  expect(find.text("Step 1 of 5"), findsOneWidget);
+  expect(find.text("How will your API be hosted?"), findsOneWidget);
+  expect(find.text("Self hosted"), findsOneWidget);
+  expect(find.text("You will need:"), findsOneWidget);
+  expect(find.text("To know what you'll charge"), findsOneWidget);
+  expect(find.text("API base URL"), findsOneWidget);
+  expect(find.text("API key"), findsOneWidget);
+  expect(find.text("A README"), findsOneWidget);
 
-  await tester.tap(find.text("Asset name"));
+  // Go back and forth between the radio buttons
+  await tester.tap(find.byKey(const Key("dhali_hosted-radio_button")));
+  await tester.pumpAndSettle();
+  await tester.tap(find.byKey(const Key("self_hosted-radio_button")));
+  await tester.pumpAndSettle();
+  await tester.tap(find.byKey(const Key("dhali_hosted-radio_button")));
+  await tester.pumpAndSettle();
+  await tester.tap(find.byKey(const Key("self_hosted-radio_button")));
+  await tester.pumpAndSettle();
+
+  if (isSelfHosted) {
+    await tester.tap(find.byKey(const Key("self_hosted-radio_button")));
+  } else {
+    await tester.tap(find.byKey(const Key("dhali_hosted-radio_button")));
+  }
+  await tester.pumpAndSettle();
+
+  await tester.tap(find.text("API name"));
   expect(
       find.text("Enter the name you'd like for your asset "
           "(a-z, 0-9, -, .)"),
@@ -120,26 +204,27 @@ void imageDeploymentDemo(
   await tester.tap(find.byKey(const Key("AssetNameNext")));
   await tester.pumpAndSettle();
 
-  expect(find.text("Step 2 of 4"), findsOneWidget);
-  await setEarnings(tester, mockRequester, mockFirebaseFirestore);
+  expect(find.text("Step 2 of 5"), findsOneWidget);
+  await setEarningsPerRequest(tester, mockFirebaseFirestore);
 
   await tester.tap(find.byKey(const Key("ImageCostNext")));
   await tester.pumpAndSettle();
 
-  expect(find.text("Step 3 of 4"), findsOneWidget);
-  await selectAssets(tester, mockRequester, mockFirebaseFirestore);
+  expect(find.text("Step 3 of 5"), findsOneWidget);
 
-  await tester.tap(find.byKey(const Key("DropZoneDeployNext")));
+  if (isSelfHosted) {
+    await selectAPICredentials(tester, mockFirebaseFirestore);
+  } else {
+    await selectImage(tester, mockFirebaseFirestore);
+  }
+
+  expect(find.text("Step 4 of 5"), findsOneWidget);
+  await selectFile(
+      tester, mockFirebaseFirestore, FileType.readme, isSelfHosted ? 1 : 2);
+  await tester.tap(find.byKey(const Key("ReadmeDropZoneDeployNext")));
   await tester.pumpAndSettle(const Duration(seconds: 4));
 
-  expect(find.text("Step 3 of 4"), findsNWidgets(2));
-  expect(find.text("Your image was successfully scanned."), findsOneWidget);
-
-  await tester.tap(find.byKey(const Key("ImageScanningNext")));
-  await tester.pumpAndSettle();
-
-  expect(find.text("Step 4 of 4"), findsOneWidget);
-  await displayCosts(tester, mockRequester, mockFirebaseFirestore);
+  await displayCosts(tester, mockFirebaseFirestore);
 
   await tester.tap(find.text("Yes"));
 
@@ -151,6 +236,10 @@ void imageDeploymentDemo(
 
   if (responseCode == 200) {
     await tester.pump();
+    if (isSelfHosted) {
+      expect(find.byKey(const Key("linking_api_spinner")), findsOneWidget);
+      await tester.pump();
+    }
     expect(find.byKey(const Key("minting_nft_spinner")), findsOneWidget);
     await mockFirebaseFirestore
         .collection(Config.config!["MINTED_NFTS_COLLECTION_NAME"])
@@ -190,18 +279,29 @@ void imageDeploymentDemo(
   expect(find.byType(MarketplaceHomeScreen), findsOneWidget);
 }
 
-@GenerateMocks([MultipartRequest, XRPLWallet])
+@GenerateMocks([Request, MultipartRequest, XRPLWallet])
 void main() async {
   TestWidgetsFlutterBinding.ensureInitialized();
   Config.config = jsonDecode(utils.publicConfig);
 
   late FakeFirebaseFirestore firebaseMockInstance;
   late MockXRPLWallet mockWallet;
-  late MockMultipartRequest mockRequester;
+  late MockRequest mockRequester;
+  late MockMultipartRequest mockMultipartRequester;
+
+  BaseRequest getRequest<T extends BaseRequest>(String method, String path) {
+    if (T == MultipartRequest) {
+      return mockMultipartRequester;
+    } else if (T == Request) {
+      return mockRequester;
+    }
+    throw ArgumentError('Unsupported request type: $T');
+  }
 
   setUpAll(() {
     mockWallet = MockXRPLWallet();
-    mockRequester = MockMultipartRequest();
+    mockRequester = MockRequest();
+    mockMultipartRequester = MockMultipartRequest();
     firebaseMockInstance = FakeFirebaseFirestore();
 
     const String theAssetName = "abadl3ynmed-asset";
@@ -239,14 +339,14 @@ void main() async {
     });
     when(mockWallet.preparePayment(
             destinationAddress: "rstbSTpPcyxMsiXwkBxS9tFTrg2JsDNxWk",
-            authAmount: "12000",
+            authAmount: anyNamed("authAmount"),
             channelDescriptor: anyNamed("channelDescriptor")))
         .thenAnswer((_) {
       return Future.value({"key": "value"});
     });
   });
 
-  group('Image deployment journeys', () {
+  group('Deployment journeys', () {
     testWidgets('Bad payment in header', (WidgetTester tester) async {
       const w = 1920;
       const h = 1080;
@@ -257,6 +357,11 @@ void main() async {
             Config.config!["DHALI_ID"].toString().toLowerCase(): theDhaliAssetID
           }));
       when(mockRequester.headers).thenAnswer((_) => {});
+      when(mockMultipartRequester.send()).thenAnswer((_) async =>
+          StreamedResponse(const Stream.empty(), responseCode, headers: {
+            Config.config!["DHALI_ID"].toString().toLowerCase(): theDhaliAssetID
+          }));
+      when(mockMultipartRequester.headers).thenAnswer((_) => {});
       final dpi = tester.binding.window.devicePixelRatio;
       tester.binding.window.physicalSizeTestValue = Size(w * dpi, h * dpi);
 
@@ -272,18 +377,16 @@ void main() async {
             firestore: firebaseMockInstance,
             getWallet: () => mockWallet,
             setWallet: (wallet) => {},
-            getRequest: (String method, String path) => mockRequester),
+            getRequest: getRequest),
       ));
 
       await tester.pumpAndSettle();
 
-      imageDeploymentDemo(
-          tester, mockRequester, FakeFirebaseFirestore(), responseCode);
+      deploymentDemo(tester, FakeFirebaseFirestore(), responseCode);
     });
     testWidgets('Successful image deployment', (WidgetTester tester) async {
       const w = 1920;
       const h = 1080;
-      var mockRequester = MockMultipartRequest();
       int responseCode = 200;
 
       when(mockRequester.send()).thenAnswer((_) async => StreamedResponse(
@@ -291,6 +394,11 @@ void main() async {
             Config.config!["DHALI_ID"].toString().toLowerCase(): theDhaliAssetID
           }));
       when(mockRequester.headers).thenAnswer((_) => {});
+      when(mockMultipartRequester.send()).thenAnswer((_) async =>
+          StreamedResponse(const Stream.empty(), responseCode, headers: {
+            Config.config!["DHALI_ID"].toString().toLowerCase(): theDhaliAssetID
+          }));
+      when(mockMultipartRequester.headers).thenAnswer((_) => {});
       final dpi = tester.binding.window.devicePixelRatio;
       tester.binding.window.physicalSizeTestValue = Size(w * dpi, h * dpi);
 
@@ -306,20 +414,18 @@ void main() async {
             firestore: firebaseMockInstance,
             getWallet: () => mockWallet,
             setWallet: (wallet) => {},
-            getRequest: (String method, String path) => mockRequester),
+            getRequest: getRequest),
       ));
 
       await tester.pumpAndSettle();
 
-      imageDeploymentDemo(
-          tester, mockRequester, firebaseMockInstance, responseCode);
+      deploymentDemo(tester, firebaseMockInstance, responseCode);
     });
 
-    testWidgets('Select self hosted journey deployment',
+    testWidgets('Successful self hosted journey deployment',
         (WidgetTester tester) async {
       const w = 1920;
       const h = 1080;
-      var mockRequester = MockMultipartRequest();
       int responseCode = 200;
 
       when(mockRequester.send()).thenAnswer((_) async => StreamedResponse(
@@ -327,6 +433,11 @@ void main() async {
             Config.config!["DHALI_ID"].toString().toLowerCase(): theDhaliAssetID
           }));
       when(mockRequester.headers).thenAnswer((_) => {});
+      when(mockMultipartRequester.send()).thenAnswer((_) async =>
+          StreamedResponse(const Stream.empty(), responseCode, headers: {
+            Config.config!["DHALI_ID"].toString().toLowerCase(): theDhaliAssetID
+          }));
+      when(mockMultipartRequester.headers).thenAnswer((_) => {});
       final dpi = tester.binding.window.devicePixelRatio;
       tester.binding.window.physicalSizeTestValue = Size(w * dpi, h * dpi);
 
@@ -342,42 +453,17 @@ void main() async {
             firestore: firebaseMockInstance,
             getWallet: () => mockWallet,
             setWallet: (wallet) => {},
-            getRequest: (String method, String path) => mockRequester),
+            getRequest: getRequest),
       ));
 
       await tester.pumpAndSettle();
-
-      await utils.dragOutDrawer(tester);
-
-      await tester.tap(find.text("My APIs"));
-      await tester.pumpAndSettle();
-
-      await tester.tap(find.text('Monetise my API', skipOffstage: false));
-      await tester.pumpAndSettle();
-
-      expect(find.text("What will your API be called?"), findsOneWidget);
-      expect(find.text("Step 1 of 4"), findsOneWidget);
-
-      await tester.tap(find.text("Asset name"));
-      expect(
-          find.text("Enter the name you'd like for your asset "
-              "(a-z, 0-9, -, .)"),
-          findsOneWidget);
-      await tester.enterText(
-          find.byKey(const Key("asset_name_input_field")), theInputAssetName);
-      await tester.pumpAndSettle(const Duration(seconds: 5));
-      expect(find.text(theAssetName), findsOneWidget);
-      await tester.tap(find.byKey(const Key("self_hosted-radio_button")));
-      await tester.tap(find.byKey(const Key("AssetNameNext")));
-      await tester.pumpAndSettle();
-
-      expect(find.text("Self hosting is unavailable."), findsOneWidget);
+      deploymentDemo(tester, firebaseMockInstance, responseCode,
+          isSelfHosted: true);
     });
 
     testWidgets('Cancel image deployment', (WidgetTester tester) async {
       const w = 1920;
       const h = 1080;
-      var mockRequester = MockMultipartRequest();
       int responseCode = 200;
 
       when(mockRequester.send()).thenAnswer((_) async => StreamedResponse(
@@ -385,6 +471,12 @@ void main() async {
             Config.config!["DHALI_ID"].toString().toLowerCase(): theDhaliAssetID
           }));
       when(mockRequester.headers).thenAnswer((_) => {});
+      when(mockMultipartRequester.send()).thenAnswer((_) async =>
+          StreamedResponse(const Stream.empty(), responseCode, headers: {
+            Config.config!["DHALI_ID"].toString().toLowerCase(): theDhaliAssetID
+          }));
+      when(mockMultipartRequester.headers).thenAnswer((_) => {});
+
       final dpi = tester.binding.window.devicePixelRatio;
       tester.binding.window.physicalSizeTestValue = Size(w * dpi, h * dpi);
 
@@ -400,7 +492,7 @@ void main() async {
             firestore: firebaseMockInstance,
             getWallet: () => mockWallet,
             setWallet: (wallet) => {},
-            getRequest: (String method, String path) => mockRequester),
+            getRequest: getRequest),
       ));
 
       await utils.dragOutDrawer(tester);
@@ -413,7 +505,7 @@ void main() async {
 
       expect(find.text("What will your API be called?"), findsOneWidget);
 
-      await tester.tap(find.text("Asset name"));
+      await tester.tap(find.text("API name"));
       expect(
           find.text("Enter the name you'd like for your asset "
               "(a-z, 0-9, -, .)"),
@@ -422,16 +514,18 @@ void main() async {
           find.byKey(const Key("asset_name_input_field")), theInputAssetName);
       await tester.pumpAndSettle(const Duration(seconds: 5));
       expect(find.text(theAssetName), findsOneWidget);
+      await tester.tap(find.byKey(const Key("dhali_hosted-radio_button")));
+      await tester.pumpAndSettle();
       await tester.tap(find.byKey(const Key("AssetNameNext")));
       await tester.pumpAndSettle();
-      await setEarnings(tester, mockRequester, firebaseMockInstance);
+      await setEarningsPerRequest(tester, firebaseMockInstance);
 
       await tester.tap(find.byKey(const Key("ImageCostNext")));
       await tester.pumpAndSettle();
 
-      await selectAssets(tester, mockRequester, firebaseMockInstance);
+      await selectFile(tester, firebaseMockInstance, FileType.dockerImage, 1);
 
-      await tester.tap(find.byKey(const Key("DropZoneDeployNext")));
+      await tester.tap(find.byKey(const Key("DockerDropZoneDeployNext")));
       await tester.pumpAndSettle(const Duration(seconds: 4));
 
       expect(find.text("Your image was successfully scanned."), findsOneWidget);
@@ -439,7 +533,11 @@ void main() async {
       await tester.tap(find.byKey(const Key("ImageScanningNext")));
       await tester.pumpAndSettle();
 
-      await displayCosts(tester, mockRequester, firebaseMockInstance);
+      await selectFile(tester, firebaseMockInstance, FileType.readme, 2);
+      await tester.tap(find.byKey(const Key("ReadmeDropZoneDeployNext")));
+      await tester.pumpAndSettle(const Duration(seconds: 4));
+
+      await displayCosts(tester, firebaseMockInstance);
 
       await tester.tap(find.text("Yes"));
 

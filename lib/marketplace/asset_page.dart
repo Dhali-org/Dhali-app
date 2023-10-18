@@ -22,7 +22,8 @@ class AssetPage extends StatefulWidget {
   final MarketplaceListData asset;
   final DhaliWallet? Function() getWallet;
   final FirebaseFirestore? Function() getFirestore;
-  final BaseRequest Function(String method, String path) getRequest;
+  final BaseRequest Function<T extends BaseRequest>(String method, String path)
+      getRequest;
   final Future<Response> Function(Uri path)? getReadme;
 
   @override

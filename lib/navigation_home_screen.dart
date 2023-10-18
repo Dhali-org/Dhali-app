@@ -37,7 +37,8 @@ class NavigationHomeScreen extends StatefulWidget {
       required this.firestore,
       this.queryParams});
 
-  final BaseRequest Function(String method, String path) getRequest;
+  final BaseRequest Function<T extends BaseRequest>(String method, String path)
+      getRequest;
   final FirebaseFirestore firestore;
   final Map<String, String>? queryParams;
 

@@ -67,8 +67,8 @@ Future<void> imageConsumptionDemo(WidgetTester tester) async {
   expect(find.text("Selected input file: test.tar"), findsOneWidget);
   await tester.tap(find.text("Next"));
   await tester.pumpAndSettle();
-  expect(find.text("Running this asset typically costs 1.0000 XRP"),
-      findsOneWidget);
+  expect(
+      find.text("Running this API typically costs 1.0000 XRP"), findsOneWidget);
   expect(find.text("Are you sure you want to continue?"), findsOneWidget);
   expect(find.text("Yes"), findsOneWidget);
   expect(find.text("No"), findsOneWidget);
@@ -125,13 +125,13 @@ void main() async {
           .doc(docId)
           .set({"to_claim": 0});
 
-      MockMultipartRequest getMockMultipartRequest(String _, String path) {
+      T getMockMultipartRequest<T extends BaseRequest>(String _, String path) {
         var mockRunRequester = MockMultipartRequest();
         when(mockRunRequester.send()).thenAnswer(
             (_) async => StreamedResponse(const Stream.empty(), responseCode));
         when(mockRunRequester.headers).thenAnswer((_) => {});
 
-        return mockRunRequester;
+        return mockRunRequester as T;
       }
 
       final dpi = tester.binding.window.devicePixelRatio;

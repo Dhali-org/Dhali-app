@@ -33,6 +33,7 @@
     "POST_DEPLOY_README_ROUTE": "readme",
     "POST_RUN_INFERENCE_ROUTE": "run",
     "POST_DEPLOY_ASSET_ROUTE": "asset",
+    "POST_LINK_ASSET_ROUTE": "link",
     "ROOT_DEPLOY_URL": "https://staging-3mmgxhct.uc.gateway.dev",
     "ROOT_CONSUMER_URL": "https://kernml-consumer-3mmgxhct.uc.gateway.dev",
     "ROOT_RUN_URL": "https://dhali-staging-run-3mmgxhct.uc.gateway.dev",
