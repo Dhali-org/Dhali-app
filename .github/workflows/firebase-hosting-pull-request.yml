@@ -12,7 +12,6 @@ jobs:
       - uses: actions/checkout@v2
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.10.6'
           channel: 'stable'
       - name: Configure the app for staging
         run: |
