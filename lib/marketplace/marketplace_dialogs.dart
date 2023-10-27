@@ -2301,6 +2301,13 @@ class InferenceCostWidget extends StatelessWidget {
   }
 }
 
+Widget getDialog(BuildContext context, {required Widget child}) {
+  return Dialog(
+      insetPadding: EdgeInsets.all(isDesktopResolution(context) ? 50 : 10),
+      backgroundColor: Colors.transparent,
+      child: child);
+}
+
 Widget getDialogTemplate(
     {required Widget child,
     required BuildContext context,

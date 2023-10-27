@@ -736,8 +736,8 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                           Text("Please link a wallet using the Wallet page"),
                     );
                   }
-                  return Dialog(
-                    backgroundColor: Colors.transparent,
+                  return getDialog(
+                    context,
                     child: AssetNameWidget(
                         step: 1,
                         steps: 5,
@@ -777,8 +777,7 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
     showDialog(
         context: context,
         builder: (BuildContext _) {
-          return Dialog(
-              backgroundColor: Colors.transparent,
+          return getDialog(context,
               child: ChargeWidget(
                 step: 2,
                 steps: 5,
@@ -801,8 +800,7 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
     showDialog(
         context: context,
         builder: (BuildContext _) {
-          return Dialog(
-              backgroundColor: Colors.transparent,
+          return getDialog(context,
               child: DropzoneDeployWidget(
                   deploymentFile: DeploymentFile.image,
                   step: 3,
@@ -820,8 +818,7 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
     showDialog(
         context: context,
         builder: (BuildContext _) {
-          return Dialog(
-              backgroundColor: Colors.transparent,
+          return getDialog(context,
               child: LinkedAPIDetailsWidget(
                 step: 3,
                 steps: 5,
@@ -838,8 +835,7 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
     showDialog(
         context: context,
         builder: (BuildContext _) {
-          return Dialog(
-              backgroundColor: Colors.transparent,
+          return getDialog(context,
               child: DropzoneDeployWidget(
                   deploymentFile: DeploymentFile.readme,
                   step: 4,
@@ -857,8 +853,7 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
     showDialog(
         context: context,
         builder: (BuildContext _) {
-          return Dialog(
-              backgroundColor: Colors.transparent,
+          return getDialog(context,
               child: ImageScanningWidget(
                   step: 3,
                   steps: 5,
@@ -896,8 +891,7 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
           final dhaliEarnings =
               Config.config!["DHALI_EARNINGS_PERCENTAGE_PER_INFERENCE"];
           double deploymentCost = assetDeploymentCost + readmeDeploymentCost;
-          return Dialog(
-              backgroundColor: Colors.transparent,
+          return getDialog(context,
               child: DeploymentCostWidget(
                 step: 5,
                 steps: 5,
@@ -981,8 +975,7 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                           });
                         }
 
-                        return Dialog(
-                            backgroundColor: Colors.transparent,
+                        return getDialog(context,
                             child: FutureBuilder<Map<String, String>>(
                               builder: (context, snapshot) {
                                 final exceptionString =
