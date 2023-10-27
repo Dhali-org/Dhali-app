@@ -2329,7 +2329,11 @@ Widget getDialogTemplate(
           icon: Icon(Icons.close, size: isDesktopResolution(context) ? 60 : 30),
           onPressed: () {
             gtag(command: "event", target: "DialogClosed");
-            Navigator.of(context).pop();
+            Navigator.of(context).popUntil((route) {
+              // Here, we assume that a Dialog doesn't have a route name (which is true by default).
+              // If you've given a custom name to your Dialog route, check against that name instead.
+              return route.settings.name != null;
+            });
           },
         ),
       ),
