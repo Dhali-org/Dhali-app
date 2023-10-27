@@ -18,7 +18,6 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:dhali/marketplace/asset_page.dart';
-import 'package:dhali/marketplace/filters_screen.dart';
 import 'package:dhali/marketplace/marketplace_app_theme.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dhali/config.dart' show Config;
@@ -589,14 +588,6 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                       showNotImplentedWidget(
                           context: context, feature: "Helper: Filter assets");
                       return;
-                      FocusScope.of(context).requestFocus(FocusNode());
-                      Navigator.push<dynamic>(
-                        context,
-                        MaterialPageRoute<dynamic>(
-                            builder: (BuildContext context) =>
-                                const FiltersScreen(),
-                            fullscreenDialog: true),
-                      );
                     },
                     child: Padding(
                       padding: const EdgeInsets.only(left: 8),
