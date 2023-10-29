@@ -1,6 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dhali/app_theme.dart';
-import 'package:dhali/consumer_workflow.dart';
 import 'package:dhali_wallet/dhali_wallet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown_selectionarea/flutter_markdown_selectionarea.dart';
@@ -200,7 +198,7 @@ class _AssetPageState extends State<AssetPage> {
                                       TextStyle(fontWeight: FontWeight.bold)),
                               TextSpan(
                                   text:
-                                      '${Config.config!["ROOT_RUN_URL"]}/${widget.asset.assetID}/run/'),
+                                      '${Config.config!["ROOT_RUN_URL"]}/${widget.asset.assetID}'),
                             ],
                           ),
                         )
