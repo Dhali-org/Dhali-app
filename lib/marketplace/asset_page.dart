@@ -204,37 +204,6 @@ class _AssetPageState extends State<AssetPage> {
                         )
                       ],
                     )),
-                Expanded(
-                    flex: 1,
-                    child: ElevatedButton.icon(
-                      style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
-                          backgroundColor: AppTheme.dhali_blue,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(4))),
-                      onPressed: () => {
-                        showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return consumerJourney(
-                                  assetDescriptor: widget.asset,
-                                  getFirestore: widget.getFirestore,
-                                  context: context,
-                                  runURL:
-                                      "${Config.config!["ROOT_RUN_URL"]}/${widget.asset.assetID}/run/",
-                                  getWallet: widget.getWallet,
-                                  getRequest: widget.getRequest);
-                            })
-                      },
-                      icon: const Icon(
-                        Icons.navigate_next_outlined,
-                        size: 25,
-                      ),
-                      label: const Text(
-                        "Run",
-                        style: TextStyle(fontSize: 15),
-                      ),
-                    ))
               ],
             )));
   }
