@@ -6,6 +6,8 @@
         "CATEGORY": "category", 
         "ENDPOINT_URL": "endpoint_url",
         "EXPECTED_INFERENCE_COST": "average_cost",
+        "AVERAGE_EARNINGS": "average_earnings",
+        "CLAIMED_EARNINGS": "claimed_earnings",
         "ASSET_NAME": "name",
         "NFTOKEN_ID": "NFTokenId",
         "EARNING_RATE": "asset_earning_rate",
