@@ -2345,7 +2345,10 @@ Widget getDialogTemplate(
         ),
       ),
       if (step != null && steps != null)
-        Column(mainAxisAlignment: MainAxisAlignment.end, children: [
+        Column(mainAxisAlignment: MainAxisAlignment.start, children: [
+          const SizedBox(
+            height: 40,
+          ),
           Align(
             alignment: Alignment.bottomCenter,
             child: Text(
