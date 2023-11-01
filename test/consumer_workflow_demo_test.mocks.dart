@@ -273,6 +273,7 @@ class MockXRPLWallet extends _i1.Mock implements _i9.XRPLWallet {
     required String? destinationAddress,
     required String? authAmount,
     required _i6.PaymentChannelDescriptor? channelDescriptor,
+    required _i5.BuildContext? context,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -282,6 +283,7 @@ class MockXRPLWallet extends _i1.Mock implements _i9.XRPLWallet {
             #destinationAddress: destinationAddress,
             #authAmount: authAmount,
             #channelDescriptor: channelDescriptor,
+            #context: context,
           },
         ),
         returnValue: _i8.Future<Map<String, String>>.value(<String, String>{}),
@@ -325,10 +327,15 @@ class MockXRPLWallet extends _i1.Mock implements _i9.XRPLWallet {
         returnValue: _i8.Future<dynamic>.value(),
       ) as _i8.Future<dynamic>);
   @override
-  _i8.Future<bool> acceptOffer(String? offerIndex) => (super.noSuchMethod(
+  _i8.Future<bool> acceptOffer(
+    String? offerIndex, {
+    required _i5.BuildContext? context,
+  }) =>
+      (super.noSuchMethod(
         Invocation.method(
           #acceptOffer,
           [offerIndex],
+          {#context: context},
         ),
         returnValue: _i8.Future<bool>.value(false),
       ) as _i8.Future<bool>);
@@ -356,8 +363,9 @@ class MockXRPLWallet extends _i1.Mock implements _i9.XRPLWallet {
   @override
   _i8.Future<_i6.PaymentChannelDescriptor> openPaymentChannel(
     String? destinationAddress,
-    String? amount,
-  ) =>
+    String? amount, {
+    required _i5.BuildContext? context,
+  }) =>
       (super.noSuchMethod(
         Invocation.method(
           #openPaymentChannel,
@@ -365,6 +373,7 @@ class MockXRPLWallet extends _i1.Mock implements _i9.XRPLWallet {
             destinationAddress,
             amount,
           ],
+          {#context: context},
         ),
         returnValue: _i8.Future<_i6.PaymentChannelDescriptor>.value(
             _FakePaymentChannelDescriptor_5(
@@ -375,14 +384,16 @@ class MockXRPLWallet extends _i1.Mock implements _i9.XRPLWallet {
               destinationAddress,
               amount,
             ],
+            {#context: context},
           ),
         )),
       ) as _i8.Future<_i6.PaymentChannelDescriptor>);
   @override
   _i8.Future<bool> fundPaymentChannel(
     _i6.PaymentChannelDescriptor? descriptor,
-    String? amount,
-  ) =>
+    String? amount, {
+    required _i5.BuildContext? context,
+  }) =>
       (super.noSuchMethod(
         Invocation.method(
           #fundPaymentChannel,
@@ -390,6 +401,7 @@ class MockXRPLWallet extends _i1.Mock implements _i9.XRPLWallet {
             descriptor,
             amount,
           ],
+          {#context: context},
         ),
         returnValue: _i8.Future<bool>.value(false),
       ) as _i8.Future<bool>);

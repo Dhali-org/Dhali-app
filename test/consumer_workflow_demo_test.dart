@@ -66,7 +66,7 @@ void main() async {
     when(mockWallet.address).thenReturn("a-random-address");
     when(mockWallet.sendDrops("9000000", "CHANNEL_ID_STRING"))
         .thenReturn("a-random-signature");
-    when(mockWallet.acceptOffer("0")).thenAnswer((_) async {
+    when(mockWallet.acceptOffer("0", context: null)).thenAnswer((_) async {
       return Future.value(true);
     });
     when(mockWallet.mnemonic).thenReturn("memorable words");
@@ -77,6 +77,7 @@ void main() async {
           [PaymentChannelDescriptor("CHANNEL_ID_STRING", 10000000)]);
     });
     when(mockWallet.preparePayment(
+            context: null,
             destinationAddress: "rstbSTpPcyxMsiXwkBxS9tFTrg2JsDNxWk",
             authAmount: anyNamed("authAmount"),
             channelDescriptor: anyNamed("channelDescriptor")))

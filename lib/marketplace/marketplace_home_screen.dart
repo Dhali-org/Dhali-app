@@ -923,7 +923,9 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                           if (channelDescriptors.isEmpty) {
                             channelDescriptors = [
                               await wallet.openPaymentChannel(
-                                  dest, deploymentCost.ceil().toString())
+                                  context: context,
+                                  dest,
+                                  deploymentCost.ceil().toString())
                             ];
                           }
                           var docId = const Uuid().v5(Uuid.NAMESPACE_URL,
@@ -945,10 +947,12 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                               1;
                           if (requiredInChannel > 0) {
                             await wallet.fundPaymentChannel(
+                                context: context,
                                 channelDescriptors[0],
                                 requiredInChannel.toString());
                           }
                           var payment = wallet.preparePayment(
+                              context: context,
                               destinationAddress: dest,
                               authAmount: total,
                               channelDescriptor: channelDescriptors[0]);
@@ -970,7 +974,9 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                               }
 
                               var offerIndex = offer.offerIndex;
-                              widget.getWallet()!.acceptOffer(offerIndex);
+                              widget
+                                  .getWallet()!
+                                  .acceptOffer(context: context, offerIndex);
                             }
                           });
                         }

@@ -310,7 +310,8 @@ void main() async {
     when(mockWallet.mnemonic).thenReturn("memorable words");
     when(mockWallet.sendDrops("9000000", "CHANNEL_ID_STRING"))
         .thenReturn("a-random-signature");
-    when(mockWallet.acceptOffer("0")).thenAnswer((_) async {
+    when(mockWallet.acceptOffer(context: anyNamed("context"), "0"))
+        .thenAnswer((_) async {
       return Future.value(true);
     });
     when(mockWallet.getNFTOffers("some_NFToken_id")).thenAnswer((_) async {
@@ -338,6 +339,7 @@ void main() async {
       });
     });
     when(mockWallet.preparePayment(
+            context: anyNamed("context"),
             destinationAddress: "rstbSTpPcyxMsiXwkBxS9tFTrg2JsDNxWk",
             authAmount: anyNamed("authAmount"),
             channelDescriptor: anyNamed("channelDescriptor")))
