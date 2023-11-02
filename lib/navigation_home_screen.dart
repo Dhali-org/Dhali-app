@@ -386,7 +386,7 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
             ),
             if (_showContinueButton)
               Positioned(
-                bottom: 100,
+                bottom: isDesktopResolution(context) ? 100 : 50,
                 left: 0,
                 right: 0,
                 child: Center(
