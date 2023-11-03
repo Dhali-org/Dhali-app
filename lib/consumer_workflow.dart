@@ -25,7 +25,9 @@ Widget consumerJourney(
     required String runURL,
     required DhaliWallet? Function() getWallet,
     required FirebaseFirestore? Function() getFirestore,
-    required BaseRequest Function(String method, String path) getRequest}) {
+    required BaseRequest Function<T extends BaseRequest>(
+            String method, String path)
+        getRequest}) {
   if (getWallet() == null) {
     gtag(
         command: "event",
@@ -73,7 +75,9 @@ Dialog costDialog(
     required AssetModel input,
     required DhaliWallet? Function() getWallet,
     required FirebaseFirestore? Function() getFirestore,
-    required BaseRequest Function(String method, String path) getRequest}) {
+    required BaseRequest Function<T extends BaseRequest>(
+            String method, String path)
+        getRequest}) {
   return Dialog(
       backgroundColor: Colors.transparent,
       child: InferenceCostWidget(
@@ -105,7 +109,9 @@ Dialog run(
     required String runURL,
     required DhaliWallet? Function() getWallet,
     required FirebaseFirestore? Function() getFirestore,
-    required BaseRequest Function(String method, String path) getRequest}) {
+    required BaseRequest Function<T extends BaseRequest>(
+            String method, String path)
+        getRequest}) {
   String dest = Config.config!["DHALI_PUBLIC_ADDRESS"];
 
   var payment = getFirestore()!
@@ -135,7 +141,8 @@ Dialog run(
 
       if (channelDescriptors.isEmpty) {
         channelDescriptors = [
-          await getWallet()!.openPaymentChannel(dest, cost.toString())
+          await getWallet()!
+              .openPaymentChannel(context: context, dest, cost.toString())
         ];
       }
       var docId =
@@ -153,9 +160,12 @@ Dialog run(
           double.parse(total) - channelDescriptors[0].amount + 1;
       if (requiredInChannel > 0) {
         await getWallet()!.fundPaymentChannel(
-            channelDescriptors[0], requiredInChannel.toString());
+            context: context,
+            channelDescriptors[0],
+            requiredInChannel.toString());
       }
       return getWallet()!.preparePayment(
+          context: context,
           destinationAddress: dest,
           authAmount: total,
           channelDescriptor: channelDescriptors[0]);

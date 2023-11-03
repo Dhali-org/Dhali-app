@@ -1,6 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dhali/app_theme.dart';
-import 'package:dhali/consumer_workflow.dart';
 import 'package:dhali_wallet/dhali_wallet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown_selectionarea/flutter_markdown_selectionarea.dart';
@@ -22,7 +20,8 @@ class AssetPage extends StatefulWidget {
   final MarketplaceListData asset;
   final DhaliWallet? Function() getWallet;
   final FirebaseFirestore? Function() getFirestore;
-  final BaseRequest Function(String method, String path) getRequest;
+  final BaseRequest Function<T extends BaseRequest>(String method, String path)
+      getRequest;
   final Future<Response> Function(Uri path)? getReadme;
 
   @override
@@ -199,43 +198,12 @@ class _AssetPageState extends State<AssetPage> {
                                       TextStyle(fontWeight: FontWeight.bold)),
                               TextSpan(
                                   text:
-                                      '${Config.config!["ROOT_RUN_URL"]}/${widget.asset.assetID}/run/'),
+                                      '${Config.config!["ROOT_RUN_URL"]}/${widget.asset.assetID}'),
                             ],
                           ),
                         )
                       ],
                     )),
-                Expanded(
-                    flex: 1,
-                    child: ElevatedButton.icon(
-                      style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
-                          backgroundColor: AppTheme.dhali_blue,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(4))),
-                      onPressed: () => {
-                        showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return consumerJourney(
-                                  assetDescriptor: widget.asset,
-                                  getFirestore: widget.getFirestore,
-                                  context: context,
-                                  runURL:
-                                      "${Config.config!["ROOT_RUN_URL"]}/${widget.asset.assetID}/run/",
-                                  getWallet: widget.getWallet,
-                                  getRequest: widget.getRequest);
-                            })
-                      },
-                      icon: const Icon(
-                        Icons.navigate_next_outlined,
-                        size: 25,
-                      ),
-                      label: const Text(
-                        "Run",
-                        style: TextStyle(fontSize: 15),
-                      ),
-                    ))
               ],
             )));
   }

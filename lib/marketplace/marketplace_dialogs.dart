@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'dart:math';
 import "package:universal_html/html.dart" as html;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dhali/utils/show_popup_text_with_link.dart';
@@ -286,25 +287,26 @@ class AssetNameWidget extends StatefulWidget {
 class _AssetNameWidgetState extends State<AssetNameWidget> {
   final textController = TextEditingController();
 
-  HostingChoice _choice = HostingChoice.hostedByDhali;
+  HostingChoice _choice = HostingChoice.selfHosted;
 
   @override
   Widget build(BuildContext context) {
     return getDialogTemplate(
       step: widget.step,
       steps: widget.steps,
-      child: Stack(
-        children: [
-          Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text(
-                  "What will your API be called?",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  textAlign: TextAlign.start,
-                ),
-                TextField(
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const Text(
+              "What will your API be called?",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              textAlign: TextAlign.start,
+            ),
+            SizedBox(
+                width: 450,
+                child: TextField(
                   key: const Key('asset_name_input_field'),
                   onChanged: (value) => {
                     setState(
@@ -317,7 +319,7 @@ class _AssetNameWidgetState extends State<AssetNameWidget> {
                     labelStyle: TextStyle(fontSize: 18),
                     helperStyle: TextStyle(
                         color: Colors.black, fontWeight: FontWeight.bold),
-                    labelText: "Asset name",
+                    labelText: "API name",
                     hintText: "Enter the name you'd like for your asset "
                         "(a-z, 0-9, -, .)",
                   ),
@@ -325,87 +327,138 @@ class _AssetNameWidgetState extends State<AssetNameWidget> {
                   inputFormatters: <TextInputFormatter>[
                     FilteringTextInputFormatter.allow(RegExp("([a-z0-9-]+)"))
                   ],
-                ),
-                const SizedBox(
-                  height: 25,
-                ),
-                const Text("How will your API be hosted?",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    textAlign: TextAlign.start),
-                HostingRadio(
-                  onChoiceSelected: (choice) {
-                    _choice = choice;
-                  },
-                  initialChoice: _choice,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    ElevatedButton.icon(
-                        style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 10, horizontal: 10),
-                            backgroundColor: AppTheme.secondary,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(4))),
-                        onPressed: () async {
-                          gtag(
-                              command: "event",
-                              target: "BackClicked",
-                              parameters: {"from": "AssetNameWidget"});
-                          Navigator.of(context).pop();
-                        },
-                        icon: Icon(
-                          Icons.arrow_back,
-                          size: isDesktopResolution(context) ? 25 : 12,
-                        ),
-                        label: Text(
-                          key: const Key("AssetNameBack"),
-                          "Back",
-                          style: TextStyle(
-                              fontSize: isDesktopResolution(context) ? 25 : 12),
-                        )),
-                    const SizedBox(
-                      width: 16,
-                    ),
-                    ElevatedButton.icon(
-                        key: const Key("use_docker_image_button"),
-                        style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 10, horizontal: 10),
-                            backgroundColor: AppTheme.dhali_blue,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(4))),
-                        onPressed: textController.text != ""
-                            ? () async {
-                                gtag(
-                                    command: "event",
-                                    target: "NextClicked",
-                                    parameters: {
-                                      "from": "DropZoneDeployWidget"
-                                    });
-                                widget.onNextClicked(
-                                    textController.text, _choice);
-                              }
-                            : null,
-                        icon: Icon(
-                          Icons.navigate_next_outlined,
-                          size: isDesktopResolution(context) ? 25 : 12,
-                        ),
-                        label: Text(
-                          key: const Key("AssetNameNext"),
-                          "Next",
-                          style: TextStyle(
-                              fontSize: isDesktopResolution(context) ? 25 : 12),
-                        )),
-                  ],
-                )
-              ],
+                )),
+            const SizedBox(
+              height: 25,
             ),
-          ),
-        ],
+            const Text("How will your API be hosted?",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                textAlign: TextAlign.start),
+            HostingRadio(
+              onChoiceSelected: (choice) {
+                _choice = choice;
+              },
+              initialChoice: _choice,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 10, horizontal: 10),
+                        backgroundColor: AppTheme.secondary,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(4))),
+                    onPressed: () async {
+                      gtag(
+                          command: "event",
+                          target: "BackClicked",
+                          parameters: {"from": "AssetNameWidget"});
+                      Navigator.of(context).pop();
+                    },
+                    icon: Icon(
+                      Icons.arrow_back,
+                      size: isDesktopResolution(context) ? 25 : 12,
+                    ),
+                    label: Text(
+                      key: const Key("AssetNameBack"),
+                      "Back",
+                      style: TextStyle(
+                          fontSize: isDesktopResolution(context) ? 25 : 12),
+                    )),
+                const SizedBox(
+                  width: 16,
+                ),
+                ElevatedButton.icon(
+                    key: const Key("use_docker_image_button"),
+                    style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 10, horizontal: 10),
+                        backgroundColor: AppTheme.dhali_blue,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(4))),
+                    onPressed: textController.text != ""
+                        ? () async {
+                            gtag(
+                                command: "event",
+                                target: "NextClicked",
+                                parameters: {"from": "DropZoneDeployWidget"});
+                            widget.onNextClicked(textController.text, _choice);
+                          }
+                        : null,
+                    icon: Icon(
+                      Icons.navigate_next_outlined,
+                      size: isDesktopResolution(context) ? 25 : 12,
+                    ),
+                    label: Text(
+                      key: const Key("AssetNameNext"),
+                      "Next",
+                      style: TextStyle(
+                          fontSize: isDesktopResolution(context) ? 25 : 12),
+                    )),
+              ],
+            )
+          ],
+        ),
       ),
       context: context,
+    );
+  }
+}
+
+class ChargingModelRadio extends StatefulWidget {
+  final Function(ChargingChoice) onChoiceSelected;
+  final ChargingChoice initialChoice;
+
+  const ChargingModelRadio(
+      {super.key, required this.onChoiceSelected, required this.initialChoice});
+  @override
+  _ChargingModelRadioState createState() => _ChargingModelRadioState();
+}
+
+class _ChargingModelRadioState extends State<ChargingModelRadio> {
+  ChargingChoice? _choice;
+
+  @override
+  void initState() {
+    _choice = widget.initialChoice;
+    super.initState();
+  }
+
+  setChoice(ChargingChoice? choice) {
+    setState(() {
+      _choice = choice;
+      if (_choice != null) {
+        widget.onChoiceSelected(_choice!);
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        RadioListTile<ChargingChoice>(
+          key: const Key('Per second'),
+          title: const Text('Per second'),
+          value: ChargingChoice.perSecond,
+          groupValue: _choice,
+          onChanged: (ChargingChoice? value) {
+            setChoice(value);
+          },
+        ),
+        RadioListTile<ChargingChoice>(
+          key: const Key('Per request'),
+          title: const Text('Per request'),
+          value: ChargingChoice.perRequest,
+          groupValue: _choice,
+          onChanged: (ChargingChoice? value) {
+            setChoice(value);
+          },
+        ),
+      ],
     );
   }
 }
@@ -442,43 +495,127 @@ class _HostingRadioState extends State<HostingRadio> {
   Widget build(BuildContext context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        RadioListTile<HostingChoice>(
-          title: const Text('Hosted by Dhali'),
-          value: HostingChoice.hostedByDhali,
-          groupValue: _choice,
-          onChanged: (HostingChoice? value) {
-            setChoice(value);
-          },
+        SizedBox(
+            width: 250,
+            child: RadioListTile<HostingChoice>(
+              key: const Key("self_hosted-radio_button"),
+              title: const Text('Self hosted'),
+              value: HostingChoice.selfHosted,
+              groupValue: _choice,
+              onChanged: (HostingChoice? value) {
+                setChoice(value);
+              },
+            )),
+        SizedBox(
+            width: 250,
+            child: RadioListTile<HostingChoice>(
+              key: const Key("dhali_hosted-radio_button"),
+              title: const Text('Hosted by Dhali'),
+              value: HostingChoice.hostedByDhali,
+              groupValue: _choice,
+              onChanged: (HostingChoice? value) {
+                setChoice(value);
+              },
+            )),
+        const SizedBox(
+          height: 20,
         ),
-        RadioListTile<HostingChoice>(
-          key: const Key("self_hosted-radio_button"),
-          title: const Text('Self hosted'),
-          value: HostingChoice.selfHosted,
-          groupValue: _choice,
-          onChanged: (HostingChoice? value) {
-            setChoice(value);
-          },
+        Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.blue, width: 2.0),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text("You will need:",
+                          style: TextStyle(
+                              fontSize: isDesktopResolution(context) ? 18 : 14),
+                          textAlign: TextAlign.start),
+                      _choice == HostingChoice.hostedByDhali
+                          ? Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                bulletPointItem(
+                                    context, 'To know what you\'ll charge'),
+                                bulletPointItem(context,
+                                    'A docker image (please see docs)'),
+                                bulletPointItem(context, 'A README'),
+                              ],
+                            )
+                          : Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                bulletPointItem(
+                                    context, 'To know what you\'ll charge'),
+                                bulletPointItem(context, 'API base URL'),
+                                bulletPointItem(context, 'API key'),
+                                bulletPointItem(context, 'A README'),
+                              ],
+                            )
+                    ],
+                  )),
+            ]),
+        const SizedBox(
+          height: 20,
         ),
       ],
     );
   }
 }
 
+Widget bulletPointItem(BuildContext context, String text) {
+  return Padding(
+    padding: const EdgeInsets.all(8.0),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        Text(
+          '• ',
+          style: TextStyle(
+              fontSize: isDesktopResolution(context) ? 18 : 12,
+              fontWeight: FontWeight.bold),
+        ),
+        Text(
+          text,
+          style: TextStyle(fontSize: isDesktopResolution(context) ? 18 : 12),
+        ),
+      ],
+    ),
+  );
+}
+
 enum HostingChoice { selfHosted, hostedByDhali }
+
+enum ChargingChoice { perRequest, perSecond }
+
+enum DeploymentFile { image, readme }
 
 class DropzoneDeployWidget extends StatefulWidget {
   final ValueChanged<AssetModel> onDroppedFile;
-  final Function(AssetModel, AssetModel) onNextClicked;
+  final Function(AssetModel) onNextClicked;
   final int step;
   final int steps;
+  final DeploymentFile deploymentFile;
 
   const DropzoneDeployWidget(
       {Key? key,
       required this.onDroppedFile,
       required this.onNextClicked,
       required this.step,
-      required this.steps})
+      required this.steps,
+      required this.deploymentFile})
       : super(key: key);
   @override
   _DropzoneDeployWidgetState createState() => _DropzoneDeployWidgetState();
@@ -487,8 +624,7 @@ class DropzoneDeployWidget extends StatefulWidget {
 class _DropzoneDeployWidgetState extends State<DropzoneDeployWidget> {
   DropzoneViewController? controller;
   bool isHighlighted = false;
-  AssetModel? assetFile;
-  AssetModel? readmeFile;
+  AssetModel? file;
   final textController = TextEditingController();
 
   @override
@@ -523,102 +659,107 @@ class _DropzoneDeployWidgetState extends State<DropzoneDeployWidget> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      textAlign: TextAlign.center,
-                      assetFile != null
-                          ? "Selected asset file: ${assetFile!.fileName}"
-                          : "No .tar docker image asset selected",
-                      style: TextStyle(
-                          fontSize: isDesktopResolution(context) ? 25 : 12,
-                          color: isHighlighted
-                              ? AppTheme.nearlyWhite
-                              : AppTheme.nearlyBlack),
-                    ),
-                    const SizedBox(
-                      width: 16,
-                    ),
-                    IconButton(
-                      onPressed: () async {
-                        gtag(
-                            command: "event",
-                            target: "HelperButtonClicked",
-                            parameters: {"forAction": "Asset upload"});
-                        showPopupTextWithLink(
-                            text:
-                                "Please provide a docker image file in '.tar' format.  For instructions, see ",
-                            urlText: "here.",
-                            url:
-                                "https://dhali.io/docs/#/?id=creating-dhali-assets",
-                            context: context);
-                      },
-                      icon: const Icon(
-                        Icons.help_outline_outlined,
-                        size: 30,
+                widget.deploymentFile == DeploymentFile.image
+                    ? Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            textAlign: TextAlign.center,
+                            file != null
+                                ? "Selected asset file: ${file!.fileName}"
+                                : "No .tar docker image asset selected",
+                            style: TextStyle(
+                                fontSize:
+                                    isDesktopResolution(context) ? 25 : 12,
+                                color: isHighlighted
+                                    ? AppTheme.nearlyWhite
+                                    : AppTheme.nearlyBlack),
+                          ),
+                          const SizedBox(
+                            width: 16,
+                          ),
+                          IconButton(
+                            onPressed: () async {
+                              gtag(
+                                  command: "event",
+                                  target: "HelperButtonClicked",
+                                  parameters: {"forAction": "Asset upload"});
+                              showPopupTextWithLink(
+                                  text:
+                                      "Please provide a docker image file in '.tar' format.  For instructions, see ",
+                                  urlText: "here.",
+                                  url:
+                                      "https://dhali.io/docs/#/?id=creating-dhali-assets",
+                                  context: context);
+                            },
+                            icon: const Icon(
+                              Icons.help_outline_outlined,
+                              size: 30,
+                            ),
+                          ),
+                          const SizedBox(
+                            width: 15,
+                          ),
+                          file != null
+                              ? const Icon(
+                                  Icons.done_outline_rounded,
+                                  color: Colors.green,
+                                  size: 30,
+                                )
+                              : Container()
+                        ],
+                      )
+                    : Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            textAlign: TextAlign.center,
+                            file != null
+                                ? "Selected README: ${file!.fileName}"
+                                : "No README selected",
+                            style: TextStyle(
+                                fontSize:
+                                    isDesktopResolution(context) ? 25 : 12,
+                                color: isHighlighted
+                                    ? AppTheme.nearlyWhite
+                                    : AppTheme.nearlyBlack),
+                          ),
+                          const SizedBox(
+                            width: 16,
+                          ),
+                          IconButton(
+                            onPressed: () async {
+                              gtag(
+                                  command: "event",
+                                  target: "HelperButtonClicked",
+                                  parameters: {
+                                    "forAction": "README.md upload"
+                                  });
+                              showPopupTextWithLink(
+                                  text:
+                                      "Please provide a 'README.md' file documenting your asset.  For more information, see ",
+                                  urlText: "here.",
+                                  url:
+                                      "https://dhali.io/docs/#/?id=creating-dhali-assets",
+                                  context: context);
+                            },
+                            icon: const Icon(
+                              Icons.help_outline_outlined,
+                              size: 30,
+                            ),
+                          ),
+                          const SizedBox(
+                            width: 15,
+                          ),
+                          file != null
+                              ? const Icon(
+                                  Icons.done_outline_rounded,
+                                  color: Colors.green,
+                                  size: 30,
+                                )
+                              : Container()
+                        ],
                       ),
-                    ),
-                    const SizedBox(
-                      width: 15,
-                    ),
-                    assetFile != null
-                        ? const Icon(
-                            Icons.done_outline_rounded,
-                            color: Colors.green,
-                            size: 30,
-                          )
-                        : Container()
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      textAlign: TextAlign.center,
-                      readmeFile != null
-                          ? "Selected markdown file: ${readmeFile!.fileName}"
-                          : "No .md asset description selected",
-                      style: TextStyle(
-                          fontSize: isDesktopResolution(context) ? 25 : 12,
-                          color: isHighlighted
-                              ? AppTheme.nearlyWhite
-                              : AppTheme.nearlyBlack),
-                    ),
-                    const SizedBox(
-                      width: 16,
-                    ),
-                    IconButton(
-                      onPressed: () async {
-                        gtag(
-                            command: "event",
-                            target: "HelperButtonClicked",
-                            parameters: {"forAction": "README.md upload"});
-                        showPopupTextWithLink(
-                            text:
-                                "Please provide a 'README.md' file documenting your asset.  For more information, see ",
-                            urlText: "here.",
-                            url:
-                                "https://dhali.io/docs/#/?id=creating-dhali-assets",
-                            context: context);
-                      },
-                      icon: const Icon(
-                        Icons.help_outline_outlined,
-                        size: 30,
-                      ),
-                    ),
-                    const SizedBox(
-                      width: 15,
-                    ),
-                    readmeFile != null
-                        ? const Icon(
-                            Icons.done_outline_rounded,
-                            color: Colors.green,
-                            size: 30,
-                          )
-                        : Container()
-                  ],
-                ),
                 const Icon(
                   Icons.cloud_upload_rounded,
                   color: AppTheme.dhali_blue,
@@ -629,7 +770,7 @@ class _DropzoneDeployWidgetState extends State<DropzoneDeployWidget> {
                   children: [
                     Text(
                       textAlign: TextAlign.center,
-                      "Drag or select your files",
+                      "Drag or select your file",
                       style: TextStyle(
                           fontSize: isDesktopResolution(context) ? 25 : 12,
                           color: isHighlighted
@@ -675,22 +816,20 @@ class _DropzoneDeployWidgetState extends State<DropzoneDeployWidget> {
                     const SizedBox(
                       width: 16,
                     ),
-                    getFileUploadButton(
-                        const Key("choose_docker_image_button"),
-                        "Choose .tar file",
-                        ["application/x-tar"],
-                        AppTheme.secondary),
-                    const SizedBox(
-                      width: 16,
-                    ),
-                    getFileUploadButton(
-                        const Key("choose_readme_button"),
-                        "Choose .md file",
-                        [
-                          "text/markdown",
-                          "text/x-markdown"
-                        ], // TODO : This is not filtering the correct mime type
-                        AppTheme.secondary),
+                    widget.deploymentFile == DeploymentFile.image
+                        ? getFileUploadButton(
+                            const Key("choose_docker_image_button"),
+                            "Select",
+                            ["application/x-tar"],
+                            AppTheme.secondary)
+                        : getFileUploadButton(
+                            const Key("choose_readme_button"),
+                            "Select",
+                            [
+                              "text/markdown",
+                              "text/x-markdown"
+                            ], // TODO : This is not filtering the correct mime type
+                            AppTheme.secondary),
                     const SizedBox(
                       width: 16,
                     ),
@@ -702,7 +841,7 @@ class _DropzoneDeployWidgetState extends State<DropzoneDeployWidget> {
                             backgroundColor: AppTheme.dhali_blue,
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(4))),
-                        onPressed: assetFile != null && readmeFile != null
+                        onPressed: file != null
                             ? () async {
                                 gtag(
                                     command: "event",
@@ -710,7 +849,7 @@ class _DropzoneDeployWidgetState extends State<DropzoneDeployWidget> {
                                     parameters: {
                                       "from": "DropZoneDeployWidget"
                                     });
-                                widget.onNextClicked(assetFile!, readmeFile!);
+                                widget.onNextClicked(file!);
                               }
                             : null,
                         icon: Icon(
@@ -718,7 +857,9 @@ class _DropzoneDeployWidgetState extends State<DropzoneDeployWidget> {
                           size: isDesktopResolution(context) ? 25 : 12,
                         ),
                         label: Text(
-                          key: const Key("DropZoneDeployNext"),
+                          key: widget.deploymentFile == DeploymentFile.image
+                              ? const Key("DockerDropZoneDeployNext")
+                              : const Key("ReadmeDropZoneDeployNext"),
                           "Next",
                           style: TextStyle(
                               fontSize: isDesktopResolution(context) ? 25 : 12),
@@ -779,23 +920,13 @@ class _DropzoneDeployWidgetState extends State<DropzoneDeployWidget> {
 
     String mime = event.type;
     int bytes = event.size;
-    if (mime == "application/x-tar") {
-      assetFile = AssetModel(
-          imageFile: event,
-          fileName: fileName,
-          modelName: textController.text,
-          mime: mime,
-          size: bytes);
-      widget.onDroppedFile(assetFile!);
-    } else if (mime == "text/markdown") {
-      readmeFile = AssetModel(
-          imageFile: event,
-          fileName: fileName,
-          modelName: textController.text,
-          mime: mime,
-          size: bytes);
-      widget.onDroppedFile(readmeFile!);
-    }
+    file = AssetModel(
+        imageFile: event,
+        fileName: fileName,
+        modelName: textController.text,
+        mime: mime,
+        size: bytes);
+    widget.onDroppedFile(file!);
     setState(() {
       isHighlighted = false;
     });
@@ -971,33 +1102,35 @@ class _ImageScanningWidgetState extends State<ImageScanningWidget> {
   }
 }
 
-class ImageCostWidget extends StatefulWidget {
-  final Function(double) onNextClicked;
-  final int? defaultEarningsPerInference;
+class ChargeWidget extends StatefulWidget {
+  final Function(double, ChargingChoice) onNextClicked;
+  final double defaultChargingRate;
+  final ChargingChoice defaultChargingChoice;
   final int step;
   final int steps;
 
-  const ImageCostWidget(
+  const ChargeWidget(
       {Key? key,
       required this.onNextClicked,
-      this.defaultEarningsPerInference,
+      required this.defaultChargingRate,
+      required this.defaultChargingChoice,
       required this.step,
       required this.steps})
       : super(key: key);
   @override
-  _ImageCostWidgetState createState() => _ImageCostWidgetState();
+  _ChargeWidgetState createState() => _ChargeWidgetState();
 }
 
-class _ImageCostWidgetState extends State<ImageCostWidget> {
+class _ChargeWidgetState extends State<ChargeWidget> {
   final controller = TextEditingController();
   bool scanning = true;
+  late ChargingChoice chargingChoice;
 
   @override
   void initState() {
+    chargingChoice = widget.defaultChargingChoice;
+    controller.text = widget.defaultChargingRate.toString();
     super.initState();
-    controller.text = widget.defaultEarningsPerInference != null
-        ? widget.defaultEarningsPerInference.toString()
-        : controller.text;
   }
 
   @override
@@ -1007,9 +1140,10 @@ class _ImageCostWidgetState extends State<ImageCostWidget> {
       steps: widget.steps,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           const Text(
-            "Set your earning rate per inference.",
+            "How much would you like to earn?",
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             textAlign: TextAlign.start,
           ),
@@ -1018,32 +1152,71 @@ class _ImageCostWidgetState extends State<ImageCostWidget> {
             "\nKeep this small to encourage usage.\n",
             style: TextStyle(fontSize: 12),
           ),
-          const Text(
-            textAlign: TextAlign.center,
-            "Example: If running your API costs Dhali \$1 in compute costs per inference, by setting 20 below you will earn \$0.20 per inference.",
-            style: TextStyle(fontSize: 12, color: AppTheme.nearlyBlack),
-          ),
           const SizedBox(
             height: 16,
           ),
-          TextField(
-            key: const Key("percentage_earnings_input"),
-            onChanged: (value) => setState(() {}),
-            controller: controller,
-            maxLength: 5,
-            // ignore: prefer_const_constructors
-            decoration: InputDecoration(
-              labelStyle: const TextStyle(fontSize: 20),
-              helperStyle: const TextStyle(
-                  color: Colors.black, fontWeight: FontWeight.bold),
-              helperText: "Percentage you earn above Dhali compute costs",
-              hintText: "Enter a percentage (e.g., '20')",
-            ),
-            keyboardType: TextInputType.number,
-            inputFormatters: <TextInputFormatter>[
-              FilteringTextInputFormatter.digitsOnly
-            ], // Only numbers can be entered
+          SizedBox(
+              width: 250,
+              child: Row(
+                children: [
+                  const Text(
+                    "   XRP  ",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    textAlign: TextAlign.start,
+                  ),
+                  SizedBox(
+                    width: 100,
+                    child: TextField(
+                      key: const Key("percentage_earnings_input"),
+                      onChanged: (value) => setState(() {}),
+                      controller: controller,
+                      // ignore: prefer_const_constructors
+                      decoration: InputDecoration(
+                        labelStyle: const TextStyle(fontSize: 20),
+                        helperStyle: const TextStyle(
+                            color: Colors.black, fontWeight: FontWeight.bold),
+                      ),
+                      keyboardType: TextInputType.number,
+                      inputFormatters: <TextInputFormatter>[
+                        FilteringTextInputFormatter.allow(
+                            RegExp(r'^\d*\.?\d*$')),
+                        LengthLimitingTextInputFormatter(10)
+                      ], // Only numbers can be entered
+                    ),
+                  ),
+                ],
+              )),
+          SizedBox(
+              width: 250,
+              child: ChargingModelRadio(
+                  onChoiceSelected: (choice) {
+                    setState(() {
+                      chargingChoice = choice;
+                    });
+                  },
+                  initialChoice: widget.defaultChargingChoice)),
+          const SizedBox(
+            height: 16,
           ),
+          Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.blue, width: 2.0),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  padding: const EdgeInsets.all(16.0),
+                  child: Text(
+                    "Your API earns you ${controller.text} XRP per ${chargingChoice == ChargingChoice.perRequest ? "request" : "second"}",
+                    style: TextStyle(
+                        fontSize: isDesktopResolution(context) ? 18 : 12),
+                    softWrap: true,
+                    textAlign: TextAlign.start,
+                  ),
+                ),
+              ]),
           const SizedBox(
             height: 16,
           ),
@@ -1091,8 +1264,8 @@ class _ImageCostWidgetState extends State<ImageCostWidget> {
                             command: "event",
                             target: "NextClicked",
                             parameters: {"from": "ImageCostWidget"});
-                        widget.onNextClicked(double.tryParse(controller
-                            .text)!); // != null because input "digitsOnly"
+                        widget.onNextClicked(double.tryParse(controller.text)!,
+                            chargingChoice); // != null because input "digitsOnly"
                       }
                     : null,
                 icon: Icon(
@@ -1116,22 +1289,218 @@ class _ImageCostWidgetState extends State<ImageCostWidget> {
   }
 }
 
+class LinkedAPIDetailsWidget extends StatefulWidget {
+  final Function(String, String) onNextClicked;
+  final int step;
+  final int steps;
+
+  const LinkedAPIDetailsWidget(
+      {Key? key,
+      required this.onNextClicked,
+      required this.step,
+      required this.steps})
+      : super(key: key);
+  @override
+  _LinkedAPIDetailsWidgetState createState() => _LinkedAPIDetailsWidgetState();
+}
+
+class _LinkedAPIDetailsWidgetState extends State<LinkedAPIDetailsWidget> {
+  final apiBaseUrlController = TextEditingController();
+  final apiKeyController = TextEditingController();
+  bool scanning = true;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return getDialogTemplate(
+      step: widget.step,
+      steps: widget.steps,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Text(
+            "What are your APIs details?",
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            textAlign: TextAlign.start,
+          ),
+          const SizedBox(
+            height: 16,
+          ),
+          const Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+            Text(
+              "API base URL:",
+              style: TextStyle(fontSize: 18),
+              textAlign: TextAlign.start,
+            )
+          ]),
+          TextField(
+            key: const Key("api_base_url"),
+            inputFormatters: [
+              FilteringTextInputFormatter.allow(
+                  RegExp(r'[^\s]+')), // This regex disallows any whitespace
+            ],
+            onChanged: (value) => setState(() {}),
+            controller: apiBaseUrlController,
+            // ignore: prefer_const_constructors
+            decoration: InputDecoration(
+              labelStyle: const TextStyle(fontSize: 20),
+              helperStyle: const TextStyle(
+                  color: Colors.black, fontWeight: FontWeight.bold),
+            ),
+          ),
+          const SizedBox(
+            height: 16,
+          ),
+          const Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Text(
+                "API bearer token:",
+                style: TextStyle(fontSize: 18),
+                textAlign: TextAlign.start,
+              ),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Text(
+                "Consider a custom service account for this.\n",
+                textAlign: TextAlign.start,
+                style:
+                    TextStyle(fontSize: isDesktopResolution(context) ? 14 : 12),
+              )
+            ],
+          ),
+          TextField(
+            key: const Key("api_key"),
+            onChanged: (value) => setState(() {}),
+            controller: apiKeyController,
+            // ignore: prefer_const_constructors
+            decoration: InputDecoration(
+              labelStyle: const TextStyle(fontSize: 20),
+              helperStyle: const TextStyle(
+                  color: Colors.black, fontWeight: FontWeight.bold),
+            ),
+          ),
+          const SizedBox(
+            height: 16,
+          ),
+          Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.blue, width: 2.0),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  padding: const EdgeInsets.all(16.0),
+                  child: Text(
+                    "Requests will have the header \n\n"
+                    "'Authorization: Bearer ${apiKeyController.text.substring(0, min(10, apiKeyController.text.length))}...'",
+                    style: TextStyle(
+                        fontSize: isDesktopResolution(context) ? 18 : 12),
+                    softWrap: true,
+                    textAlign: TextAlign.start,
+                  ),
+                ),
+              ]),
+          const SizedBox(
+            height: 16,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 10, horizontal: 10),
+                      backgroundColor: AppTheme.secondary,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(4))),
+                  onPressed: () async {
+                    gtag(
+                        command: "event",
+                        target: "BackClicked",
+                        parameters: {"from": "LinkedAPIDetailsWidget"});
+                    Navigator.of(context).pop();
+                  },
+                  icon: Icon(
+                    Icons.arrow_back,
+                    size: isDesktopResolution(context) ? 25 : 12,
+                  ),
+                  label: Text(
+                    key: const Key("APICredentialsBack"),
+                    "Back",
+                    style: TextStyle(
+                      fontSize: isDesktopResolution(context) ? 25 : 12,
+                    ),
+                  )),
+              const SizedBox(
+                width: 16,
+              ),
+              ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 10, horizontal: 10),
+                    backgroundColor: AppTheme.dhali_blue,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(4))),
+                onPressed: apiBaseUrlController.text.isNotEmpty &&
+                        apiKeyController.text.isNotEmpty
+                    ? () {
+                        gtag(
+                            command: "event",
+                            target: "NextClicked",
+                            parameters: {"from": "LinkedAPIDetailsWidget"});
+                        widget.onNextClicked(
+                            apiBaseUrlController.text, apiKeyController.text);
+                      }
+                    : null,
+                icon: Icon(
+                  Icons.navigate_next_outlined,
+                  size: isDesktopResolution(context) ? 25 : 12,
+                ),
+                label: Text(
+                  key: const Key("APICredentialsNext"),
+                  "Next",
+                  style: TextStyle(
+                    fontSize: isDesktopResolution(context) ? 25 : 12,
+                  ),
+                ),
+              ),
+            ],
+          )
+        ],
+      ),
+      context: context,
+    );
+  }
+}
+
 class DeploymentCostWidget extends StatelessWidget {
   const DeploymentCostWidget(
       {Key? key,
-      required this.file,
       required this.assetEarnings,
+      required this.assetEarningsType,
       required this.dhaliEarnings,
       required this.deploymentCost,
+      required this.hostingType,
       required this.yesClicked,
       required this.step,
       required this.steps})
       : super(key: key);
 
-  final Function(AssetModel, double) yesClicked;
-  final AssetModel file;
+  final Function() yesClicked;
   final double deploymentCost;
   final double assetEarnings;
+  final ChargingChoice assetEarningsType;
+  final HostingChoice hostingType;
   final double dhaliEarnings;
   final int step;
   final int steps;
@@ -1148,7 +1517,7 @@ class DeploymentCostWidget extends StatelessWidget {
             height: 16,
           ),
           Text(
-            "Here is a break down of the asset's costs:",
+            "Here is a break down of the charges:",
             style: TextStyle(
                 fontSize: isDesktopResolution(context) ? 25 : 12,
                 color: AppTheme.nearlyBlack),
@@ -1194,7 +1563,7 @@ class DeploymentCostWidget extends StatelessWidget {
                   Container(
                       padding: const EdgeInsets.all(10),
                       child: Text(
-                        "Cost: XRP",
+                        "Cost (XRP):",
                         style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: isDesktopResolution(context) ? 25 : 12),
@@ -1205,7 +1574,10 @@ class DeploymentCostWidget extends StatelessWidget {
                 children: <Widget>[
                   Container(
                       padding: const EdgeInsets.all(10),
-                      child: Text("Deployment cost",
+                      child: Text(
+                          isDesktopResolution(context)
+                              ? "Deployment cost"
+                              : "Deployment\ncost",
                           style: TextStyle(
                               fontSize:
                                   isDesktopResolution(context) ? 25 : 12))),
@@ -1266,7 +1638,7 @@ class DeploymentCostWidget extends StatelessWidget {
                   Container(
                       padding: const EdgeInsets.all(10),
                       child: Text(
-                        "Cost:",
+                        "Cost (XRP):",
                         style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: isDesktopResolution(context) ? 25 : 12),
@@ -1278,46 +1650,25 @@ class DeploymentCostWidget extends StatelessWidget {
                   Container(
                       padding: const EdgeInsets.all(10),
                       child: Text(
-                        "Dhali's earnings",
+                        isDesktopResolution(context)
+                            ? "Dhali's earnings"
+                            : "Dhali's\nearnings",
                         style: TextStyle(
                             fontSize: isDesktopResolution(context) ? 25 : 12),
                       )),
                   Container(
                       padding: const EdgeInsets.all(10),
                       child: Text(
-                        "When asset is used",
+                        isDesktopResolution(context)
+                            ? "When API is used"
+                            : "When API\nis used",
                         style: TextStyle(
                             fontSize: isDesktopResolution(context) ? 25 : 12),
                       )),
                   Container(
                       padding: const EdgeInsets.all(10),
                       child: Text(
-                        "$dhaliEarnings%",
-                        style: TextStyle(
-                            fontSize: isDesktopResolution(context) ? 25 : 12),
-                      )),
-                ],
-              ),
-              TableRow(
-                children: <Widget>[
-                  Container(
-                      padding: const EdgeInsets.all(10),
-                      child: Text(
-                        "Your earnings",
-                        style: TextStyle(
-                            fontSize: isDesktopResolution(context) ? 25 : 12),
-                      )),
-                  Container(
-                      padding: const EdgeInsets.all(10),
-                      child: Text(
-                        "When asset is used",
-                        style: TextStyle(
-                            fontSize: isDesktopResolution(context) ? 25 : 12),
-                      )),
-                  Container(
-                      padding: const EdgeInsets.all(10),
-                      child: Text(
-                        "$assetEarnings%",
+                        "${(dhaliEarnings / 100 * assetEarnings).toStringAsFixed(5)} per ${assetEarningsType == ChargingChoice.perRequest ? "request" : "second"}",
                         style: TextStyle(
                             fontSize: isDesktopResolution(context) ? 25 : 12),
                       )),
@@ -1328,21 +1679,54 @@ class DeploymentCostWidget extends StatelessWidget {
                   Container(
                       padding: const EdgeInsets.all(10),
                       child: Text(
-                        "Total cost per inference",
+                        isDesktopResolution(context)
+                            ? "Your earnings"
+                            : "Your\nearnings",
                         style: TextStyle(
                             fontSize: isDesktopResolution(context) ? 25 : 12),
                       )),
                   Container(
                       padding: const EdgeInsets.all(10),
                       child: Text(
-                        "When asset is used",
+                        isDesktopResolution(context)
+                            ? "When API is used"
+                            : "When API\nis used",
                         style: TextStyle(
                             fontSize: isDesktopResolution(context) ? 25 : 12),
                       )),
                   Container(
                       padding: const EdgeInsets.all(10),
                       child: Text(
-                        "${100 + dhaliEarnings + assetEarnings}%",
+                        "${assetEarnings.toStringAsFixed(5)} per ${assetEarningsType == ChargingChoice.perRequest ? "request" : "second"}",
+                        style: TextStyle(
+                            fontSize: isDesktopResolution(context) ? 25 : 12),
+                      )),
+                ],
+              ),
+              TableRow(
+                children: <Widget>[
+                  Container(
+                      padding: const EdgeInsets.all(10),
+                      child: Text(
+                        isDesktopResolution(context)
+                            ? "Total cost"
+                            : "Total\ncost",
+                        style: TextStyle(
+                            fontSize: isDesktopResolution(context) ? 25 : 12),
+                      )),
+                  Container(
+                      padding: const EdgeInsets.all(10),
+                      child: Text(
+                        isDesktopResolution(context)
+                            ? "When API is used"
+                            : "When API\nis used",
+                        style: TextStyle(
+                            fontSize: isDesktopResolution(context) ? 25 : 12),
+                      )),
+                  Container(
+                      padding: const EdgeInsets.all(10),
+                      child: Text(
+                        "${(dhaliEarnings / 100 * assetEarnings + assetEarnings).toStringAsFixed(5)} per ${assetEarningsType == ChargingChoice.perRequest ? "request" : "second"}",
                         style: TextStyle(
                             fontSize: isDesktopResolution(context) ? 25 : 12),
                       )),
@@ -1351,20 +1735,7 @@ class DeploymentCostWidget extends StatelessWidget {
             ],
           ),
           const SizedBox(
-            height: 16,
-          ),
-          Text(
-            "If you continue, the above costs will be applied.",
-            textAlign: TextAlign.center,
-            style: TextStyle(
-                fontSize: isDesktopResolution(context) ? 25 : 12,
-                color: AppTheme.nearlyBlack),
-          ),
-          const SizedBox(
-            height: 16,
-          ),
-          const SizedBox(
-            height: 16,
+            height: 32,
           ),
           Text(
             "Are you sure you want to deploy?",
@@ -1417,7 +1788,7 @@ class DeploymentCostWidget extends StatelessWidget {
                         command: "event",
                         target: "YesClicked",
                         parameters: {"from": "DeploymentCostWidget"});
-                    yesClicked(file, assetEarnings);
+                    yesClicked();
                   },
                   icon: Icon(
                     Icons.done_outline_rounded,
@@ -1443,8 +1814,9 @@ class DeploymentCostWidget extends StatelessWidget {
 class DataTransmissionWidget extends StatefulWidget {
   final List<DataEndpointPair> data;
   final Function(List<DataEndpointPair>) onNextClicked;
-  final BaseRequest Function(String method, String path) getRequest;
-  final Widget? Function(BuildContext context, BaseResponse?)
+  final BaseRequest Function<T extends BaseRequest>(String method, String path)
+      getRequest;
+  final Widget? Function(BuildContext context, BaseResponse?)?
       getOnSuccessWidget;
 
   final GetUploader getUploader;
@@ -1515,7 +1887,7 @@ class _DataTransmissionWidgetState extends State<DataTransmissionWidget> {
     return getDialogTemplate(
       child: deploying ||
               !uploadWasSuccessful ||
-              widget.getOnSuccessWidget(context, response) == null
+              widget.getOnSuccessWidget == null
           ? Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -1623,7 +1995,7 @@ class _DataTransmissionWidgetState extends State<DataTransmissionWidget> {
               ],
             )
           : uploadWasSuccessful
-              ? widget.getOnSuccessWidget(context, response)!
+              ? widget.getOnSuccessWidget!(context, response)!
               : uploadFailed(context, responseCode!),
       context: context,
     );
@@ -1675,7 +2047,7 @@ class _DataTransmissionWidgetState extends State<DataTransmissionWidget> {
   }
 }
 
-Widget uploadFailed(BuildContext context, int responseCode) {
+Widget uploadFailed(BuildContext context, int responseCode, {String? reason}) {
   gtag(
       command: "event",
       target: "UploadFailed",
@@ -1692,8 +2064,7 @@ Widget uploadFailed(BuildContext context, int responseCode) {
         Text(
           key: const Key("upload_failed_warning"),
           textAlign: TextAlign.center,
-          "Deployment failed: status code "
-          "${responseCode.toString()}",
+          "Deployment failed: status code ${responseCode.toString()}${reason != null ? " reason: $reason" : ""}",
           style: const TextStyle(fontSize: 30, color: AppTheme.nearlyBlack),
         ),
         const SizedBox(
@@ -1754,7 +2125,7 @@ Widget NFTUploadingWidget(
                 CircularProgressIndicator(),
                 SizedBox(height: 20),
                 Text(
-                  'Minting asset NFT: This may take a minute or two. Please wait.',
+                  'Minting API\'s NFT: This may take a minute or two. Please wait.',
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -1779,10 +2150,12 @@ Widget NFTUploadingWidget(
                 color: Colors.green,
                 size: 80,
               ),
-              const Text(
-                key: Key("upload_success_info"),
+              Text(
+                key: const Key("upload_success_info"),
                 "Your NFT was successfully minted.",
-                style: TextStyle(fontSize: 30, color: AppTheme.nearlyBlack),
+                style: TextStyle(
+                    fontSize: isDesktopResolution(context) ? 30 : 18,
+                    color: AppTheme.nearlyBlack),
               ),
               const SizedBox(
                 height: 16,
@@ -1847,7 +2220,7 @@ class InferenceCostWidget extends StatelessWidget {
             height: 16,
           ),
           Text(
-            "Running this asset typically costs ${(inferenceCost / 1000000).toStringAsFixed(4)} XRP",
+            "Running this API typically costs ${(inferenceCost / 1000000).toStringAsFixed(4)} XRP",
             style: TextStyle(
                 fontSize: isDesktopResolution(context) ? 25 : 12,
                 color: AppTheme.nearlyBlack),
@@ -1928,6 +2301,13 @@ class InferenceCostWidget extends StatelessWidget {
   }
 }
 
+Widget getDialog(BuildContext context, {required Widget child}) {
+  return Dialog(
+      insetPadding: EdgeInsets.all(isDesktopResolution(context) ? 50 : 10),
+      backgroundColor: Colors.transparent,
+      child: child);
+}
+
 Widget getDialogTemplate(
     {required Widget child,
     required BuildContext context,
@@ -1943,7 +2323,7 @@ Widget getDialogTemplate(
           child: Center(
             child: Container(
               padding: EdgeInsets.symmetric(
-                  horizontal: isDesktopResolution(context) ? 80 : 40),
+                  horizontal: isDesktopResolution(context) ? 80 : 10),
               child: child,
             ),
           ),
@@ -1956,12 +2336,19 @@ Widget getDialogTemplate(
           icon: Icon(Icons.close, size: isDesktopResolution(context) ? 60 : 30),
           onPressed: () {
             gtag(command: "event", target: "DialogClosed");
-            Navigator.of(context).pop();
+            Navigator.of(context).popUntil((route) {
+              // Here, we assume that a Dialog doesn't have a route name (which is true by default).
+              // If you've given a custom name to your Dialog route, check against that name instead.
+              return route.settings.name != null;
+            });
           },
         ),
       ),
       if (step != null && steps != null)
-        Column(mainAxisAlignment: MainAxisAlignment.end, children: [
+        Column(mainAxisAlignment: MainAxisAlignment.start, children: [
+          const SizedBox(
+            height: 40,
+          ),
           Align(
             alignment: Alignment.bottomCenter,
             child: Text(
