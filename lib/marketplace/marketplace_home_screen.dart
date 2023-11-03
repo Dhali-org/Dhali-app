@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'dart:math';
 
 import 'package:dhali/analytics/analytics.dart';
@@ -16,7 +18,6 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:dhali/marketplace/asset_page.dart';
-import 'package:dhali/marketplace/filters_screen.dart';
 import 'package:dhali/marketplace/marketplace_app_theme.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dhali/config.dart' show Config;
@@ -36,7 +37,8 @@ class MarketplaceHomeScreen extends StatefulWidget {
   final DhaliWallet? Function() getWallet;
   final FirebaseFirestore? Function() getFirestore;
 
-  final BaseRequest Function(String method, String path) getRequest;
+  final BaseRequest Function<T extends BaseRequest>(String method, String path)
+      getRequest;
   final assetScreenType;
   @override
   _AssetScreenState createState() => _AssetScreenState();
@@ -52,6 +54,15 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
 
   DateTime startDate = DateTime.now();
   DateTime endDate = DateTime.now().add(const Duration(days: 5));
+
+  String? assetName;
+  AssetModel? image;
+  String? apiUrl;
+  String? apiKey;
+  AssetModel? readme;
+  ChargingChoice? chargingChoice;
+  HostingChoice? hostingChoice;
+  double? earningsRate;
 
   @override
   void initState() {
@@ -577,14 +588,6 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                       showNotImplentedWidget(
                           context: context, feature: "Helper: Filter assets");
                       return;
-                      FocusScope.of(context).requestFocus(FocusNode());
-                      Navigator.push<dynamic>(
-                        context,
-                        MaterialPageRoute<dynamic>(
-                            builder: (BuildContext context) =>
-                                const FiltersScreen(),
-                            fullscreenDialog: true),
-                      );
                     },
                     child: Padding(
                       padding: const EdgeInsets.only(left: 8),
@@ -733,13 +736,15 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                           Text("Please link a wallet using the Wallet page"),
                     );
                   }
-                  return Dialog(
-                    backgroundColor: Colors.transparent,
+                  return getDialog(
+                    context,
                     child: AssetNameWidget(
                         step: 1,
-                        steps: 4,
+                        steps: 5,
                         onDroppedFile: ((file) {}),
                         onNextClicked: (name, choice) {
+                          assetName = name;
+                          hostingChoice = choice;
                           var uuid = const Uuid();
                           widget
                               .getFirestore()!
@@ -749,7 +754,7 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                             "selected-choice": choice.toString(),
                             "time": DateTime.now()
                           });
-                          showEarningsSelectionDialog(name, choice);
+                          showEarningsSelectionDialog();
                         }),
                   );
                 });
@@ -768,79 +773,117 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
     return actionButton;
   }
 
-  showEarningsSelectionDialog(String name, HostingChoice choice) {
+  showEarningsSelectionDialog() {
     showDialog(
         context: context,
         builder: (BuildContext _) {
-          print(choice);
-          if (choice == HostingChoice.selfHosted) {
-            return const AlertDialog(
-              title: Text("Self hosting is unavailable."),
-            );
-          }
-          return Dialog(
-              backgroundColor: Colors.transparent,
-              child: ImageCostWidget(
+          return getDialog(context,
+              child: ChargeWidget(
                 step: 2,
-                steps: 4,
-                defaultEarningsPerInference: 20,
-                onNextClicked: (assetEarnings) {
-                  showImageSelectionDialog(name, assetEarnings);
+                steps: 5,
+                defaultChargingRate: 0.001,
+                defaultChargingChoice: ChargingChoice.perSecond,
+                onNextClicked: (assetEarnings, earningChoice) {
+                  earningsRate = assetEarnings;
+                  chargingChoice = earningChoice;
+                  if (hostingChoice == HostingChoice.hostedByDhali) {
+                    showImageSelectionDialog();
+                  } else {
+                    showImageLinkingDialog();
+                  }
                 },
               ));
         });
   }
 
-  showImageSelectionDialog(String name, double assetEarnings) {
+  showImageSelectionDialog() {
     showDialog(
         context: context,
         builder: (BuildContext _) {
-          return Dialog(
-              backgroundColor: Colors.transparent,
+          return getDialog(context,
               child: DropzoneDeployWidget(
+                  deploymentFile: DeploymentFile.image,
                   step: 3,
-                  steps: 4,
+                  steps: 5,
                   onDroppedFile: ((file) {}),
-                  onNextClicked: (asset, readme) {
-                    showScannngImageDialog(name, assetEarnings, asset, readme);
+                  onNextClicked: (asset) {
+                    image = asset;
+                    image!.modelName = assetName!;
+                    showScannngImageDialog();
                   }));
         });
   }
 
-  showScannngImageDialog(
-      String name, double assetEarnings, AssetModel asset, AssetModel readme) {
-    asset.modelName = name;
-    readme.modelName = name;
+  showImageLinkingDialog() {
     showDialog(
         context: context,
         builder: (BuildContext _) {
-          return Dialog(
-              backgroundColor: Colors.transparent,
+          return getDialog(context,
+              child: LinkedAPIDetailsWidget(
+                step: 3,
+                steps: 5,
+                onNextClicked: (apiUrl, apiKey) {
+                  this.apiKey = apiKey;
+                  this.apiUrl = apiUrl;
+                  showReadmeSelectionDialog();
+                },
+              ));
+        });
+  }
+
+  showReadmeSelectionDialog() {
+    showDialog(
+        context: context,
+        builder: (BuildContext _) {
+          return getDialog(context,
+              child: DropzoneDeployWidget(
+                  deploymentFile: DeploymentFile.readme,
+                  step: 4,
+                  steps: 5,
+                  onDroppedFile: ((file) {}),
+                  onNextClicked: (readme) {
+                    this.readme = readme;
+                    this.readme!.modelName = assetName!;
+                    showDeployAssetDialog();
+                  }));
+        });
+  }
+
+  showScannngImageDialog() {
+    showDialog(
+        context: context,
+        builder: (BuildContext _) {
+          return getDialog(context,
               child: ImageScanningWidget(
                   step: 3,
-                  steps: 4,
-                  file: asset,
+                  steps: 5,
+                  file: image!,
                   onNextClicked: (asset) {
-                    showDeployAssetDialog(name, assetEarnings, asset, readme);
+                    showReadmeSelectionDialog();
                   }));
         });
   }
 
-  showDeployAssetDialog(
-      String name, double assetEarnings, AssetModel asset, AssetModel readme) {
+  showDeployAssetDialog() {
     showDialog(
         context: context,
         builder: (BuildContext _) {
-          final assetDeploymentCost = Config
-                  .config!["DHALI_DEPLOYMENT_COST_PER_CHUNK_DROPS"] *
-              ((asset.size /
-                          Config
-                              .config!["MAX_NUMBER_OF_BYTES_PER_DEPLOY_CHUNK"])
-                      .floor() +
-                  3); // TODO: Why? We add a buffer of 3 to guarantee success
+          double assetDeploymentCost;
+          if (hostingChoice == HostingChoice.hostedByDhali) {
+            assetDeploymentCost = Config
+                    .config!["DHALI_DEPLOYMENT_COST_PER_CHUNK_DROPS"] *
+                ((image!.size /
+                            Config.config![
+                                "MAX_NUMBER_OF_BYTES_PER_DEPLOY_CHUNK"])
+                        .floor() +
+                    3); // TODO: Why? We add a buffer of 3 to guarantee success
+          } else {
+            assetDeploymentCost = Config.config![
+                "DHALI_DEPLOYMENT_COST_PER_CHUNK_DROPS"]; // Linking costs a single chunk
+          }
           final readmeDeploymentCost = Config
                   .config!["DHALI_DEPLOYMENT_COST_PER_CHUNK_DROPS"] *
-              ((readme.size /
+              ((readme!.size /
                           Config
                               .config!["MAX_NUMBER_OF_BYTES_PER_DEPLOY_CHUNK"])
                       .floor() +
@@ -848,16 +891,16 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
           final dhaliEarnings =
               Config.config!["DHALI_EARNINGS_PERCENTAGE_PER_INFERENCE"];
           double deploymentCost = assetDeploymentCost + readmeDeploymentCost;
-          return Dialog(
-              backgroundColor: Colors.transparent,
+          return getDialog(context,
               child: DeploymentCostWidget(
-                step: 4,
-                steps: 4,
-                file: asset,
+                step: 5,
+                steps: 5,
                 deploymentCost: deploymentCost,
-                assetEarnings: assetEarnings,
+                assetEarnings: earningsRate!,
                 dhaliEarnings: dhaliEarnings,
-                yesClicked: ((asset, earningsInferenceCost) {
+                assetEarningsType: chargingChoice!,
+                hostingType: hostingChoice!,
+                yesClicked: (() {
                   DhaliWallet? wallet = widget.getWallet()!;
 
                   showDialog(
@@ -880,7 +923,9 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                           if (channelDescriptors.isEmpty) {
                             channelDescriptors = [
                               await wallet.openPaymentChannel(
-                                  dest, deploymentCost.ceil().toString())
+                                  context: context,
+                                  dest,
+                                  deploymentCost.ceil().toString())
                             ];
                           }
                           var docId = const Uuid().v5(Uuid.NAMESPACE_URL,
@@ -902,10 +947,12 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                               1;
                           if (requiredInChannel > 0) {
                             await wallet.fundPaymentChannel(
+                                context: context,
                                 channelDescriptors[0],
                                 requiredInChannel.toString());
                           }
                           var payment = wallet.preparePayment(
+                              context: context,
                               destinationAddress: dest,
                               authAmount: total,
                               channelDescriptor: channelDescriptors[0]);
@@ -927,13 +974,14 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                               }
 
                               var offerIndex = offer.offerIndex;
-                              widget.getWallet()!.acceptOffer(offerIndex);
+                              widget
+                                  .getWallet()!
+                                  .acceptOffer(context: context, offerIndex);
                             }
                           });
                         }
 
-                        return Dialog(
-                            backgroundColor: Colors.transparent,
+                        return getDialog(context,
                             child: FutureBuilder<Map<String, String>>(
                               builder: (context, snapshot) {
                                 final exceptionString =
@@ -948,56 +996,22 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                                         Config.config!["ROOT_DEPLOY_URL"];
                                   }
                                   Map<String, String> payment = snapshot.data!;
-                                  return DataTransmissionWidget(
-                                    getUploader: (
-                                        {required payment,
-                                        required getRequest,
-                                        required dynamic Function(double)
-                                            progressStatus,
-                                        required int maxChunkSize,
-                                        required AssetModel model}) {
-                                      return DeployUploader(
-                                          payment: payment,
-                                          getRequest: getRequest,
-                                          progressStatus: progressStatus,
-                                          model: model,
-                                          maxChunkSize: maxChunkSize,
-                                          getWallet: widget.getWallet,
-                                          assetEarningRate: assetEarnings);
-                                    },
-                                    payment: payment,
-                                    getRequest: widget.getRequest,
-                                    data: [
-                                      DataEndpointPair(
-                                          data: asset,
-                                          endPoint:
-                                              "$entryPointUrlRoot/${Config.config!["POST_DEPLOY_ASSET_ROUTE"]}/"),
-                                      DataEndpointPair(
-                                          data: readme,
-                                          endPoint:
-                                              "$entryPointUrlRoot/${Config.config!["POST_DEPLOY_README_ROUTE"]}/"),
-                                    ],
-                                    onNextClicked: (data) {},
-                                    getOnSuccessWidget: (BuildContext context,
-                                        BaseResponse? response) {
-                                      if (response == null ||
-                                          !response.headers.containsKey(Config
-                                              .config!["DHALI_ID"]
-                                              .toString()
-                                              .toLowerCase())) {
-                                        throw Exception(exceptionString);
-                                      }
-
-                                      return NFTUploadingWidget(
-                                          context,
-                                          widget.getFirestore,
-                                          onNFTOfferPoll,
-                                          () => response.headers[Config
-                                              .config!["DHALI_ID"]
-                                              .toString()
-                                              .toLowerCase()]);
-                                    },
-                                  );
+                                  if (hostingChoice ==
+                                      HostingChoice.hostedByDhali) {
+                                    return getDeployAssetWidget(
+                                        payment,
+                                        entryPointUrlRoot,
+                                        exceptionString,
+                                        onNFTOfferPoll);
+                                  } else if (hostingChoice ==
+                                      HostingChoice.selfHosted) {
+                                    // TODO: Ensure this is called once only
+                                    return getLinkAssetWidget(
+                                        payment,
+                                        entryPointUrlRoot,
+                                        exceptionString,
+                                        onNFTOfferPoll);
+                                  }
                                 }
                                 return Container();
                               },
@@ -1007,6 +1021,166 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                 }),
               ));
         });
+  }
+
+  Widget getDeployAssetWidget(
+      Map<String, String> payment,
+      String entryPointUrlRoot,
+      String exceptionString,
+      void Function(String) onNFTOfferPoll) {
+    return DataTransmissionWidget(
+      getUploader: (
+          {required payment,
+          required getRequest,
+          required dynamic Function(double) progressStatus,
+          required int maxChunkSize,
+          required AssetModel model}) {
+        return DeployUploader(
+            payment: payment,
+            getRequest: getRequest,
+            progressStatus: progressStatus,
+            model: model,
+            maxChunkSize: maxChunkSize,
+            getWallet: widget.getWallet,
+            assetEarningRate: earningsRate!,
+            assetEarningType: chargingChoice!);
+      },
+      payment: payment,
+      getRequest: widget.getRequest,
+      data: [
+        DataEndpointPair(
+            data: image!,
+            endPoint:
+                "$entryPointUrlRoot/${Config.config!["POST_DEPLOY_ASSET_ROUTE"]}/"),
+        DataEndpointPair(
+            data: readme!,
+            endPoint:
+                "$entryPointUrlRoot/${Config.config!["POST_DEPLOY_README_ROUTE"]}/"),
+      ],
+      onNextClicked: (data) {},
+      getOnSuccessWidget: (BuildContext context, BaseResponse? response) {
+        if (response == null ||
+            !response.headers.containsKey(
+                Config.config!["DHALI_ID"].toString().toLowerCase())) {
+          throw Exception(exceptionString);
+        }
+
+        return NFTUploadingWidget(
+            context,
+            widget.getFirestore,
+            onNFTOfferPoll,
+            () => response
+                .headers[Config.config!["DHALI_ID"].toString().toLowerCase()]);
+      },
+    );
+  }
+
+  Widget getLinkAssetWidget(
+      Map<String, String> payment,
+      String entryPointUrlRoot,
+      String exceptionString,
+      void Function(String) onNFTOfferPoll) {
+    return DataTransmissionWidget(
+      getUploader: (
+          {required payment,
+          required getRequest,
+          required dynamic Function(double) progressStatus,
+          required int maxChunkSize,
+          required AssetModel model}) {
+        return DeployUploader(
+            payment: payment,
+            getRequest: getRequest,
+            progressStatus: progressStatus,
+            model: model,
+            maxChunkSize: maxChunkSize,
+            getWallet: widget.getWallet,
+            assetEarningRate: earningsRate!,
+            assetEarningType: chargingChoice!);
+      },
+      payment: payment,
+      getRequest: widget.getRequest,
+      data: [
+        DataEndpointPair(
+            data: readme!,
+            endPoint:
+                "$entryPointUrlRoot/${Config.config!["POST_DEPLOY_README_ROUTE"]}/"),
+      ],
+      onNextClicked: (data) {},
+      getOnSuccessWidget: (BuildContext context, BaseResponse? response) {
+        if (response == null ||
+            !response.headers.containsKey(
+                Config.config!["DHALI_ID"].toString().toLowerCase())) {
+          throw Exception(exceptionString);
+        }
+
+        final String url =
+            "$entryPointUrlRoot/${Config.config!["POST_LINK_ASSET_ROUTE"]}/";
+        var request = widget.getRequest<http.Request>("POST", url) as Request;
+
+        Map<String, String> headers = {
+          "Payment-Claim":
+              jsonEncode(payment), // Assuming payment is a Map or List
+          // TODO: This header argument will likely be derived from the client wallet
+          Config.config!["DHALI_ID"].toString().toLowerCase(): response
+              .headers[Config.config!["DHALI_ID"].toString().toLowerCase()]!
+        };
+
+        request.headers.addAll(headers);
+
+        Map<String, String> body = {
+          "assetName": assetName!,
+          "chainID": "xrpl", // TODO: Add user input for this
+          "walletID": widget.getWallet()!.address,
+          "labels": "",
+          "apiEarningRate": "${earningsRate!}",
+          "apiEarningType": chargingChoice == ChargingChoice.perRequest
+              ? "per_request"
+              : "per_second",
+          "apiCredentials": jsonEncode(
+              {"url": apiUrl!, "Authorization": "Bearer ${apiKey!}"}),
+        };
+
+        request.bodyFields = body;
+
+        final newResponse = request.send();
+
+        return FutureBuilder(
+            future: newResponse,
+            builder: (BuildContext context,
+                AsyncSnapshot<StreamedResponse> snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting ||
+                  !snapshot.hasData) {
+                return const Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      CircularProgressIndicator(),
+                      SizedBox(height: 20),
+                      Text(
+                        'Linking your API. Please wait...',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        key: Key("linking_api_spinner"),
+                      ),
+                    ],
+                  ),
+                );
+              }
+              if (snapshot.data!.statusCode != 200) {
+                return uploadFailed(context, snapshot.data!.statusCode,
+                    reason: snapshot.data!.reasonPhrase);
+              }
+              return NFTUploadingWidget(
+                  context,
+                  widget.getFirestore,
+                  onNFTOfferPoll,
+                  () => response.headers[
+                      Config.config!["DHALI_ID"].toString().toLowerCase()]);
+            });
+      },
+    );
   }
 
   String getTitle(assetScreenType) {

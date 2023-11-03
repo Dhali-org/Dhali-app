@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:dhali/app_theme.dart';
 import 'package:dhali/navigation_home_screen.dart';
+import 'package:http/http.dart';
 import 'package:mockito/mockito.dart';
 
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
@@ -126,7 +127,8 @@ void main() async {
             firestore: firebaseMockInstance,
             getWallet: () => mockWallet,
             setWallet: (wallet) => {},
-            getRequest: (String method, String path) => mockRequester),
+            getRequest: <T extends BaseRequest>(String method, String path) =>
+                mockRequester as T),
       ));
 
       await tester.pumpAndSettle();
@@ -212,7 +214,8 @@ void main() async {
             firestore: firebaseMockInstance,
             getWallet: () => mockWallet,
             setWallet: (wallet) => {},
-            getRequest: (String method, String path) => mockRequester),
+            getRequest: <T extends BaseRequest>(String method, String path) =>
+                mockRequester as T),
       ));
 
       await tester.pumpAndSettle();
@@ -280,7 +283,8 @@ void main() async {
             firestore: firebaseMockInstance,
             getWallet: () => mockWallet,
             setWallet: (wallet) => {},
-            getRequest: (String method, String path) => mockRequester),
+            getRequest: <T extends BaseRequest>(String method, String path) =>
+                mockRequester as T),
       ));
 
       await tester.pumpAndSettle();
@@ -342,7 +346,8 @@ void main() async {
             firestore: firebaseMockInstance,
             getWallet: () => mockWallet,
             setWallet: (wallet) => {},
-            getRequest: (String method, String path) => mockRequester),
+            getRequest: <T extends BaseRequest>(String method, String path) =>
+                mockRequester as T),
       ));
 
       await tester.pumpAndSettle();

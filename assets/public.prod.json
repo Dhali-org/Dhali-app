@@ -33,6 +33,7 @@
     "POST_DEPLOY_README_ROUTE": "readme",
     "POST_RUN_INFERENCE_ROUTE": "run",
     "POST_DEPLOY_ASSET_ROUTE": "asset",
+    "POST_LINK_ASSET_ROUTE": "link",
     "ROOT_DEPLOY_URL": "https://prod-dauenf0n.uc.gateway.dev",
     "ROOT_CONSUMER_URL": "https://dhali-prod-consumer-dauenf0n.uc.gateway.dev",
     "ROOT_RUN_URL": "https://dhali-prod-run-dauenf0n.uc.gateway.dev",

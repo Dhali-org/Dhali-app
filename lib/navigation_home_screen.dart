@@ -37,7 +37,8 @@ class NavigationHomeScreen extends StatefulWidget {
       required this.firestore,
       this.queryParams});
 
-  final BaseRequest Function(String method, String path) getRequest;
+  final BaseRequest Function<T extends BaseRequest>(String method, String path)
+      getRequest;
   final FirebaseFirestore firestore;
   final Map<String, String>? queryParams;
 
@@ -385,7 +386,7 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
             ),
             if (_showContinueButton)
               Positioned(
-                bottom: 100,
+                bottom: isDesktopResolution(context) ? 100 : 50,
                 left: 0,
                 right: 0,
                 child: Center(

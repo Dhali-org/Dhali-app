@@ -28,20 +28,25 @@ Future<void> initializeApp() async {
   ]);
 }
 
-MultipartRequest Function(String method, String path) getRequestFunction =
-    (String method, String path) {
-  return MultipartRequest(method, Uri.parse(path));
-};
+BaseRequest getRequest<T extends BaseRequest>(String method, String path) {
+  if (T == MultipartRequest) {
+    return MultipartRequest(method, Uri.parse(path)) as T;
+  } else if (T == Request) {
+    return Request(method, Uri.parse(path)) as T;
+  }
+  throw ArgumentError('Unsupported request type: $T');
+}
 
 void main() async {
   await initializeApp();
-  runApp(MyApp(getRequest: getRequestFunction));
+  runApp(const MyApp(getRequest: getRequest));
 }
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key, required this.getRequest});
 
-  final BaseRequest Function(String method, String path) getRequest;
+  final BaseRequest Function<T extends BaseRequest>(String method, String path)
+      getRequest;
 
   @override
   State<MyApp> createState() => _MyAppState();

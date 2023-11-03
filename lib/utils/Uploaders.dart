@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:dhali/config.dart';
+import 'package:dhali/marketplace/marketplace_dialogs.dart';
 import 'package:dhali_wallet/dhali_wallet.dart';
 import "package:universal_html/html.dart";
 import 'dart:math';
@@ -14,7 +15,8 @@ import 'package:wakelock/wakelock.dart';
 
 typedef GetUploader = BaseUploader Function({
   required String payment,
-  required http.BaseRequest Function(String method, String path)
+  required http.BaseRequest Function<T extends BaseRequest>(
+          String method, String path)
       getRequest, // This is not related to an HTTP GET request
   required AssetModel model,
   required Function(double) progressStatus,
@@ -63,7 +65,8 @@ abstract class BaseUploader {
 }
 
 class RunUploader extends BaseUploader {
-  final http.BaseRequest Function(String method, String path)
+  final http.BaseRequest Function<T extends BaseRequest>(
+          String method, String path)
       getRequest; // We use a getter here because a BaseRequest.send()
   // can only be made once per instance. Because BaseRequest is in a for
   // loop below, its send() method would be called multiple
@@ -103,7 +106,7 @@ class RunUploader extends BaseUploader {
         final end = _getChunkEnd(model, _maxChunkSize, i);
         final chunkStream = _getChunkStream(model, start, end);
 
-        var request = getRequest("PUT", path);
+        var request = getRequest<http.MultipartRequest>("PUT", path);
 
         logger.d("Preparing header");
         Map<String, String> header = {
@@ -158,7 +161,8 @@ class RunUploader extends BaseUploader {
 }
 
 class DeployUploader extends BaseUploader {
-  final http.BaseRequest Function(String method, String path)
+  final http.BaseRequest Function<T extends BaseRequest>(
+          String method, String path)
       getRequest; // We use a getter here because a BaseRequest.send()
   // can only be made once per instance. Because BaseRequest is in a for
   // loop below, its send() method would be called multiple
@@ -169,6 +173,7 @@ class DeployUploader extends BaseUploader {
   late DropzoneViewController controller;
   final DhaliWallet? Function() getWallet;
   final double assetEarningRate;
+  final ChargingChoice assetEarningType;
 
   DeployUploader({
     required this.payment,
@@ -177,6 +182,7 @@ class DeployUploader extends BaseUploader {
     required this.progressStatus,
     required this.getWallet,
     required this.assetEarningRate,
+    required this.assetEarningType,
     int maxChunkSize = 1024 * 1024 * 10,
   }) {
     _maxChunkSize = min(model.size, maxChunkSize);
@@ -200,7 +206,7 @@ class DeployUploader extends BaseUploader {
         final end = _getChunkEnd(model, _maxChunkSize, i);
         final chunkStream = _getChunkStream(model, start, end);
 
-        var request = getRequest("POST", path);
+        var request = getRequest<http.MultipartRequest>("POST", path);
 
         logger.d("Preparing header");
         Map<String, String> header = {
@@ -221,7 +227,9 @@ class DeployUploader extends BaseUploader {
           "walletID": getWallet()!.address,
           "labels": "",
           "assetEarningRate": "$assetEarningRate",
-          "assetEarningType": "per_second"
+          "assetEarningType": assetEarningType == ChargingChoice.perRequest
+              ? "per_request"
+              : "per_second"
         };
 
         if (request.runtimeType == http.MultipartRequest) {
