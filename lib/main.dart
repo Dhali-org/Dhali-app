@@ -122,7 +122,19 @@ class _MyAppState extends State<MyApp> {
                     AsyncSnapshot<DocumentSnapshot<Map<String, dynamic>>>
                         snapshot) {
                   if (!snapshot.hasData) {
-                    return const Text("Asset not found");
+                    // Do not show "Asset not found" immediately. Instead, wait
+                    // a couple of seconds to see if one actually is present
+                    return FutureBuilder(
+                      builder: (BuildContext context,
+                          AsyncSnapshot<dynamic> snapshot) {
+                        if (!snapshot.hasData) {
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        }
+                        return const Text("Asset not found");
+                      },
+                      future: Future.delayed(const Duration(seconds: 2)),
+                    );
                   }
                   MarketplaceListData element = MarketplaceListData(
                       assetID: pathList[2],
