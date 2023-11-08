@@ -3,7 +3,6 @@ import 'package:dhali_wallet/dhali_wallet.dart';
 import 'package:flutter/material.dart';
 import 'package:markdown_widget/markdown_widget.dart';
 import 'package:http/http.dart';
-import 'package:flutter_highlight/themes/a11y-light.dart';
 import 'package:dhali/analytics/analytics.dart';
 import 'package:dhali/config.dart' show Config;
 import 'package:dhali/marketplace/model/marketplace_list_data.dart';
@@ -32,14 +31,23 @@ class _AssetPageState extends State<AssetPage> {
   @override
   Widget build(BuildContext context) {
     Future<Response> future;
+    Future<Response> timeoutFuture;
     var uri = Uri.parse(
         "${Config.config!["ROOT_CONSUMER_URL"]}/${widget.asset.assetID}/${Config.config!['GET_READMES_ROUTE']}");
     if (widget.getReadme == null) {
+      // This will make two requests at most. If the second fails, the user will
+      // be shown a 404 error.
+      timeoutFuture = get(
+        uri,
+      ).timeout(
+        const Duration(seconds: 10),
+        onTimeout: () => Response("Page not found.", 404),
+      );
       future = get(
         uri,
       ).timeout(
         const Duration(seconds: 10),
-        onTimeout: () => Response("Page not found. Consider refreshing", 404),
+        onTimeout: () => timeoutFuture,
       ); // Set the timeout to 5 seconds.;
     } else {
       // typically executed when mocking
