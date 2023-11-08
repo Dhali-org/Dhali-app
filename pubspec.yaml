@@ -44,7 +44,6 @@ dependencies:
     tuple: ^2.0.1
     js: ^0.6.5
     cloud_firestore: ^4.4.0
-    flutter_markdown_selectionarea: any
     fake_cloud_firestore: ^2.4.0
     node_interop: ^2.1.0
     xrpl: ^0.0.7
@@ -57,6 +56,7 @@ dependencies:
       git:
         url: "https://github.com/Dhali-org/Dhali-wallet.git"
         ref: 0.0.29
+    markdown_widget: ^2.3.1
       # or
       # path: <path to local dhali directory>
 
