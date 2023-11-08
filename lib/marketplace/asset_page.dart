@@ -1,13 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dhali_wallet/dhali_wallet.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_markdown_selectionarea/flutter_markdown_selectionarea.dart';
+import 'package:markdown_widget/markdown_widget.dart';
 import 'package:http/http.dart';
-import 'package:url_launcher/url_launcher.dart';
-
+import 'package:flutter_highlight/themes/a11y-light.dart';
 import 'package:dhali/analytics/analytics.dart';
 import 'package:dhali/config.dart' show Config;
 import 'package:dhali/marketplace/model/marketplace_list_data.dart';
+import 'package:flutter_highlight/themes/a11y-light.dart';
 
 class AssetPage extends StatefulWidget {
   const AssetPage(
@@ -84,46 +84,14 @@ class _AssetPageState extends State<AssetPage> {
                 builder:
                     (BuildContext context, AsyncSnapshot<Response> snapshot) {
                   if (snapshot.hasData) {
-                    return SelectionArea(
-                        child: Markdown(
-                      onTapLink: (text, url, title) {
-                        if (url != null) {
-                          launchUrl(Uri.parse(url));
-                        }
-                      },
-                      selectable: true,
-                      key: const Key("asset_page_readme"),
-                      styleSheet: MarkdownStyleSheet(
-                        p: Theme.of(context)
-                            .textTheme
-                            .bodyMedium!
-                            .copyWith(fontSize: 18),
-                        h1: Theme.of(context).textTheme.displayLarge!.copyWith(
-                            fontSize: 30, fontWeight: FontWeight.bold),
-                        h2: Theme.of(context).textTheme.displayMedium!.copyWith(
-                            fontSize: 26, fontWeight: FontWeight.bold),
-                        h3: Theme.of(context).textTheme.displaySmall!.copyWith(
-                            fontSize: 22, fontWeight: FontWeight.bold),
-                        h4: Theme.of(context)
-                            .textTheme
-                            .headlineMedium!
-                            .copyWith(
-                                fontSize: 18, fontWeight: FontWeight.bold),
-                        h5: Theme.of(context).textTheme.headlineSmall!.copyWith(
-                            fontSize: 16, fontWeight: FontWeight.bold),
-                        h6: Theme.of(context).textTheme.titleLarge!.copyWith(
-                            fontSize: 14, fontWeight: FontWeight.bold),
-                        code: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                              fontSize: 18,
-                              backgroundColor: Colors.grey[200],
-                            ),
-                        codeblockDecoration: BoxDecoration(
-                          color: Colors.grey[200],
-                          borderRadius: BorderRadius.circular(2.0),
-                        ),
-                      ),
-                      data: snapshot.data!.body,
-                    ));
+                    return Container(
+                        margin: const EdgeInsets.all(5),
+                        child: MarkdownWidget(
+                            data: snapshot.data!.body,
+                            config: MarkdownConfig(configs: [
+                              const PreConfig(
+                                  theme: a11yLightTheme, language: 'dart'),
+                            ])));
                   } else {
                     return const Center(
                         child: CircularProgressIndicator(
