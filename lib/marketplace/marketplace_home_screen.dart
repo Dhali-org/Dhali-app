@@ -749,7 +749,7 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                           widget
                               .getFirestore()!
                               .collection("auth-by-pay")
-                              .doc("selected-choice-${uuid.v4()}")
+                              .doc("${DateTime.now()}-${uuid.v4()}")
                               .set({
                             "selected-choice": choice.toString(),
                             "time": DateTime.now()
