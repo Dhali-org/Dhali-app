@@ -113,6 +113,11 @@ class RunUploader extends BaseUploader {
           "Payment-Claim": payment // TODO : This header argument will
           // likely be derived from the client wallet
         };
+
+        const key = String.fromEnvironment('API_KEY', defaultValue: "");
+        if (key != "") {
+          header.addAll({"X-API-Key": key});
+        }
         request.headers.addAll(header);
 
         if (request.runtimeType == http.MultipartRequest) {
@@ -215,8 +220,9 @@ class DeployUploader extends BaseUploader {
           "Payment-Claim": payment // TODO : This header argument will
           // likely be derived from the client wallet
         };
-        if (sessionID != null) {
-          header[Config.config!["DHALI_ID"]] = sessionID;
+        const key = String.fromEnvironment('API_KEY', defaultValue: "");
+        if (key != "") {
+          header.addAll({"X-API-Key": key});
         }
         request.headers.addAll(header);
 

@@ -1125,6 +1125,11 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
               .headers[Config.config!["DHALI_ID"].toString().toLowerCase()]!
         };
 
+        const bearerToken =
+            String.fromEnvironment('BEARER_TOKEN', defaultValue: "");
+        if (bearerToken != "") {
+          headers.addAll({"Authorization": "Bearer {bearertoken}"});
+        }
         request.headers.addAll(headers);
 
         Map<String, String> body = {

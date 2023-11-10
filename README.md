@@ -18,7 +18,7 @@ Install [Flutter](https://docs.flutter.dev/get-started/install)
 
 * From your CLI:
 ```
-flutter run
+flutter run  --dart-define=API_URL=
 ```
 * When prompted, select the web-based version of the app.
 * Once the GUI has opened, you will be able to do the following by navigating the left-hand drawer:
@@ -31,7 +31,7 @@ flutter run
 
 You may not have sufficient permissions to access a local backend. If you do:
 ```
-flutter run --dart-define=ENTRY_POINT_URL_ROOT=<URL to local server>
+flutter run --dart-define=API_KEY=<ask admin for access to a key>
 ```
 
 ### Testing
