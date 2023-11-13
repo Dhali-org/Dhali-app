@@ -315,13 +315,10 @@ void main() async {
       return Future.value(true);
     });
     when(mockWallet.getNFTOffers("some_NFToken_id")).thenAnswer((_) async {
-      return Future.value(
-          // TODO: Make a more realistic offer, inject XRPL client and confirm it fails
-          //      for a nonzero amount, and passes for zero amount
-          [
-            NFTOffer(0, Config.config!["DHALI_PUBLIC_ADDRESS"],
-                mockWallet.address, "0")
-          ]);
+      return Future.value([
+        NFTOffer(
+            0, Config.config!["DHALI_PUBLIC_ADDRESS"], mockWallet.address, "0")
+      ]);
     });
     when(mockWallet.getOpenPaymentChannels(
             destination_address: "rstbSTpPcyxMsiXwkBxS9tFTrg2JsDNxWk"))
@@ -474,6 +471,201 @@ void main() async {
       await deploymentDemo(tester, firebaseMockInstance, responseCode,
           isSelfHosted: true);
 
+      verify(mockWallet.acceptOffer(any, context: anyNamed("context")))
+          .called(1);
+    });
+
+    testWidgets('Image deployment, incorrect offer amount',
+        (WidgetTester tester) async {
+      const w = 1920;
+      const h = 1080;
+      int responseCode = 200;
+
+      when(mockWallet.getNFTOffers("some_NFToken_id")).thenAnswer((_) async {
+        return Future.value([
+          NFTOffer(1, Config.config!["DHALI_PUBLIC_ADDRESS"],
+              mockWallet.address, "0")
+        ]);
+      });
+      when(mockRequester.send()).thenAnswer((_) async => StreamedResponse(
+              const Stream.empty(), responseCode, headers: {
+            Config.config!["DHALI_ID"].toString().toLowerCase(): theDhaliAssetID
+          }));
+      when(mockRequester.headers).thenAnswer((_) => {});
+      when(mockMultipartRequester.send()).thenAnswer((_) async =>
+          StreamedResponse(const Stream.empty(), responseCode, headers: {
+            Config.config!["DHALI_ID"].toString().toLowerCase(): theDhaliAssetID
+          }));
+      when(mockMultipartRequester.headers).thenAnswer((_) => {});
+      final dpi = tester.binding.window.devicePixelRatio;
+      tester.binding.window.physicalSizeTestValue = Size(w * dpi, h * dpi);
+
+      await tester.pumpWidget(MaterialApp(
+        title: "Dhali",
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+          textTheme: AppTheme.textTheme,
+          platform: TargetPlatform.iOS,
+        ),
+        home: NavigationHomeScreen(
+            setDarkTheme: (value) {},
+            isDarkTheme: () => true,
+            firestore: firebaseMockInstance,
+            getWallet: () => mockWallet,
+            setWallet: (wallet) => {},
+            getRequest: getRequest),
+      ));
+
+      await tester.pumpAndSettle();
+      await deploymentDemo(tester, firebaseMockInstance, responseCode,
+          isSelfHosted: true);
+      verifyNever(mockWallet.acceptOffer(any, context: anyNamed("context")));
+    });
+
+    testWidgets('Image deployment, incorrect source address',
+        (WidgetTester tester) async {
+      const w = 1920;
+      const h = 1080;
+      int responseCode = 200;
+
+      when(mockWallet.getNFTOffers("some_NFToken_id")).thenAnswer((_) async {
+        return Future.value(
+            [NFTOffer(0, "some_incorrect_address", mockWallet.address, "0")]);
+      });
+      when(mockRequester.send()).thenAnswer((_) async => StreamedResponse(
+              const Stream.empty(), responseCode, headers: {
+            Config.config!["DHALI_ID"].toString().toLowerCase(): theDhaliAssetID
+          }));
+      when(mockRequester.headers).thenAnswer((_) => {});
+      when(mockMultipartRequester.send()).thenAnswer((_) async =>
+          StreamedResponse(const Stream.empty(), responseCode, headers: {
+            Config.config!["DHALI_ID"].toString().toLowerCase(): theDhaliAssetID
+          }));
+      when(mockMultipartRequester.headers).thenAnswer((_) => {});
+      final dpi = tester.binding.window.devicePixelRatio;
+      tester.binding.window.physicalSizeTestValue = Size(w * dpi, h * dpi);
+
+      await tester.pumpWidget(MaterialApp(
+        title: "Dhali",
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+          textTheme: AppTheme.textTheme,
+          platform: TargetPlatform.iOS,
+        ),
+        home: NavigationHomeScreen(
+            setDarkTheme: (value) {},
+            isDarkTheme: () => true,
+            firestore: firebaseMockInstance,
+            getWallet: () => mockWallet,
+            setWallet: (wallet) => {},
+            getRequest: getRequest),
+      ));
+
+      await tester.pumpAndSettle();
+      await deploymentDemo(tester, firebaseMockInstance, responseCode,
+          isSelfHosted: true);
+      verifyNever(mockWallet.acceptOffer(any, context: anyNamed("context")));
+    });
+
+    testWidgets('Image deployment, incorrect destination address',
+        (WidgetTester tester) async {
+      const w = 1920;
+      const h = 1080;
+      int responseCode = 200;
+
+      when(mockWallet.getNFTOffers("some_NFToken_id")).thenAnswer((_) async {
+        return Future.value([
+          NFTOffer(0, Config.config!["DHALI_PUBLIC_ADDRESS"],
+              "some_incorrect_address", "0")
+        ]);
+      });
+      when(mockRequester.send()).thenAnswer((_) async => StreamedResponse(
+              const Stream.empty(), responseCode, headers: {
+            Config.config!["DHALI_ID"].toString().toLowerCase(): theDhaliAssetID
+          }));
+      when(mockRequester.headers).thenAnswer((_) => {});
+      when(mockMultipartRequester.send()).thenAnswer((_) async =>
+          StreamedResponse(const Stream.empty(), responseCode, headers: {
+            Config.config!["DHALI_ID"].toString().toLowerCase(): theDhaliAssetID
+          }));
+      when(mockMultipartRequester.headers).thenAnswer((_) => {});
+      final dpi = tester.binding.window.devicePixelRatio;
+      tester.binding.window.physicalSizeTestValue = Size(w * dpi, h * dpi);
+
+      await tester.pumpWidget(MaterialApp(
+        title: "Dhali",
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+          textTheme: AppTheme.textTheme,
+          platform: TargetPlatform.iOS,
+        ),
+        home: NavigationHomeScreen(
+            setDarkTheme: (value) {},
+            isDarkTheme: () => true,
+            firestore: firebaseMockInstance,
+            getWallet: () => mockWallet,
+            setWallet: (wallet) => {},
+            getRequest: getRequest),
+      ));
+
+      await tester.pumpAndSettle();
+      await deploymentDemo(tester, firebaseMockInstance, responseCode,
+          isSelfHosted: true);
+      verifyNever(mockWallet.acceptOffer(any, context: anyNamed("context")));
+    });
+
+    testWidgets(
+        'Successful image deployment, mixed incorrect offers with correct',
+        (WidgetTester tester) async {
+      const w = 1920;
+      const h = 1080;
+      int responseCode = 200;
+
+      when(mockWallet.getNFTOffers("some_NFToken_id")).thenAnswer((_) async {
+        return Future.value([
+          NFTOffer(0, Config.config!["DHALI_PUBLIC_ADDRESS"],
+              "some_incorrect_address", "0"),
+          NFTOffer(0, Config.config!["DHALI_PUBLIC_ADDRESS"],
+              mockWallet.address, "1"),
+          NFTOffer(0, "some_incorrect_address", mockWallet.address, "2")
+        ]);
+      });
+      when(mockRequester.send()).thenAnswer((_) async => StreamedResponse(
+              const Stream.empty(), responseCode, headers: {
+            Config.config!["DHALI_ID"].toString().toLowerCase(): theDhaliAssetID
+          }));
+      when(mockRequester.headers).thenAnswer((_) => {});
+      when(mockMultipartRequester.send()).thenAnswer((_) async =>
+          StreamedResponse(const Stream.empty(), responseCode, headers: {
+            Config.config!["DHALI_ID"].toString().toLowerCase(): theDhaliAssetID
+          }));
+      when(mockMultipartRequester.headers).thenAnswer((_) => {});
+      final dpi = tester.binding.window.devicePixelRatio;
+      tester.binding.window.physicalSizeTestValue = Size(w * dpi, h * dpi);
+
+      await tester.pumpWidget(MaterialApp(
+        title: "Dhali",
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+          textTheme: AppTheme.textTheme,
+          platform: TargetPlatform.iOS,
+        ),
+        home: NavigationHomeScreen(
+            setDarkTheme: (value) {},
+            isDarkTheme: () => true,
+            firestore: firebaseMockInstance,
+            getWallet: () => mockWallet,
+            setWallet: (wallet) => {},
+            getRequest: getRequest),
+      ));
+
+      await tester.pumpAndSettle();
+      await deploymentDemo(tester, firebaseMockInstance, responseCode,
+          isSelfHosted: true);
       verify(mockWallet.acceptOffer(any, context: anyNamed("context")))
           .called(1);
     });
