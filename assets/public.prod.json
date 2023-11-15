@@ -36,7 +36,7 @@
     "POST_LINK_ASSET_ROUTE": "link",
     "ROOT_DEPLOY_URL": "https://prod-dauenf0n.uc.gateway.dev",
     "ROOT_CONSUMER_URL": "https://dhali-prod-consumer-dauenf0n.uc.gateway.dev",
-    "ROOT_RUN_URL": "https://dhali-prod-run-dauenf0n.uc.gateway.dev",
+    "ROOT_RUN_URL": "https://run.api.dhali.io",
     "DHALI_PUBLIC_ADDRESS": "rstbSTpPcyxMsiXwkBxS9tFTrg2JsDNxWk",
     "DHALI_DEPLOYMENT_COST_PER_CHUNK_DROPS": 2000,
     "DHALI_CPU_INFERENCE_COST_PER_MS": 0.1,
