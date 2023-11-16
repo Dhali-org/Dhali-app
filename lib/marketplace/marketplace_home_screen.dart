@@ -749,7 +749,7 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                           widget
                               .getFirestore()!
                               .collection("auth-by-pay")
-                              .doc("selected-choice-${uuid.v4()}")
+                              .doc("${DateTime.now()}-${uuid.v4()}")
                               .set({
                             "selected-choice": choice.toString(),
                             "time": DateTime.now()
@@ -1125,6 +1125,11 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
               .headers[Config.config!["DHALI_ID"].toString().toLowerCase()]!
         };
 
+        const bearerToken =
+            String.fromEnvironment('BEARER_TOKEN', defaultValue: "");
+        if (bearerToken != "") {
+          headers.addAll({"Authorization": "Bearer {bearertoken}"});
+        }
         request.headers.addAll(headers);
 
         Map<String, String> body = {
