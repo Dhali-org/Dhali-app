@@ -898,7 +898,18 @@ class _DropzoneDeployWidgetState extends State<DropzoneDeployWidget> {
           if (controller != null) {
             final events = await controller!.pickFiles(mime: mime);
             if (events.isEmpty) return;
-            acceptFile(events.first);
+            if (events.first.size > 0) {
+              acceptFile(events.first);
+            } else {
+              await showDialog(
+                  context: context,
+                  builder: (BuildContext _) {
+                    return const AlertDialog(
+                      title: Text("File invalid"),
+                      content: Text("Your selected file must not be empty"),
+                    );
+                  });
+            }
           } else {
             // TODO : This should be injectable
             acceptFile(html.File(
