@@ -906,14 +906,6 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                   showDialog(
                       context: context,
                       builder: (BuildContext _) {
-                        if (wallet == null) {
-                          // Should never make it here!
-                          return const AlertDialog(
-                            title: Text("Unable to proceed"),
-                            content: Text(
-                                "Please link a wallet using the Wallet page"),
-                          );
-                        }
                         String dest = Config.config![
                             "DHALI_PUBLIC_ADDRESS"]; // TODO : This should be Dhali's address
                         var payment = wallet
