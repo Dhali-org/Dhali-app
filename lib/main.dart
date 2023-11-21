@@ -87,6 +87,8 @@ class HomeWithBanner extends StatelessWidget {
 class _MyAppState extends State<MyApp> {
   DhaliWallet? _wallet;
 
+  bool _isDark = false;
+
   @override
   Widget build(BuildContext context) {
     const title = "Dhali Marketplace";
@@ -172,7 +174,10 @@ class _MyAppState extends State<MyApp> {
           platform: TargetPlatform.iOS,
           colorScheme: ColorScheme.fromSeed(
             seedColor: AppTheme.dhali_blue,
-            brightness: Brightness.light,
+
+            brightness: _isDark ? Brightness.dark : Brightness.light,
+
+            // primary: const Color.fromARGB(255, 246, 246, 246),
           ),
         ),
         home: getHomeScreen());
@@ -181,6 +186,8 @@ class _MyAppState extends State<MyApp> {
   Widget getHomeScreen({Map<String, String>? queryParams}) {
     return HomeWithBanner(
       child: NavigationHomeScreen(
+          setDarkTheme: setDarkTheme,
+          isDarkTheme: isDarkTheme,
           getWallet: getWallet,
           setWallet: setWallet,
           firestore: FirebaseFirestore.instance,
@@ -191,6 +198,16 @@ class _MyAppState extends State<MyApp> {
 
   DhaliWallet? getWallet() {
     return _wallet;
+  }
+
+  void setDarkTheme(bool value) {
+    setState(() {
+      _isDark = value;
+    });
+  }
+
+  bool isDarkTheme() {
+    return _isDark;
   }
 
   void setWallet(DhaliWallet? wallet) {

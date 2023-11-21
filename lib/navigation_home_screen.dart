@@ -34,6 +34,8 @@ class NavigationHomeScreen extends StatefulWidget {
       required this.setWallet,
       required this.getRequest,
       required this.firestore,
+      required this.setDarkTheme,
+      required this.isDarkTheme,
       this.queryParams});
 
   final BaseRequest Function<T extends BaseRequest>(String method, String path)
@@ -44,6 +46,8 @@ class NavigationHomeScreen extends StatefulWidget {
   final DrawerIndex? drawerIndex;
   final DhaliWallet? Function() getWallet;
   final Function(DhaliWallet?) setWallet;
+  final void Function(bool) setDarkTheme;
+  final bool Function() isDarkTheme;
 
   @override
   _NavigationHomeScreenState createState() =>
@@ -58,6 +62,7 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
   bool _walletIsLinked = false;
   bool _showWalletPrompt = true;
   bool _tray_open = false;
+  final bool _is_dark = false;
 
   @override
   void initState() {
@@ -315,6 +320,18 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
             onTap: () {
               js.context.callMethod('displayPreferenceModal');
             }),
+        const Divider(
+          height: 20,
+          thickness: 1,
+          color: Colors.grey,
+        ),
+        ListTile(
+          leading: Switch(
+              value: widget.isDarkTheme(),
+              onChanged: (value) {
+                widget.setDarkTheme(value);
+              }),
+        ),
       ],
     ));
   }
