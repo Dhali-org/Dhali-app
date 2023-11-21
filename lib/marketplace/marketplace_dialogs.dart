@@ -86,10 +86,7 @@ class _DropzoneRunWidgetState extends State<DropzoneRunWidget> {
                           ? "Selected input file: ${input!.fileName}"
                           : "No input file selected",
                       style: TextStyle(
-                          fontSize: isDesktopResolution(context) ? 20 : 10,
-                          color: isHighlighted
-                              ? AppTheme.nearlyWhite
-                              : AppTheme.nearlyBlack),
+                          fontSize: isDesktopResolution(context) ? 20 : 10),
                     ),
                     SizedBox(
                       width: isDesktopResolution(context) ? 16 : 5,
@@ -129,8 +126,8 @@ class _DropzoneRunWidgetState extends State<DropzoneRunWidget> {
                       style: TextStyle(
                           fontSize: isDesktopResolution(context) ? 30 : 10,
                           color: isHighlighted
-                              ? AppTheme.nearlyWhite
-                              : AppTheme.nearlyBlack),
+                              ? Theme.of(context).colorScheme.onBackground
+                              : Theme.of(context).colorScheme.onSecondary),
                     ),
                     SizedBox(
                       height: isDesktopResolution(context) ? 16 : 2,
@@ -167,9 +164,10 @@ class _DropzoneRunWidgetState extends State<DropzoneRunWidget> {
                     ElevatedButton.icon(
                         key: const Key("use_docker_image_button"),
                         style: ElevatedButton.styleFrom(
+                            backgroundColor:
+                                Theme.of(context).colorScheme.primary,
                             padding: const EdgeInsets.symmetric(
                                 vertical: 20, horizontal: 20),
-                            backgroundColor: AppTheme.dhali_blue,
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(4))),
                         onPressed: input != null
@@ -182,6 +180,7 @@ class _DropzoneRunWidgetState extends State<DropzoneRunWidget> {
                               }
                             : null,
                         icon: Icon(
+                          color: Theme.of(context).colorScheme.onPrimary,
                           Icons.navigate_next_outlined,
                           size: isDesktopResolution(context) ? 32 : 16,
                         ),
@@ -189,6 +188,7 @@ class _DropzoneRunWidgetState extends State<DropzoneRunWidget> {
                           key: const Key("DropZoneRunNext"),
                           "Next",
                           style: TextStyle(
+                              color: Theme.of(context).colorScheme.onPrimary,
                               fontSize: isDesktopResolution(context) ? 30 : 16),
                         )),
                   ],
@@ -208,7 +208,6 @@ class _DropzoneRunWidgetState extends State<DropzoneRunWidget> {
         key: key,
         style: ElevatedButton.styleFrom(
             padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
-            backgroundColor: color,
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(4))),
         onPressed: () async {
@@ -347,7 +346,6 @@ class _AssetNameWidgetState extends State<AssetNameWidget> {
                     style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(
                             vertical: 10, horizontal: 10),
-                        backgroundColor: AppTheme.secondary,
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(4))),
                     onPressed: () async {
@@ -373,9 +371,9 @@ class _AssetNameWidgetState extends State<AssetNameWidget> {
                 ElevatedButton.icon(
                     key: const Key("use_docker_image_button"),
                     style: ElevatedButton.styleFrom(
+                        backgroundColor: Theme.of(context).colorScheme.primary,
                         padding: const EdgeInsets.symmetric(
                             vertical: 10, horizontal: 10),
-                        backgroundColor: AppTheme.dhali_blue,
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(4))),
                     onPressed: textController.text != ""
@@ -388,6 +386,7 @@ class _AssetNameWidgetState extends State<AssetNameWidget> {
                           }
                         : null,
                     icon: Icon(
+                      color: Theme.of(context).colorScheme.onPrimary,
                       Icons.navigate_next_outlined,
                       size: isDesktopResolution(context) ? 25 : 12,
                     ),
@@ -395,6 +394,7 @@ class _AssetNameWidgetState extends State<AssetNameWidget> {
                       key: const Key("AssetNameNext"),
                       "Next",
                       style: TextStyle(
+                          color: Theme.of(context).colorScheme.onPrimary,
                           fontSize: isDesktopResolution(context) ? 25 : 12),
                     )),
               ],
@@ -719,10 +719,7 @@ class _DropzoneDeployWidgetState extends State<DropzoneDeployWidget> {
                                 : "No README selected",
                             style: TextStyle(
                                 fontSize:
-                                    isDesktopResolution(context) ? 25 : 12,
-                                color: isHighlighted
-                                    ? AppTheme.nearlyWhite
-                                    : AppTheme.nearlyBlack),
+                                    isDesktopResolution(context) ? 25 : 12),
                           ),
                           const SizedBox(
                             width: 16,
@@ -762,7 +759,6 @@ class _DropzoneDeployWidgetState extends State<DropzoneDeployWidget> {
                       ),
                 const Icon(
                   Icons.cloud_upload_rounded,
-                  color: AppTheme.dhali_blue,
                   size: 80,
                 ),
                 Row(
@@ -772,10 +768,7 @@ class _DropzoneDeployWidgetState extends State<DropzoneDeployWidget> {
                       textAlign: TextAlign.center,
                       "Drag or select your file",
                       style: TextStyle(
-                          fontSize: isDesktopResolution(context) ? 25 : 12,
-                          color: isHighlighted
-                              ? AppTheme.nearlyWhite
-                              : AppTheme.nearlyBlack),
+                          fontSize: isDesktopResolution(context) ? 25 : 12),
                     ),
                   ],
                 ),
@@ -793,7 +786,6 @@ class _DropzoneDeployWidgetState extends State<DropzoneDeployWidget> {
                         style: ElevatedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(
                                 vertical: 10, horizontal: 10),
-                            backgroundColor: AppTheme.secondary,
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(4))),
                         onPressed: () async {
@@ -836,9 +828,10 @@ class _DropzoneDeployWidgetState extends State<DropzoneDeployWidget> {
                     ElevatedButton.icon(
                         key: const Key("use_docker_image_button"),
                         style: ElevatedButton.styleFrom(
+                            backgroundColor:
+                                Theme.of(context).colorScheme.primary,
                             padding: const EdgeInsets.symmetric(
                                 vertical: 10, horizontal: 10),
-                            backgroundColor: AppTheme.dhali_blue,
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(4))),
                         onPressed: file != null
@@ -853,6 +846,7 @@ class _DropzoneDeployWidgetState extends State<DropzoneDeployWidget> {
                               }
                             : null,
                         icon: Icon(
+                          color: Theme.of(context).colorScheme.onPrimary,
                           Icons.navigate_next_outlined,
                           size: isDesktopResolution(context) ? 25 : 12,
                         ),
@@ -862,6 +856,7 @@ class _DropzoneDeployWidgetState extends State<DropzoneDeployWidget> {
                               : const Key("ReadmeDropZoneDeployNext"),
                           "Next",
                           style: TextStyle(
+                              color: Theme.of(context).colorScheme.onPrimary,
                               fontSize: isDesktopResolution(context) ? 25 : 12),
                         )),
                   ],
@@ -881,7 +876,6 @@ class _DropzoneDeployWidgetState extends State<DropzoneDeployWidget> {
         key: key,
         style: ElevatedButton.styleFrom(
             padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-            backgroundColor: color,
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(4))),
         onPressed: () async {
@@ -1003,15 +997,13 @@ class _ImageScanningWidgetState extends State<ImageScanningWidget> {
                   "Scanning '${widget.file.fileName}'. \nThis may take a "
                   "minute or two. Please wait.",
                   style: TextStyle(
-                      fontSize: isDesktopResolution(context) ? 25 : 12,
-                      color: AppTheme.nearlyBlack),
+                      fontSize: isDesktopResolution(context) ? 25 : 12),
                 )
               : scanSuccess
                   ? Text(
                       "Your image was successfully scanned.",
                       style: TextStyle(
-                          fontSize: isDesktopResolution(context) ? 25 : 12,
-                          color: AppTheme.nearlyBlack),
+                          fontSize: isDesktopResolution(context) ? 25 : 12),
                     )
                   : Text(
                       textAlign: TextAlign.center,
@@ -1019,8 +1011,7 @@ class _ImageScanningWidgetState extends State<ImageScanningWidget> {
                       "\nFollow the guide for preparing your "
                       "image <here>.",
                       style: TextStyle(
-                          fontSize: isDesktopResolution(context) ? 25 : 12,
-                          color: AppTheme.nearlyBlack),
+                          fontSize: isDesktopResolution(context) ? 25 : 12),
                     ),
           const SizedBox(
             height: 16,
@@ -1055,9 +1046,9 @@ class _ImageScanningWidgetState extends State<ImageScanningWidget> {
             ),
             ElevatedButton.icon(
               style: ElevatedButton.styleFrom(
+                  backgroundColor: Theme.of(context).colorScheme.primary,
                   padding:
                       const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                  backgroundColor: AppTheme.dhali_blue,
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(4))),
               onPressed: scanSuccess
@@ -1070,14 +1061,16 @@ class _ImageScanningWidgetState extends State<ImageScanningWidget> {
                     }
                   : null,
               icon: Icon(
+                color: Theme.of(context).colorScheme.onPrimary,
                 Icons.navigate_next_outlined,
                 size: isDesktopResolution(context) ? 25 : 12,
               ),
               label: Text(
                 key: const Key("ImageScanningNext"),
                 "Next",
-                style:
-                    TextStyle(fontSize: isDesktopResolution(context) ? 25 : 12),
+                style: TextStyle(
+                    color: Theme.of(context).colorScheme.onPrimary,
+                    fontSize: isDesktopResolution(context) ? 25 : 12),
               ),
             )
           ]),
@@ -1184,8 +1177,8 @@ class _ChargeWidgetState extends State<ChargeWidget> {
                       // ignore: prefer_const_constructors
                       decoration: InputDecoration(
                         labelStyle: const TextStyle(fontSize: 20),
-                        helperStyle: const TextStyle(
-                            color: Colors.black, fontWeight: FontWeight.bold),
+                        helperStyle:
+                            const TextStyle(fontWeight: FontWeight.bold),
                       ),
                       keyboardType: TextInputType.number,
                       inputFormatters: <TextInputFormatter>[
@@ -1238,7 +1231,6 @@ class _ChargeWidgetState extends State<ChargeWidget> {
                   style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(
                           vertical: 10, horizontal: 10),
-                      backgroundColor: AppTheme.secondary,
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(4))),
                   onPressed: () async {
@@ -1264,9 +1256,9 @@ class _ChargeWidgetState extends State<ChargeWidget> {
               ),
               ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(context).colorScheme.primary,
                     padding: const EdgeInsets.symmetric(
                         vertical: 10, horizontal: 10),
-                    backgroundColor: AppTheme.dhali_blue,
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(4))),
                 onPressed: controller.text.isNotEmpty
@@ -1280,6 +1272,7 @@ class _ChargeWidgetState extends State<ChargeWidget> {
                       }
                     : null,
                 icon: Icon(
+                  color: Theme.of(context).colorScheme.onPrimary,
                   Icons.navigate_next_outlined,
                   size: isDesktopResolution(context) ? 25 : 12,
                 ),
@@ -1287,6 +1280,7 @@ class _ChargeWidgetState extends State<ChargeWidget> {
                   key: const Key("ImageCostNext"),
                   "Next",
                   style: TextStyle(
+                    color: Theme.of(context).colorScheme.onPrimary,
                     fontSize: isDesktopResolution(context) ? 25 : 12,
                   ),
                 ),
@@ -1359,8 +1353,7 @@ class _LinkedAPIDetailsWidgetState extends State<LinkedAPIDetailsWidget> {
             // ignore: prefer_const_constructors
             decoration: InputDecoration(
               labelStyle: const TextStyle(fontSize: 20),
-              helperStyle: const TextStyle(
-                  color: Colors.black, fontWeight: FontWeight.bold),
+              helperStyle: const TextStyle(fontWeight: FontWeight.bold),
             ),
           ),
           const SizedBox(
@@ -1394,8 +1387,7 @@ class _LinkedAPIDetailsWidgetState extends State<LinkedAPIDetailsWidget> {
             // ignore: prefer_const_constructors
             decoration: InputDecoration(
               labelStyle: const TextStyle(fontSize: 20),
-              helperStyle: const TextStyle(
-                  color: Colors.black, fontWeight: FontWeight.bold),
+              helperStyle: const TextStyle(fontWeight: FontWeight.bold),
             ),
           ),
           const SizedBox(
@@ -1431,7 +1423,6 @@ class _LinkedAPIDetailsWidgetState extends State<LinkedAPIDetailsWidget> {
                   style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(
                           vertical: 10, horizontal: 10),
-                      backgroundColor: AppTheme.secondary,
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(4))),
                   onPressed: () async {
@@ -1457,9 +1448,9 @@ class _LinkedAPIDetailsWidgetState extends State<LinkedAPIDetailsWidget> {
               ),
               ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(context).colorScheme.primary,
                     padding: const EdgeInsets.symmetric(
                         vertical: 10, horizontal: 10),
-                    backgroundColor: AppTheme.dhali_blue,
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(4))),
                 onPressed: apiBaseUrlController.text.isNotEmpty &&
@@ -1474,6 +1465,7 @@ class _LinkedAPIDetailsWidgetState extends State<LinkedAPIDetailsWidget> {
                       }
                     : null,
                 icon: Icon(
+                  color: Theme.of(context).colorScheme.onPrimary,
                   Icons.navigate_next_outlined,
                   size: isDesktopResolution(context) ? 25 : 12,
                 ),
@@ -1481,6 +1473,7 @@ class _LinkedAPIDetailsWidgetState extends State<LinkedAPIDetailsWidget> {
                   key: const Key("APICredentialsNext"),
                   "Next",
                   style: TextStyle(
+                    color: Theme.of(context).colorScheme.onPrimary,
                     fontSize: isDesktopResolution(context) ? 25 : 12,
                   ),
                 ),
@@ -1529,9 +1522,7 @@ class DeploymentCostWidget extends StatelessWidget {
           ),
           Text(
             "Here is a break down of the charges:",
-            style: TextStyle(
-                fontSize: isDesktopResolution(context) ? 25 : 12,
-                color: AppTheme.nearlyBlack),
+            style: TextStyle(fontSize: isDesktopResolution(context) ? 25 : 12),
           ),
           const SizedBox(
             height: 16,
@@ -1540,7 +1531,6 @@ class DeploymentCostWidget extends StatelessWidget {
             "Paid by you:",
             style: TextStyle(
                 fontSize: isDesktopResolution(context) ? 25 : 12,
-                color: AppTheme.nearlyBlack,
                 fontWeight: FontWeight.bold),
           ),
           Table(
@@ -1616,7 +1606,6 @@ class DeploymentCostWidget extends StatelessWidget {
             textAlign: TextAlign.left,
             style: TextStyle(
                 fontSize: isDesktopResolution(context) ? 25 : 12,
-                color: AppTheme.nearlyBlack,
                 fontWeight: FontWeight.bold),
           ),
           Table(
@@ -1750,9 +1739,7 @@ class DeploymentCostWidget extends StatelessWidget {
           ),
           Text(
             "Are you sure you want to deploy?",
-            style: TextStyle(
-                fontSize: isDesktopResolution(context) ? 25 : 12,
-                color: AppTheme.nearlyBlack),
+            style: TextStyle(fontSize: isDesktopResolution(context) ? 25 : 12),
           ),
           const SizedBox(
             height: 16,
@@ -1764,7 +1751,6 @@ class DeploymentCostWidget extends StatelessWidget {
                   style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(
                           vertical: 10, horizontal: 10),
-                      backgroundColor: AppTheme.secondary,
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(4))),
                   onPressed: () async {
@@ -1789,9 +1775,9 @@ class DeploymentCostWidget extends StatelessWidget {
               ),
               ElevatedButton.icon(
                   style: ElevatedButton.styleFrom(
+                      backgroundColor: Theme.of(context).colorScheme.primary,
                       padding: const EdgeInsets.symmetric(
                           vertical: 10, horizontal: 10),
-                      backgroundColor: AppTheme.dhali_blue,
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(4))),
                   onPressed: () {
@@ -1802,12 +1788,14 @@ class DeploymentCostWidget extends StatelessWidget {
                     yesClicked();
                   },
                   icon: Icon(
+                    color: Theme.of(context).colorScheme.onPrimary,
                     Icons.done_outline_rounded,
                     size: isDesktopResolution(context) ? 25 : 12,
                   ),
                   label: Text(
                     "Yes",
                     style: TextStyle(
+                        color: Theme.of(context).colorScheme.onPrimary,
                         fontSize: isDesktopResolution(context) ? 25 : 12),
                   )),
               const SizedBox(
@@ -1923,9 +1911,8 @@ class _DataTransmissionWidgetState extends State<DataTransmissionWidget> {
                             "file $currentFileIndexUploading of ${widget.data.length}'."
                             "\nPlease wait.",
                             style: TextStyle(
-                                fontSize:
-                                    isDesktopResolution(context) ? 30 : 15,
-                                color: AppTheme.nearlyBlack),
+                              fontSize: isDesktopResolution(context) ? 30 : 15,
+                            ),
                           ),
                           SizedBox(
                               height: isDesktopResolution(context) ? 20 : 10),
@@ -1938,8 +1925,7 @@ class _DataTransmissionWidgetState extends State<DataTransmissionWidget> {
                             "Your upload was successful",
                             style: TextStyle(
                                 fontSize:
-                                    isDesktopResolution(context) ? 30 : 15,
-                                color: AppTheme.nearlyBlack),
+                                    isDesktopResolution(context) ? 30 : 15),
                           )
                         : Text(
                             key: const Key("upload_failed_warning"),
@@ -1949,8 +1935,7 @@ class _DataTransmissionWidgetState extends State<DataTransmissionWidget> {
                             "\nReason: ${response!.reasonPhrase}",
                             style: TextStyle(
                                 fontSize:
-                                    isDesktopResolution(context) ? 30 : 15,
-                                color: AppTheme.nearlyBlack),
+                                    isDesktopResolution(context) ? 30 : 15),
                           ),
                 SizedBox(
                   height: isDesktopResolution(context) ? 16 : 8,
@@ -1965,7 +1950,6 @@ class _DataTransmissionWidgetState extends State<DataTransmissionWidget> {
                                     isDesktopResolution(context) ? 20 : 10,
                                 horizontal:
                                     isDesktopResolution(context) ? 20 : 10),
-                            backgroundColor: AppTheme.dhali_blue,
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(4))),
                         onPressed: () {
@@ -2076,7 +2060,7 @@ Widget uploadFailed(BuildContext context, int responseCode, {String? reason}) {
           key: const Key("upload_failed_warning"),
           textAlign: TextAlign.center,
           "Deployment failed: status code ${responseCode.toString()}${reason != null ? " reason: $reason" : ""}",
-          style: const TextStyle(fontSize: 30, color: AppTheme.nearlyBlack),
+          style: const TextStyle(fontSize: 30),
         ),
         const SizedBox(
           height: 16,
@@ -2088,7 +2072,6 @@ Widget uploadFailed(BuildContext context, int responseCode, {String? reason}) {
                 style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(
                         vertical: 20, horizontal: 20),
-                    backgroundColor: AppTheme.dhali_blue,
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(4))),
                 onPressed: () {
@@ -2164,9 +2147,8 @@ Widget NFTUploadingWidget(
               Text(
                 key: const Key("upload_success_info"),
                 "Your NFT was successfully minted.",
-                style: TextStyle(
-                    fontSize: isDesktopResolution(context) ? 30 : 18,
-                    color: AppTheme.nearlyBlack),
+                style:
+                    TextStyle(fontSize: isDesktopResolution(context) ? 30 : 18),
               ),
               const SizedBox(
                 height: 16,
@@ -2178,7 +2160,6 @@ Widget NFTUploadingWidget(
                       style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(
                               vertical: 20, horizontal: 20),
-                          backgroundColor: AppTheme.dhali_blue,
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(4))),
                       onPressed: () {
@@ -2232,15 +2213,11 @@ class InferenceCostWidget extends StatelessWidget {
           ),
           Text(
             "Running this API typically costs ${(inferenceCost / 1000000).toStringAsFixed(4)} XRP",
-            style: TextStyle(
-                fontSize: isDesktopResolution(context) ? 25 : 12,
-                color: AppTheme.nearlyBlack),
+            style: TextStyle(fontSize: isDesktopResolution(context) ? 25 : 12),
           ),
           Text(
             "Are you sure you want to continue?",
-            style: TextStyle(
-                fontSize: isDesktopResolution(context) ? 25 : 12,
-                color: AppTheme.nearlyBlack),
+            style: TextStyle(fontSize: isDesktopResolution(context) ? 25 : 12),
           ),
           SizedBox(
             height: isDesktopResolution(context) ? 16 : 8,
@@ -2251,10 +2228,10 @@ class InferenceCostWidget extends StatelessWidget {
             children: [
               ElevatedButton.icon(
                   style: ElevatedButton.styleFrom(
+                      backgroundColor: Theme.of(context).colorScheme.primary,
                       padding: EdgeInsets.symmetric(
                           vertical: isDesktopResolution(context) ? 20 : 10,
                           horizontal: isDesktopResolution(context) ? 20 : 10),
-                      backgroundColor: AppTheme.secondary,
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(4))),
                   onPressed: () async {
@@ -2278,10 +2255,10 @@ class InferenceCostWidget extends StatelessWidget {
               ),
               ElevatedButton.icon(
                   style: ElevatedButton.styleFrom(
+                      backgroundColor: Theme.of(context).colorScheme.primary,
                       padding: EdgeInsets.symmetric(
                           vertical: isDesktopResolution(context) ? 20 : 10,
                           horizontal: isDesktopResolution(context) ? 20 : 10),
-                      backgroundColor: AppTheme.dhali_blue,
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(4))),
                   onPressed: () {
@@ -2292,12 +2269,14 @@ class InferenceCostWidget extends StatelessWidget {
                     yesClicked(file, inferenceCost);
                   },
                   icon: Icon(
+                    color: Theme.of(context).colorScheme.onPrimary,
                     Icons.done_outline_rounded,
                     size: isDesktopResolution(context) ? 32 : 16,
                   ),
                   label: Text(
                     "Yes",
                     style: TextStyle(
+                        color: Theme.of(context).colorScheme.onPrimary,
                         fontSize: isDesktopResolution(context) ? 30 : 15),
                   )),
               const SizedBox(
@@ -2315,7 +2294,6 @@ class InferenceCostWidget extends StatelessWidget {
 Widget getDialog(BuildContext context, {required Widget child}) {
   return Dialog(
       insetPadding: EdgeInsets.all(isDesktopResolution(context) ? 50 : 10),
-      backgroundColor: Colors.transparent,
       child: child);
 }
 
@@ -2330,7 +2308,6 @@ Widget getDialogTemplate(
         borderRadius: BorderRadius.circular(20),
         child: Container(
           padding: const EdgeInsets.all(15),
-          color: AppTheme.nearlyWhite,
           child: Center(
             child: Container(
               padding: EdgeInsets.symmetric(

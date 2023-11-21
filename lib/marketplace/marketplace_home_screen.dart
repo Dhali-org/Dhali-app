@@ -10,7 +10,6 @@ import 'package:dhali/utils/not_implemented_dialog.dart';
 import 'package:dhali_wallet/dhali_wallet.dart';
 import 'package:dhali_wallet/xrpl_wallet.dart';
 import 'package:http/http.dart';
-import 'package:dhali/app_theme.dart';
 import 'package:dhali/marketplace/marketplace_dialogs.dart';
 import 'package:dhali/marketplace/marketplace_list_view.dart';
 import 'package:dhali/marketplace/model/marketplace_list_data.dart';
@@ -18,7 +17,6 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:dhali/marketplace/asset_page.dart';
-import 'package:dhali/marketplace/marketplace_app_theme.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dhali/config.dart' show Config;
 import 'package:uuid/uuid.dart';
@@ -97,106 +95,82 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Theme(
-      data: MarketplaceAppTheme.buildLightTheme(),
-      child: Container(
-        child: Scaffold(
-          floatingActionButtonLocation: widget.getWallet() != null
-              ? FloatingActionButtonLocation.centerFloat
-              : null,
-          floatingActionButton: widget.getWallet() != null
-              ? Padding(
-                  padding: const EdgeInsets.only(bottom: 50.0),
-                  child: getFloatingActionButton(widget.assetScreenType))
-              : null,
-          body: Stack(
-            children: <Widget>[
-              InkWell(
-                splashColor: Colors.transparent,
-                focusColor: Colors.transparent,
-                highlightColor: Colors.transparent,
-                hoverColor: Colors.transparent,
-                onTap: () {
-                  FocusScope.of(context).requestFocus(FocusNode());
+    return Container(
+      child: Scaffold(
+        floatingActionButtonLocation: widget.getWallet() != null
+            ? FloatingActionButtonLocation.centerFloat
+            : null,
+        floatingActionButton: widget.getWallet() != null
+            ? Padding(
+                padding: const EdgeInsets.only(bottom: 50.0),
+                child: getFloatingActionButton(widget.assetScreenType))
+            : null,
+        body: Column(
+          children: <Widget>[
+            Expanded(
+              child: NestedScrollView(
+                controller: _scrollController,
+                headerSliverBuilder:
+                    (BuildContext context, bool innerBoxIsScrolled) {
+                  return <Widget>[
+                    SliverList(
+                      delegate: SliverChildBuilderDelegate(
+                          (BuildContext context, int index) {
+                        return Padding(
+                            padding: const EdgeInsets.only(
+                                left: 16, right: 16, top: 8, bottom: 8),
+                            child: Row(
+                                // mainAxisAlignment:
+                                //     MainAxisAlignment.center,
+                                children: <Widget>[
+                                  Text(
+                                    widget.assetScreenType ==
+                                            AssetScreenType.MyAssets
+                                        ? "My APIs"
+                                        : "The marketplace",
+                                    style: const TextStyle(
+                                        fontSize: 28,
+                                        fontWeight: FontWeight.bold),
+                                  )
+                                ]));
+                      }, childCount: 1),
+                    ),
+                  ];
                 },
-                child: Column(
-                  children: <Widget>[
-                    Expanded(
-                      child: NestedScrollView(
-                        controller: _scrollController,
-                        headerSliverBuilder:
-                            (BuildContext context, bool innerBoxIsScrolled) {
-                          return <Widget>[
-                            SliverList(
-                              delegate: SliverChildBuilderDelegate(
-                                  (BuildContext context, int index) {
-                                return Padding(
-                                    padding: const EdgeInsets.only(
-                                        left: 16, right: 16, top: 8, bottom: 8),
-                                    child: Row(
-                                        // mainAxisAlignment:
-                                        //     MainAxisAlignment.center,
-                                        children: <Widget>[
-                                          Text(
-                                            widget.assetScreenType ==
-                                                    AssetScreenType.MyAssets
-                                                ? "My APIs"
-                                                : "The marketplace",
-                                            style: const TextStyle(
-                                                color: Colors.black,
-                                                fontSize: 28,
-                                                fontWeight: FontWeight.bold),
-                                          )
-                                        ]));
-                              }, childCount: 1),
-                            ),
-                          ];
-                        },
-                        body: Container(
-                            color: MarketplaceAppTheme.buildLightTheme()
-                                .colorScheme
-                                .background,
-                            child: widget.assetScreenType ==
-                                    AssetScreenType.MyAssets
-                                ? widget.getWallet() == null
-                                    ? const Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                            Text(
-                                              "Link a wallet through the Wallet"
-                                              " page\n and start earning!",
-                                              textAlign: TextAlign.center,
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 25,
-                                                  color: Colors.grey),
-                                            ),
-                                            SizedBox(height: 50),
-                                            Image(
-                                              opacity:
-                                                  AlwaysStoppedAnimation(0.2),
-                                              height: 220,
-                                              width: 220,
-                                              image: AssetImage(
-                                                  'assets/images/broken_link.png'),
-                                            )
-                                          ])
-                                    : getFilteredAssetStreamBuilder()
-                                : getAssetStreamBuilder(
-                                    assetStream: widget
-                                        .getFirestore()!
-                                        .collection(Config.config![
-                                            "MINTED_NFTS_COLLECTION_NAME"])
-                                        .limit(20)
-                                        .snapshots())),
-                      ),
-                    )
-                  ],
-                ),
+                body: Container(
+                    child: widget.assetScreenType == AssetScreenType.MyAssets
+                        ? widget.getWallet() == null
+                            ? const Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                    Text(
+                                      "Link a wallet through the Wallet"
+                                      " page\n and start earning!",
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 25),
+                                    ),
+                                    SizedBox(height: 50),
+                                    Image(
+                                      opacity: AlwaysStoppedAnimation(0.2),
+                                      height: 220,
+                                      width: 220,
+                                      image: AssetImage(
+                                          'assets/images/broken_link.png'),
+                                    )
+                                  ])
+                            : getFilteredAssetStreamBuilder()
+                        : getAssetStreamBuilder(
+                            assetStream: widget
+                                .getFirestore()!
+                                .collection(Config
+                                    .config!["MINTED_NFTS_COLLECTION_NAME"])
+                                .limit(20)
+                                .snapshots())),
               ),
-            ],
-          ),
+            )
+          ],
         ),
       ),
     );
@@ -280,9 +254,7 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                           key: Key("my_asset_not_found"),
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 25,
-                              color: Colors.grey),
+                              fontWeight: FontWeight.bold, fontSize: 25),
                         ),
                         Image(
                           opacity: AlwaysStoppedAnimation(.5),
@@ -377,13 +349,9 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
 
   Widget getListUI() {
     return Container(
-      decoration: BoxDecoration(
-        color: MarketplaceAppTheme.buildLightTheme().colorScheme.background,
+      decoration: const BoxDecoration(
         boxShadow: <BoxShadow>[
-          BoxShadow(
-              color: Colors.grey.withOpacity(0.2),
-              offset: const Offset(0, -2),
-              blurRadius: 8.0),
+          BoxShadow(offset: Offset(0, -2), blurRadius: 8.0),
         ],
       ),
       child: Column(
@@ -473,18 +441,12 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
             child: Padding(
               padding: const EdgeInsets.only(right: 16, top: 8, bottom: 8),
               child: Container(
-                decoration: BoxDecoration(
-                  color: MarketplaceAppTheme.buildLightTheme()
-                      .colorScheme
-                      .background,
-                  borderRadius: const BorderRadius.all(
+                decoration: const BoxDecoration(
+                  borderRadius: BorderRadius.all(
                     Radius.circular(38.0),
                   ),
                   boxShadow: <BoxShadow>[
-                    BoxShadow(
-                        color: Colors.grey.withOpacity(0.2),
-                        offset: const Offset(0, 2),
-                        blurRadius: 8.0),
+                    BoxShadow(offset: Offset(0, 2), blurRadius: 8.0),
                   ],
                 ),
                 child: Padding(
@@ -495,8 +457,6 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                     style: const TextStyle(
                       fontSize: 18,
                     ),
-                    cursorColor:
-                        MarketplaceAppTheme.buildLightTheme().primaryColor,
                     decoration: const InputDecoration(
                       border: InputBorder.none,
                       hintText: 'Asset name, asset type, solution space, etc',
@@ -507,16 +467,12 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
             ),
           ),
           Container(
-            decoration: BoxDecoration(
-              color: MarketplaceAppTheme.buildLightTheme().primaryColor,
-              borderRadius: const BorderRadius.all(
+            decoration: const BoxDecoration(
+              borderRadius: BorderRadius.all(
                 Radius.circular(38.0),
               ),
               boxShadow: <BoxShadow>[
-                BoxShadow(
-                    color: Colors.grey.withOpacity(0.4),
-                    offset: const Offset(0, 2),
-                    blurRadius: 8.0),
+                BoxShadow(offset: Offset(0, 2), blurRadius: 8.0),
               ],
             ),
             child: Material(
@@ -530,13 +486,12 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                       context: context, feature: "Helper: Search for assets");
                   FocusScope.of(context).requestFocus(FocusNode());
                 },
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Icon(FontAwesomeIcons.magnifyingGlass,
-                      size: 20,
-                      color: MarketplaceAppTheme.buildLightTheme()
-                          .colorScheme
-                          .background),
+                child: const Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: Icon(
+                    FontAwesomeIcons.magnifyingGlass,
+                    size: 20,
+                  ),
                 ),
               ),
             ),
@@ -555,20 +510,14 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
           right: 0,
           child: Container(
             height: 24,
-            decoration: BoxDecoration(
-              color:
-                  MarketplaceAppTheme.buildLightTheme().colorScheme.background,
+            decoration: const BoxDecoration(
               boxShadow: <BoxShadow>[
-                BoxShadow(
-                    color: Colors.grey.withOpacity(0.2),
-                    offset: const Offset(0, -2),
-                    blurRadius: 8.0),
+                BoxShadow(offset: Offset(0, -2), blurRadius: 8.0),
               ],
             ),
           ),
         ),
         Container(
-          color: MarketplaceAppTheme.buildLightTheme().colorScheme.background,
           child: Padding(
             padding:
                 const EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 4),
@@ -577,10 +526,6 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                 Material(
                   color: Colors.transparent,
                   child: InkWell(
-                    focusColor: Colors.transparent,
-                    highlightColor: Colors.transparent,
-                    hoverColor: Colors.transparent,
-                    splashColor: Colors.grey.withOpacity(0.2),
                     borderRadius: const BorderRadius.all(
                       Radius.circular(4.0),
                     ),
@@ -589,11 +534,11 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                           context: context, feature: "Helper: Filter assets");
                       return;
                     },
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 8),
+                    child: const Padding(
+                      padding: EdgeInsets.only(left: 8),
                       child: Row(
                         children: <Widget>[
-                          const Text(
+                          Text(
                             'Filter',
                             style: TextStyle(
                               fontWeight: FontWeight.w100,
@@ -601,10 +546,10 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                             ),
                           ),
                           Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Icon(Icons.sort,
-                                color: MarketplaceAppTheme.buildLightTheme()
-                                    .primaryColor),
+                            padding: EdgeInsets.all(8.0),
+                            child: Icon(
+                              Icons.sort,
+                            ),
                           ),
                         ],
                       ),
@@ -629,13 +574,9 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
 
   Widget getAppBarUI() {
     return Container(
-      decoration: BoxDecoration(
-        color: MarketplaceAppTheme.buildLightTheme().colorScheme.background,
+      decoration: const BoxDecoration(
         boxShadow: <BoxShadow>[
-          BoxShadow(
-              color: Colors.grey.withOpacity(0.2),
-              offset: const Offset(0, 2),
-              blurRadius: 8.0),
+          BoxShadow(offset: Offset(0, 2), blurRadius: 8.0),
         ],
       ),
       child: Padding(
@@ -759,10 +700,6 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                   );
                 });
           },
-          backgroundColor: AppTheme.dhali_blue,
-          foregroundColor: AppTheme.white,
-          hoverColor: AppTheme.dhali_blue_highlight,
-          focusColor: AppTheme.dhali_blue_highlight,
           label: const Text('Monetise my API'),
           icon: const Icon(Icons.add),
         );

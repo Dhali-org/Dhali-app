@@ -1,4 +1,3 @@
-import 'package:dhali/marketplace/marketplace_app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -33,26 +32,31 @@ class MarketplaceListView extends StatelessWidget {
                   left: 24, right: 24, top: 8, bottom: 16),
               child: InkWell(
                 key: Key(marketplaceData!.assetID),
-                splashColor: Colors.transparent,
                 onTap: () => callback(marketplaceData!),
                 child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: const BorderRadius.all(Radius.circular(16.0)),
-                    boxShadow: <BoxShadow>[
-                      BoxShadow(
-                        color: Colors.grey.withOpacity(0.6),
-                        offset: const Offset(4, 4),
-                        blurRadius: 16,
-                      ),
-                    ],
-                  ),
-                  child: ClipRRect(
+                    decoration: BoxDecoration(
+                      borderRadius:
+                          const BorderRadius.all(Radius.circular(16.0)),
+                      boxShadow:
+                          Theme.of(context).brightness == Brightness.light
+                              ? <BoxShadow>[
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.6),
+                                    offset: const Offset(4, 4),
+                                    blurRadius: 16,
+                                  ),
+                                ]
+                              : null,
+                    ),
+                    child: ClipRRect(
                       borderRadius:
                           const BorderRadius.all(Radius.circular(16.0)),
                       child: Container(
-                        color: MarketplaceAppTheme.buildLightTheme()
-                            .colorScheme
-                            .background,
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.onSecondary,
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        // color: Theme.of(context).colorScheme.onSecondary,
                         child: Padding(
                           padding: const EdgeInsets.all(15),
                           child: Column(
@@ -64,10 +68,12 @@ class MarketplaceListView extends StatelessWidget {
                                   fit: BoxFit.fitWidth,
                                   child: Text(
                                     marketplaceData!.assetName,
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 25,
-                                    ),
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 25,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .secondary),
                                   )),
                               const Spacer(),
                               Row(
@@ -80,9 +86,11 @@ class MarketplaceListView extends StatelessWidget {
                                         ? marketplaceData!.assetCategories
                                             .toString()
                                         : "",
-                                    style: const TextStyle(
-                                      fontSize: 14,
-                                    ),
+                                    style: TextStyle(
+                                        fontSize: 14,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .secondary),
                                   ),
                                   const Spacer(),
                                 ],
@@ -95,12 +103,11 @@ class MarketplaceListView extends StatelessWidget {
                                   const SizedBox(
                                     width: 4,
                                   ),
-                                  Icon(
-                                    FontAwesomeIcons.moneyBill1Wave,
-                                    size: 14,
-                                    color: MarketplaceAppTheme.buildLightTheme()
-                                        .primaryColor,
-                                  ),
+                                  Icon(FontAwesomeIcons.moneyBill1Wave,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .secondary,
+                                      size: 14),
                                   const SizedBox(
                                     width: 4,
                                   ),
@@ -109,31 +116,34 @@ class MarketplaceListView extends StatelessWidget {
                                     child: Text(
                                       ' ${(marketplaceData!.pricePerRun / 1000000).toStringAsFixed(4)} XRP/run',
                                       textAlign: TextAlign.left,
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.w600,
-                                        fontSize: 16,
-                                      ),
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: 16,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .secondary),
                                     ),
                                   ),
                                   const Spacer(
                                     flex: 1,
                                   ),
-                                  Icon(
-                                    FontAwesomeIcons.clock,
-                                    size: 14,
-                                    color: MarketplaceAppTheme.buildLightTheme()
-                                        .primaryColor,
-                                  ),
+                                  Icon(FontAwesomeIcons.clock,
+                                      size: 14,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .secondary),
                                   Expanded(
                                     flex: 2,
                                     child: Text(
                                       ' ${(marketplaceData!.averageRuntime / 1000).toStringAsFixed(2)} secs/run',
                                       overflow: TextOverflow.ellipsis,
                                       textAlign: TextAlign.left,
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.w600,
-                                        fontSize: 16,
-                                      ),
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: 16,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .secondary),
                                     ),
                                   )
                                 ],
@@ -141,8 +151,8 @@ class MarketplaceListView extends StatelessWidget {
                             ],
                           ),
                         ),
-                      )),
-                ),
+                      ),
+                    )),
               ),
             ),
           ),

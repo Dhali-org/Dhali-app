@@ -11,7 +11,6 @@ import 'package:split_view/split_view.dart';
 import 'package:http/http.dart';
 
 import 'package:dhali/analytics/analytics.dart';
-import 'package:dhali/app_theme.dart';
 import 'package:dhali/marketplace/marketplace_home_screen.dart';
 import 'package:dhali_wallet/dhali_wallet.dart';
 import 'package:dhali_wallet/dhali_wallet_widget.dart';
@@ -105,15 +104,12 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
     }
 
     return Container(
-      color: AppTheme.white,
       child: SafeArea(
         top: false,
         bottom: false,
         child: Scaffold(
           appBar: !_tray_open
               ? AppBar(
-                  backgroundColor: AppTheme.white,
-                  foregroundColor: AppTheme.nearlyBlack,
                   leading: Builder(
                     builder: (BuildContext context) {
                       return Stack(
@@ -148,11 +144,9 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
               : null,
           drawer: !_tray_open
               ? Drawer(
-                  backgroundColor: AppTheme.white,
                   child: getTrayElements(),
                 )
               : null,
-          backgroundColor: AppTheme.nearlyBlack,
           drawerEdgeDragWidth: 0,
           body: !_tray_open ? screenView : getSplitScreen(),
         ),
@@ -163,7 +157,6 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
   Widget getSplitScreen() {
     return SplitView(
       viewMode: SplitViewMode.Horizontal,
-      gripColor: Colors.grey,
       gripSize: 5.0,
       controller: SplitViewController(weights: [0.15, 0.85]),
       children: [getTrayElements(), screenView!],
@@ -172,156 +165,158 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
 
   Widget getTrayElements() {
     return Container(
-        color: Colors.white,
         child: ListView(
-          padding: EdgeInsets.zero,
+      padding: EdgeInsets.zero,
+      children: <Widget>[
+        DrawerHeader(
+          child: SizedBox(
+            height: 30, // Or any other height that suits your design
+            child: FittedBox(
+              fit: BoxFit.contain,
+              child: Image.asset('assets/images/dhali.png'),
+            ),
+          ),
+        ),
+        Material(
+            type: MaterialType.transparency,
+            child: ListTile(
+              leading: const Icon(Icons.home_filled),
+              title: const Text('Home', style: TextStyle()),
+              onTap: () {
+                gtag(command: "event", target: "HomeSelected", parameters: {});
+                _launchUrl("https://dhali.io");
+              },
+            )),
+        const Divider(
+          height: 20,
+          thickness: 1,
+          color: Colors.grey,
+        ),
+        Stack(
           children: <Widget>[
-            DrawerHeader(
-              decoration: const BoxDecoration(
-                color: AppTheme.white,
+            ListTile(
+              selected: DrawerIndex.Wallet == drawerIndex,
+              selectedTileColor: Theme.of(context).colorScheme.secondary,
+              leading: Icon(Icons.wallet,
+                  color: DrawerIndex.Wallet == drawerIndex
+                      ? Theme.of(context).colorScheme.onSecondary
+                      : Theme.of(context).colorScheme.onBackground),
+              title: Text(
+                'Wallet',
+                style: TextStyle(
+                    color: DrawerIndex.Wallet == drawerIndex
+                        ? Theme.of(context).colorScheme.onSecondary
+                        : Theme.of(context).colorScheme.onBackground),
               ),
-              child: SizedBox(
-                height: 30, // Or any other height that suits your design
-                child: FittedBox(
-                  fit: BoxFit.contain,
-                  child: Image.asset('assets/images/dhali.png'),
+              onTap: () {
+                drawerIndex = DrawerIndex.Wallet;
+                getScreenView(DrawerIndex.Wallet);
+                if (!_tray_open) {
+                  Navigator.pop(context);
+                }
+              },
+            ),
+            Positioned(
+              left: 30,
+              top: 5,
+              child: Container(
+                padding: const EdgeInsets.all(1),
+                child: Icon(
+                  CupertinoIcons.circle_filled, // Your notification icon
+                  color: _walletIsLinked ? Colors.green : Colors.red,
+                  size: 18, // Adjust this to make your icon bigger or smaller
                 ),
               ),
             ),
-            Material(
-                type: MaterialType.transparency,
-                child: ListTile(
-                  leading:
-                      const Icon(Icons.home_filled, color: AppTheme.dhali_blue),
-                  title: const Text('Home',
-                      style: TextStyle(color: AppTheme.nearlyBlack)),
-                  onTap: () {
-                    gtag(
-                        command: "event",
-                        target: "HomeSelected",
-                        parameters: {});
-                    _launchUrl("https://dhali.io");
-                  },
-                )),
-            const Divider(
-              height: 20,
-              thickness: 1,
-              color: Colors.grey,
-            ),
-            Stack(
-              children: <Widget>[
-                Material(
-                    type: MaterialType.transparency,
-                    child: ListTile(
-                      selected: DrawerIndex.Wallet == drawerIndex,
-                      selectedTileColor: AppTheme.light_purple,
-                      leading:
-                          const Icon(Icons.wallet, color: AppTheme.dhali_blue),
-                      title: const Text('Wallet',
-                          style: TextStyle(color: AppTheme.nearlyBlack)),
-                      onTap: () {
-                        drawerIndex = DrawerIndex.Wallet;
-                        getScreenView(DrawerIndex.Wallet);
-                        if (!_tray_open) {
-                          Navigator.pop(context);
-                        }
-                      },
-                    )),
-                Positioned(
-                  left: 30,
-                  top: 5,
-                  child: Container(
-                    padding: const EdgeInsets.all(1),
-                    child: Icon(
-                      CupertinoIcons.circle_filled, // Your notification icon
-                      color: _walletIsLinked ? Colors.green : Colors.red,
-                      size:
-                          18, // Adjust this to make your icon bigger or smaller
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            Material(
-                type: MaterialType.transparency,
-                child: ListTile(
-                  selected: DrawerIndex.Assets == drawerIndex,
-                  selectedTileColor: AppTheme.light_purple,
-                  leading: const Icon(Icons.token, color: AppTheme.dhali_blue),
-                  title: const Text('My APIs',
-                      style: TextStyle(color: AppTheme.nearlyBlack)),
-                  onTap: () {
-                    drawerIndex = DrawerIndex.Assets;
-                    getScreenView(DrawerIndex.Assets);
-                    if (!_tray_open) {
-                      Navigator.pop(context);
-                    }
-                  },
-                )),
-            Material(
-                type: MaterialType.transparency,
-                child: ListTile(
-                  selected: DrawerIndex.Marketplace == drawerIndex,
-                  selectedTileColor: AppTheme.light_purple,
-                  leading: const Icon(Icons.shop, color: AppTheme.dhali_blue),
-                  title: const Text('Marketplace',
-                      style: TextStyle(color: AppTheme.nearlyBlack)),
-                  onTap: () {
-                    drawerIndex = DrawerIndex.Marketplace;
-                    getScreenView(DrawerIndex.Marketplace);
-                    if (!_tray_open) {
-                      Navigator.pop(context);
-                    }
-                  },
-                )),
-            const Divider(
-              height: 20,
-              thickness: 1,
-              color: Colors.grey,
-            ),
-            Material(
-                type: MaterialType.transparency,
-                child: ListTile(
-                  leading: const Icon(Icons.book, color: AppTheme.dhali_blue),
-                  title: const Text('Docs',
-                      style: TextStyle(color: AppTheme.nearlyBlack)),
-                  onTap: () {
-                    gtag(
-                        command: "event",
-                        target: "DocsSelected",
-                        parameters: {});
-                    _launchUrl("https://dhali.io/docs");
-                  },
-                )),
-            Material(
-                type: MaterialType.transparency,
-                child: ListTile(
-                  selectedTileColor: Colors.grey,
-                  selected: DrawerIndex.Licenses == drawerIndex,
-                  leading: const Icon(Icons.badge, color: AppTheme.dhali_blue),
-                  title: const Text('Licenses',
-                      style: TextStyle(color: AppTheme.nearlyBlack)),
-                  onTap: () {
-                    drawerIndex = DrawerIndex.Licenses;
-                    getScreenView(drawerIndex);
-                    if (!_tray_open) {
-                      Navigator.pop(context);
-                    }
-                  },
-                )),
-            Material(
-                type: MaterialType.transparency,
-                child: ListTile(
-                    selectedTileColor: Colors.grey,
-                    leading:
-                        const Icon(Icons.cookie, color: AppTheme.dhali_blue),
-                    title: const Text('Cookie Consent Preferences',
-                        style: TextStyle(color: AppTheme.nearlyBlack)),
-                    onTap: () {
-                      js.context.callMethod('displayPreferenceModal');
-                    })),
           ],
-        ));
+        ),
+        ListTile(
+          selected: DrawerIndex.Assets == drawerIndex,
+          selectedTileColor: Theme.of(context).colorScheme.secondary,
+          leading: Icon(Icons.token,
+              color: DrawerIndex.Assets == drawerIndex
+                  ? Theme.of(context).colorScheme.onSecondary
+                  : Theme.of(context).colorScheme.onBackground),
+          title: Text('My APIs',
+              style: TextStyle(
+                  color: DrawerIndex.Assets == drawerIndex
+                      ? Theme.of(context).colorScheme.onSecondary
+                      : Theme.of(context).colorScheme.onBackground)),
+          onTap: () {
+            drawerIndex = DrawerIndex.Assets;
+            getScreenView(DrawerIndex.Assets);
+            if (!_tray_open) {
+              Navigator.pop(context);
+            }
+          },
+        ),
+        ListTile(
+          selected: DrawerIndex.Marketplace == drawerIndex,
+          selectedTileColor: Theme.of(context).colorScheme.secondary,
+          leading: Icon(Icons.shop,
+              color: DrawerIndex.Marketplace == drawerIndex
+                  ? Theme.of(context).colorScheme.onSecondary
+                  : Theme.of(context).colorScheme.onBackground),
+          title: Text('Marketplace',
+              style: TextStyle(
+                  color: DrawerIndex.Marketplace == drawerIndex
+                      ? Theme.of(context).colorScheme.onSecondary
+                      : Theme.of(context).colorScheme.onBackground)),
+          onTap: () {
+            drawerIndex = DrawerIndex.Marketplace;
+            getScreenView(DrawerIndex.Marketplace);
+            if (!_tray_open) {
+              Navigator.pop(context);
+            }
+          },
+        ),
+        const Divider(
+          height: 20,
+          thickness: 1,
+          color: Colors.grey,
+        ),
+        ListTile(
+          leading: const Icon(Icons.book),
+          title: const Text(
+            'Docs',
+          ),
+          onTap: () {
+            gtag(command: "event", target: "DocsSelected", parameters: {});
+            _launchUrl("https://dhali.io/docs");
+          },
+        ),
+        ListTile(
+          selected: DrawerIndex.Licenses == drawerIndex,
+          selectedTileColor: Theme.of(context).colorScheme.secondary,
+          leading: Icon(Icons.badge,
+              color: DrawerIndex.Licenses == drawerIndex
+                  ? Theme.of(context).colorScheme.onSecondary
+                  : Theme.of(context).colorScheme.onBackground),
+          title: Text(
+            'Licenses',
+            style: TextStyle(
+                color: DrawerIndex.Licenses == drawerIndex
+                    ? Theme.of(context).colorScheme.onSecondary
+                    : Theme.of(context).colorScheme.onBackground),
+          ),
+          onTap: () {
+            drawerIndex = DrawerIndex.Licenses;
+            getScreenView(drawerIndex);
+            if (!_tray_open) {
+              Navigator.pop(context);
+            }
+          },
+        ),
+        ListTile(
+            leading: const Icon(Icons.cookie),
+            title: const Text(
+              'Cookie Consent Preferences',
+            ),
+            onTap: () {
+              js.context.callMethod('displayPreferenceModal');
+            }),
+      ],
+    ));
   }
 
   Future<void> _launchUrl(String url) async {
@@ -379,9 +374,6 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
               title: "Wallet",
               getWallet: widget.getWallet,
               setWallet: widget.setWallet,
-              appBarColor: AppTheme.dhali_blue,
-              bodyTextColor: Colors.black,
-              buttonsColor: AppTheme.dhali_blue,
               onActivation: linkWallet,
             ),
             if (_showContinueButton)
@@ -403,10 +395,6 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
                         _showContinueButton = false;
                       });
                     }),
-                    backgroundColor: AppTheme.dhali_blue,
-                    foregroundColor: AppTheme.white,
-                    hoverColor: AppTheme.dhali_blue_highlight,
-                    focusColor: AppTheme.dhali_blue_highlight,
                   ),
                 ),
               )

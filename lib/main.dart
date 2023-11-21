@@ -74,7 +74,7 @@ class HomeWithBanner extends StatelessWidget {
                   fit: BoxFit.fitWidth,
                   child: Text(
                       "Warning!  This is a preview, and uses the XRPL testnet.  Please only use testnet wallets.  Created assets may not persist!",
-                      style: TextStyle(color: Colors.white),
+                      style: TextStyle(),
                       textAlign: TextAlign.center)),
             ),
           ),
@@ -92,12 +92,8 @@ class _MyAppState extends State<MyApp> {
     const title = "Dhali Marketplace";
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
-      statusBarIconBrightness: Brightness.dark,
       statusBarBrightness:
           !kIsWeb && Platform.isAndroid ? Brightness.dark : Brightness.light,
-      systemNavigationBarColor: Colors.white,
-      systemNavigationBarDividerColor: Colors.transparent,
-      systemNavigationBarIconBrightness: Brightness.dark,
     ));
 
     return MaterialApp(
@@ -173,9 +169,11 @@ class _MyAppState extends State<MyApp> {
         title: title,
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
-          primarySwatch: Colors.blue,
-          textTheme: AppTheme.textTheme,
           platform: TargetPlatform.iOS,
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: AppTheme.dhali_blue,
+            brightness: Brightness.light,
+          ),
         ),
         home: getHomeScreen());
   }

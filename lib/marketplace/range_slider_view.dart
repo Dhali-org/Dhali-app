@@ -1,4 +1,3 @@
-import 'package:dhali/marketplace/marketplace_app_theme.dart';
 import 'package:flutter/material.dart';
 
 class RangeSliderView extends StatefulWidget {
@@ -76,8 +75,6 @@ class _RangeSliderViewState extends State<RangeSliderView> {
               values: _values!,
               min: 0.0,
               max: 999999.0,
-              activeColor: MarketplaceAppTheme.buildLightTheme().primaryColor,
-              inactiveColor: Colors.grey.withOpacity(0.4),
               divisions: 10000,
               onChanged: (RangeValues values) {
                 try {
