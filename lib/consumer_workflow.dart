@@ -9,7 +9,6 @@ import 'package:uuid/uuid.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:dhali/analytics/analytics.dart';
-import 'package:dhali/app_theme.dart';
 import 'package:dhali/config.dart';
 import 'package:dhali/marketplace/marketplace_dialogs.dart';
 import 'package:dhali/marketplace/model/asset_model.dart';
@@ -248,7 +247,6 @@ class _DownloadFileWidgetState extends State<DownloadFileWidget> {
                 padding: EdgeInsets.symmetric(
                     vertical: isDesktopResolution(context) ? 20 : 10,
                     horizontal: isDesktopResolution(context) ? 20 : 10),
-                backgroundColor: AppTheme.grey,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(4))),
             onPressed: () async {
@@ -298,7 +296,6 @@ class _DownloadFileWidgetState extends State<DownloadFileWidget> {
                 padding: EdgeInsets.symmetric(
                     vertical: isDesktopResolution(context) ? 20 : 10,
                     horizontal: isDesktopResolution(context) ? 20 : 10),
-                backgroundColor: AppTheme.grey,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(4))),
             onPressed: () async {

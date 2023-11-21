@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'package:dhali/marketplace/marketplace_app_theme.dart';
-
 class SliderView extends StatefulWidget {
   const SliderView({Key? key, this.onChangedistValue, this.distValue})
       : super(key: key);
@@ -61,8 +59,6 @@ class _SliderViewState extends State<SliderView> {
               },
               min: 0,
               max: 100,
-              activeColor: MarketplaceAppTheme.buildLightTheme().primaryColor,
-              inactiveColor: Colors.grey.withOpacity(0.4),
               divisions: 1000,
               value: distValue,
             ),
