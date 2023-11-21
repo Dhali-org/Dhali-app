@@ -124,6 +124,8 @@ void main() async {
           platform: TargetPlatform.iOS,
         ),
         home: NavigationHomeScreen(
+            setDarkTheme: (value) {},
+            isDarkTheme: () => true,
             firestore: firebaseMockInstance,
             getWallet: () => mockWallet,
             setWallet: (wallet) => {},
@@ -211,6 +213,8 @@ void main() async {
           platform: TargetPlatform.iOS,
         ),
         home: NavigationHomeScreen(
+            setDarkTheme: (value) {},
+            isDarkTheme: () => true,
             firestore: firebaseMockInstance,
             getWallet: () => mockWallet,
             setWallet: (wallet) => {},
@@ -280,6 +284,8 @@ void main() async {
           platform: TargetPlatform.iOS,
         ),
         home: NavigationHomeScreen(
+            setDarkTheme: (value) {},
+            isDarkTheme: () => true,
             firestore: firebaseMockInstance,
             getWallet: () => mockWallet,
             setWallet: (wallet) => {},
@@ -343,6 +349,8 @@ void main() async {
           platform: TargetPlatform.iOS,
         ),
         home: NavigationHomeScreen(
+            setDarkTheme: (value) {},
+            isDarkTheme: () => true,
             firestore: firebaseMockInstance,
             getWallet: () => mockWallet,
             setWallet: (wallet) => {},

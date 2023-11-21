@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:dhali/marketplace/range_slider_view.dart';
 import 'package:dhali/marketplace/slider_view.dart';
-import 'package:dhali/marketplace/marketplace_app_theme.dart';
 import 'package:dhali/marketplace/model/popular_filter_list.dart';
 
 class FiltersScreen extends StatefulWidget {
@@ -25,9 +24,7 @@ class _FiltersScreenState extends State<FiltersScreen> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: MarketplaceAppTheme.buildLightTheme().colorScheme.background,
       child: Scaffold(
-        backgroundColor: Colors.transparent,
         body: Column(
           children: <Widget>[
             getAppBarUI(),
@@ -64,22 +61,18 @@ class _FiltersScreenState extends State<FiltersScreen> {
                   left: 16, right: 16, bottom: 16, top: 8),
               child: Container(
                 height: 48,
-                decoration: BoxDecoration(
-                  color: MarketplaceAppTheme.buildLightTheme().primaryColor,
-                  borderRadius: const BorderRadius.all(Radius.circular(24.0)),
+                decoration: const BoxDecoration(
+                  borderRadius: BorderRadius.all(Radius.circular(24.0)),
                   boxShadow: <BoxShadow>[
                     BoxShadow(
-                      color: Colors.grey.withOpacity(0.6),
                       blurRadius: 8,
-                      offset: const Offset(4, 4),
+                      offset: Offset(4, 4),
                     ),
                   ],
                 ),
                 child: Material(
-                  color: Colors.transparent,
                   child: InkWell(
                     borderRadius: const BorderRadius.all(Radius.circular(24.0)),
-                    highlightColor: Colors.transparent,
                     onTap: () {
                       Navigator.pop(context);
                     },
@@ -87,9 +80,9 @@ class _FiltersScreenState extends State<FiltersScreen> {
                       child: Text(
                         'Apply',
                         style: TextStyle(
-                            fontWeight: FontWeight.w500,
-                            fontSize: 18,
-                            color: Colors.white),
+                          fontWeight: FontWeight.w500,
+                          fontSize: 18,
+                        ),
                       ),
                     ),
                   ),
@@ -114,7 +107,6 @@ class _FiltersScreenState extends State<FiltersScreen> {
             'Sort by',
             textAlign: TextAlign.left,
             style: TextStyle(
-                color: Colors.grey,
                 fontSize: MediaQuery.of(context).size.width > 360 ? 18 : 16,
                 fontWeight: FontWeight.normal),
           ),
@@ -144,7 +136,6 @@ class _FiltersScreenState extends State<FiltersScreen> {
             'Type of asset',
             textAlign: TextAlign.left,
             style: TextStyle(
-                color: Colors.grey,
                 fontSize: MediaQuery.of(context).size.width > 360 ? 18 : 16,
                 fontWeight: FontWeight.normal),
           ),
@@ -169,7 +160,6 @@ class _FiltersScreenState extends State<FiltersScreen> {
       final PopularFilterListData date = sortListData[i];
       noList.add(
         Material(
-          color: Colors.transparent,
           child: InkWell(
             borderRadius: const BorderRadius.all(Radius.circular(4.0)),
             onTap: () {
@@ -184,13 +174,9 @@ class _FiltersScreenState extends State<FiltersScreen> {
                   Expanded(
                     child: Text(
                       date.titleTxt,
-                      style: const TextStyle(color: Colors.black),
                     ),
                   ),
                   CupertinoSwitch(
-                    activeColor: date.isSelected
-                        ? MarketplaceAppTheme.buildLightTheme().primaryColor
-                        : Colors.grey.withOpacity(0.6),
                     onChanged: (bool value) {
                       setState(() {
                         radioCheckButtons(i, sortListData);
@@ -214,7 +200,6 @@ class _FiltersScreenState extends State<FiltersScreen> {
       final PopularFilterListData date = accomodationListData[i];
       noList.add(
         Material(
-          color: Colors.transparent,
           child: InkWell(
             borderRadius: const BorderRadius.all(Radius.circular(4.0)),
             onTap: () {
@@ -229,13 +214,9 @@ class _FiltersScreenState extends State<FiltersScreen> {
                   Expanded(
                     child: Text(
                       date.titleTxt,
-                      style: const TextStyle(color: Colors.black),
                     ),
                   ),
                   CupertinoSwitch(
-                    activeColor: date.isSelected
-                        ? MarketplaceAppTheme.buildLightTheme().primaryColor
-                        : Colors.grey.withOpacity(0.6),
                     onChanged: (bool value) {
                       setState(() {
                         checkAppPosition(i, accomodationListData);
@@ -323,7 +304,6 @@ class _FiltersScreenState extends State<FiltersScreen> {
             'Expected run-time (seconds)',
             textAlign: TextAlign.left,
             style: TextStyle(
-                color: Colors.grey,
                 fontSize: MediaQuery.of(context).size.width > 360 ? 18 : 16,
                 fontWeight: FontWeight.normal),
           ),
@@ -353,7 +333,6 @@ class _FiltersScreenState extends State<FiltersScreen> {
             'Popular filters',
             textAlign: TextAlign.left,
             style: TextStyle(
-                color: Colors.grey,
                 fontSize: MediaQuery.of(context).size.width > 360 ? 18 : 16,
                 fontWeight: FontWeight.normal),
           ),
@@ -384,7 +363,6 @@ class _FiltersScreenState extends State<FiltersScreen> {
             child: Row(
               children: <Widget>[
                 Material(
-                  color: Colors.transparent,
                   child: InkWell(
                     borderRadius: const BorderRadius.all(Radius.circular(4.0)),
                     onTap: () {
@@ -400,10 +378,6 @@ class _FiltersScreenState extends State<FiltersScreen> {
                             date.isSelected
                                 ? Icons.check_box
                                 : Icons.check_box_outline_blank,
-                            color: date.isSelected
-                                ? MarketplaceAppTheme.buildLightTheme()
-                                    .primaryColor
-                                : Colors.grey.withOpacity(0.6),
                           ),
                           const SizedBox(
                             width: 4,
@@ -449,7 +423,6 @@ class _FiltersScreenState extends State<FiltersScreen> {
             'Price per run (drops or muXRP)',
             textAlign: TextAlign.left,
             style: TextStyle(
-                color: Colors.grey,
                 fontSize: MediaQuery.of(context).size.width > 360 ? 18 : 16,
                 fontWeight: FontWeight.normal),
           ),
@@ -469,13 +442,9 @@ class _FiltersScreenState extends State<FiltersScreen> {
 
   Widget getAppBarUI() {
     return Container(
-      decoration: BoxDecoration(
-        color: MarketplaceAppTheme.buildLightTheme().colorScheme.background,
+      decoration: const BoxDecoration(
         boxShadow: <BoxShadow>[
-          BoxShadow(
-              color: Colors.grey.withOpacity(0.2),
-              offset: const Offset(0, 2),
-              blurRadius: 4.0),
+          BoxShadow(offset: Offset(0, 2), blurRadius: 4.0),
         ],
       ),
       child: Padding(
@@ -488,7 +457,6 @@ class _FiltersScreenState extends State<FiltersScreen> {
               width: AppBar().preferredSize.height + 40,
               height: AppBar().preferredSize.height,
               child: Material(
-                color: Colors.transparent,
                 child: InkWell(
                   borderRadius: const BorderRadius.all(
                     Radius.circular(32.0),

@@ -19,7 +19,6 @@ void showPopupTextWithLink(
               TextSpan(
                 text: urlText,
                 style: const TextStyle(
-                  color: Colors.blue,
                   decoration: TextDecoration.underline,
                 ),
                 recognizer: TapGestureRecognizer()

@@ -67,19 +67,17 @@ class _AssetPageState extends State<AssetPage> {
             children: [
               Text(
                 widget.asset.assetName,
-                style: const TextStyle(color: Colors.black, fontSize: 18),
+                style: const TextStyle(fontSize: 18),
               ),
               Text(
                 widget.asset.assetCategories.isNotEmpty
                     ? "Categories: ${widget.asset.assetCategories}"
                     : "",
                 key: const Key("categories_in_asset_page"),
-                style: const TextStyle(color: Colors.black, fontSize: 20),
+                style: const TextStyle(fontSize: 20),
               ),
             ],
           ),
-          backgroundColor: Colors.white,
-          foregroundColor: Colors.black,
         ),
         body: Container(
             decoration: BoxDecoration(
@@ -118,10 +116,9 @@ class _AssetPageState extends State<AssetPage> {
                     child: ListView(
                       shrinkWrap: true,
                       children: [
-                        RichText(
-                          text: TextSpan(
-                            style: const TextStyle(
-                                color: Colors.black, fontSize: 15),
+                        SelectableText.rich(
+                          TextSpan(
+                            style: const TextStyle(fontSize: 15),
                             children: <TextSpan>[
                               const TextSpan(
                                   text: 'Runtime: ',
@@ -133,10 +130,9 @@ class _AssetPageState extends State<AssetPage> {
                             ],
                           ),
                         ),
-                        RichText(
-                          text: TextSpan(
-                            style: const TextStyle(
-                                color: Colors.black, fontSize: 15),
+                        SelectableText.rich(
+                          TextSpan(
+                            style: const TextStyle(fontSize: 15),
                             children: <TextSpan>[
                               const TextSpan(
                                   text: 'Cost: ',
@@ -148,10 +144,9 @@ class _AssetPageState extends State<AssetPage> {
                             ],
                           ),
                         ),
-                        RichText(
-                          text: TextSpan(
-                            style: const TextStyle(
-                                color: Colors.black, fontSize: 15),
+                        SelectableText.rich(
+                          TextSpan(
+                            style: const TextStyle(fontSize: 15),
                             children: <TextSpan>[
                               const TextSpan(
                                   text: 'Used: ',
@@ -165,8 +160,7 @@ class _AssetPageState extends State<AssetPage> {
                         ),
                         SelectableText.rich(
                           TextSpan(
-                            style: const TextStyle(
-                                color: Colors.black, fontSize: 15),
+                            style: const TextStyle(fontSize: 15),
                             children: <TextSpan>[
                               const TextSpan(
                                   text: 'Endpoint: ',

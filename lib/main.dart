@@ -74,7 +74,7 @@ class HomeWithBanner extends StatelessWidget {
                   fit: BoxFit.fitWidth,
                   child: Text(
                       "Warning!  This is a preview, and uses the XRPL testnet.  Please only use testnet wallets.  Created assets may not persist!",
-                      style: TextStyle(color: Colors.white),
+                      style: TextStyle(),
                       textAlign: TextAlign.center)),
             ),
           ),
@@ -87,17 +87,15 @@ class HomeWithBanner extends StatelessWidget {
 class _MyAppState extends State<MyApp> {
   DhaliWallet? _wallet;
 
+  bool _isDark = false;
+
   @override
   Widget build(BuildContext context) {
     const title = "Dhali Marketplace";
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
-      statusBarIconBrightness: Brightness.dark,
       statusBarBrightness:
           !kIsWeb && Platform.isAndroid ? Brightness.dark : Brightness.light,
-      systemNavigationBarColor: Colors.white,
-      systemNavigationBarDividerColor: Colors.transparent,
-      systemNavigationBarIconBrightness: Brightness.dark,
     ));
 
     return MaterialApp(
@@ -173,9 +171,14 @@ class _MyAppState extends State<MyApp> {
         title: title,
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
-          primarySwatch: Colors.blue,
-          textTheme: AppTheme.textTheme,
           platform: TargetPlatform.iOS,
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: AppTheme.dhali_blue,
+
+            brightness: _isDark ? Brightness.dark : Brightness.light,
+
+            // primary: const Color.fromARGB(255, 246, 246, 246),
+          ),
         ),
         home: getHomeScreen());
   }
@@ -183,6 +186,8 @@ class _MyAppState extends State<MyApp> {
   Widget getHomeScreen({Map<String, String>? queryParams}) {
     return HomeWithBanner(
       child: NavigationHomeScreen(
+          setDarkTheme: setDarkTheme,
+          isDarkTheme: isDarkTheme,
           getWallet: getWallet,
           setWallet: setWallet,
           firestore: FirebaseFirestore.instance,
@@ -193,6 +198,16 @@ class _MyAppState extends State<MyApp> {
 
   DhaliWallet? getWallet() {
     return _wallet;
+  }
+
+  void setDarkTheme(bool value) {
+    setState(() {
+      _isDark = value;
+    });
+  }
+
+  bool isDarkTheme() {
+    return _isDark;
   }
 
   void setWallet(DhaliWallet? wallet) {
