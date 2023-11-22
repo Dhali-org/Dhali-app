@@ -221,7 +221,8 @@ class _DropzoneRunWidgetState extends State<DropzoneRunWidget> {
           // The callback is passed right through to
           // `HtmlElementView` (here)[https://github.com/deakjahn/flutter_dropzone/blob/master/flutter_dropzone_web/lib/flutter_dropzone_plugin.dart#L117]
           // which suggests that the platform view does not get created during the test.
-          if (controller != null) {
+          if (controller != null &&
+              const String.fromEnvironment('INTEGRATION') != "true") {
             final events = await controller!.pickFiles(mime: mime);
             if (events.isEmpty) return;
             acceptFile(events.first);
@@ -889,7 +890,8 @@ class _DropzoneDeployWidgetState extends State<DropzoneDeployWidget> {
           // The callback is passed right through to
           // `HtmlElementView` (here)[https://github.com/deakjahn/flutter_dropzone/blob/master/flutter_dropzone_web/lib/flutter_dropzone_plugin.dart#L117]
           // which suggests that the platform view does not get created during the test.
-          if (controller != null) {
+          if (controller != null &&
+              const String.fromEnvironment('INTEGRATION') != "true") {
             final events = await controller!.pickFiles(mime: mime);
             if (events.isEmpty) return;
             if (events.first.size > 0) {
