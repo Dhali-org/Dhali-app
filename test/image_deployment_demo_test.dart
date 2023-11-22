@@ -310,7 +310,7 @@ void main() async {
     when(mockWallet.mnemonic).thenReturn("memorable words");
     when(mockWallet.sendDrops("9000000", "CHANNEL_ID_STRING"))
         .thenReturn("a-random-signature");
-    when(mockWallet.acceptOffer(context: anyNamed("context"), "0"))
+    when(mockWallet.acceptOffer(any, context: anyNamed("context")))
         .thenAnswer((_) async {
       return Future.value(true);
     });
@@ -318,7 +318,10 @@ void main() async {
       return Future.value(
           // TODO: Make a more realistic offer, inject XRPL client and confirm it fails
           //      for a nonzero amount, and passes for zero amount
-          [NFTOffer(0, "an_owner_account", "a_destination_account", "0")]);
+          [
+            NFTOffer(0, Config.config!["DHALI_PUBLIC_ADDRESS"],
+                mockWallet.address, "0")
+          ]);
     });
     when(mockWallet.getOpenPaymentChannels(
             destination_address: "rstbSTpPcyxMsiXwkBxS9tFTrg2JsDNxWk"))
@@ -426,6 +429,9 @@ void main() async {
       await tester.pumpAndSettle();
 
       await deploymentDemo(tester, firebaseMockInstance, responseCode);
+
+      verify(mockWallet.acceptOffer(any, context: anyNamed("context")))
+          .called(1);
     });
 
     testWidgets('Successful self hosted journey deployment',
@@ -467,6 +473,9 @@ void main() async {
       await tester.pumpAndSettle();
       await deploymentDemo(tester, firebaseMockInstance, responseCode,
           isSelfHosted: true);
+
+      verify(mockWallet.acceptOffer(any, context: anyNamed("context")))
+          .called(1);
     });
 
     testWidgets('Cancel image deployment', (WidgetTester tester) async {
