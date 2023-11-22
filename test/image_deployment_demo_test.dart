@@ -154,7 +154,7 @@ Future<void> selectAPICredentials(
   await tester.pumpAndSettle();
 }
 
-void deploymentDemo(WidgetTester tester,
+Future<void> deploymentDemo(WidgetTester tester,
     FakeFirebaseFirestore mockFirebaseFirestore, int responseCode,
     {bool isSelfHosted = false}) async {
   await utils.dragOutDrawer(tester);
@@ -386,7 +386,7 @@ void main() async {
 
       await tester.pumpAndSettle();
 
-      deploymentDemo(tester, FakeFirebaseFirestore(), responseCode);
+      await deploymentDemo(tester, FakeFirebaseFirestore(), responseCode);
     });
     testWidgets('Successful image deployment', (WidgetTester tester) async {
       const w = 1920;
@@ -425,7 +425,7 @@ void main() async {
 
       await tester.pumpAndSettle();
 
-      deploymentDemo(tester, firebaseMockInstance, responseCode);
+      await deploymentDemo(tester, firebaseMockInstance, responseCode);
     });
 
     testWidgets('Successful self hosted journey deployment',
@@ -465,7 +465,7 @@ void main() async {
       ));
 
       await tester.pumpAndSettle();
-      deploymentDemo(tester, firebaseMockInstance, responseCode,
+      await deploymentDemo(tester, firebaseMockInstance, responseCode,
           isSelfHosted: true);
     });
 
