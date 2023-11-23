@@ -70,9 +70,9 @@ Future<void> displayCosts(
   expect(find.text("What?"), findsNWidgets(2));
   expect(find.text("When?"), findsNWidgets(2));
   expect(find.text("Cost (XRP):"), findsNWidgets(2));
-  expect(find.text("60.40000 per second"), findsOneWidget);
+  expect(find.text("15.10000 per second"), findsOneWidget);
   expect(find.text("302.00000 per second"), findsOneWidget);
-  expect(find.text("362.40000 per second"), findsOneWidget);
+  expect(find.text("317.10000 per second"), findsOneWidget);
   expect(find.text("Are you sure you want to deploy?"), findsOneWidget);
   expect(find.text("Yes"), findsOneWidget);
   expect(find.byKey(const Key("DeploymentCostWidgetBack")), findsOneWidget);
