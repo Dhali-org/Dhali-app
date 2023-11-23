@@ -33,10 +33,10 @@ class DropzoneRunWidget extends StatefulWidget {
   final Function(AssetModel) onNextClicked;
 
   const DropzoneRunWidget({
-    Key? key,
+    super.key,
     required this.onDroppedFile,
     required this.onNextClicked,
-  }) : super(key: key);
+  });
   @override
   _DropzoneRunWidgetState createState() => _DropzoneRunWidgetState();
 }
@@ -273,12 +273,11 @@ class AssetNameWidget extends StatefulWidget {
   final int steps;
 
   const AssetNameWidget(
-      {Key? key,
+      {super.key,
       required this.onDroppedFile,
       required this.onNextClicked,
       required this.step,
-      required this.steps})
-      : super(key: key);
+      required this.steps});
   @override
   _AssetNameWidgetState createState() => _AssetNameWidgetState();
 }
@@ -549,7 +548,8 @@ class _HostingRadioState extends State<HostingRadio> {
                                     context, 'To know what you\'ll charge'),
                                 bulletPointItem(context,
                                     'A docker image (please see docs)'),
-                                bulletPointItem(context, 'A README'),
+                                bulletPointItem(context,
+                                    'A README or OpenAPI endpoint specification document in json format'),
                               ],
                             )
                           : Column(
@@ -560,7 +560,8 @@ class _HostingRadioState extends State<HostingRadio> {
                                     context, 'To know what you\'ll charge'),
                                 bulletPointItem(context, 'API base URL'),
                                 bulletPointItem(context, 'API key'),
-                                bulletPointItem(context, 'A README'),
+                                bulletPointItem(context,
+                                    'A README or an OpenAPI endpoint specification document in json format'),
                               ],
                             )
                     ],
@@ -610,13 +611,12 @@ class DropzoneDeployWidget extends StatefulWidget {
   final DeploymentFile deploymentFile;
 
   const DropzoneDeployWidget(
-      {Key? key,
+      {super.key,
       required this.onDroppedFile,
       required this.onNextClicked,
       required this.step,
       required this.steps,
-      required this.deploymentFile})
-      : super(key: key);
+      required this.deploymentFile});
   @override
   _DropzoneDeployWidgetState createState() => _DropzoneDeployWidgetState();
 }
@@ -715,8 +715,8 @@ class _DropzoneDeployWidgetState extends State<DropzoneDeployWidget> {
                           Text(
                             textAlign: TextAlign.center,
                             file != null
-                                ? "Selected README: ${file!.fileName}"
-                                : "No README selected",
+                                ? "Selected README/OpenAPI json: ${file!.fileName}"
+                                : "No README/OpenAPI json selected",
                             style: TextStyle(
                                 fontSize:
                                     isDesktopResolution(context) ? 25 : 12),
@@ -734,7 +734,7 @@ class _DropzoneDeployWidgetState extends State<DropzoneDeployWidget> {
                                   });
                               showPopupTextWithLink(
                                   text:
-                                      "Please provide a 'README.md' file documenting your asset.  For more information, see ",
+                                      "Please provide a 'README.md' or OpenAPI json file documenting your api.  For more information, see ",
                                   urlText: "here.",
                                   url:
                                       "https://dhali.io/docs/#/?id=creating-dhali-assets",
@@ -945,12 +945,11 @@ class ImageScanningWidget extends StatefulWidget {
   final int steps;
 
   const ImageScanningWidget(
-      {Key? key,
+      {super.key,
       required this.file,
       required this.onNextClicked,
       required this.step,
-      required this.steps})
-      : super(key: key);
+      required this.steps});
   @override
   _ImageScanningWidgetState createState() => _ImageScanningWidgetState();
 }
@@ -1114,13 +1113,12 @@ class ChargeWidget extends StatefulWidget {
   final int steps;
 
   const ChargeWidget(
-      {Key? key,
+      {super.key,
       required this.onNextClicked,
       required this.defaultChargingRate,
       required this.defaultChargingChoice,
       required this.step,
-      required this.steps})
-      : super(key: key);
+      required this.steps});
   @override
   _ChargeWidgetState createState() => _ChargeWidgetState();
 }
@@ -1300,11 +1298,10 @@ class LinkedAPIDetailsWidget extends StatefulWidget {
   final int steps;
 
   const LinkedAPIDetailsWidget(
-      {Key? key,
+      {super.key,
       required this.onNextClicked,
       required this.step,
-      required this.steps})
-      : super(key: key);
+      required this.steps});
   @override
   _LinkedAPIDetailsWidgetState createState() => _LinkedAPIDetailsWidgetState();
 }
@@ -1489,7 +1486,7 @@ class _LinkedAPIDetailsWidgetState extends State<LinkedAPIDetailsWidget> {
 
 class DeploymentCostWidget extends StatelessWidget {
   const DeploymentCostWidget(
-      {Key? key,
+      {super.key,
       required this.assetEarnings,
       required this.assetEarningsType,
       required this.dhaliEarnings,
@@ -1497,8 +1494,7 @@ class DeploymentCostWidget extends StatelessWidget {
       required this.hostingType,
       required this.yesClicked,
       required this.step,
-      required this.steps})
-      : super(key: key);
+      required this.steps});
 
   final Function() yesClicked;
   final double deploymentCost;
@@ -1823,14 +1819,14 @@ class DataTransmissionWidget extends StatefulWidget {
   final Map<String, String> payment;
 
   const DataTransmissionWidget({
-    Key? key,
+    super.key,
     required this.data,
     required this.onNextClicked,
     required this.getRequest,
     required this.payment,
     required this.getUploader,
     required this.getOnSuccessWidget,
-  }) : super(key: key);
+  });
 
   @override
   _DataTransmissionWidgetState createState() => _DataTransmissionWidgetState();
@@ -2186,13 +2182,12 @@ Widget NFTUploadingWidget(
 
 class InferenceCostWidget extends StatelessWidget {
   const InferenceCostWidget(
-      {Key? key,
+      {super.key,
       required this.file,
       required this.inferenceCost,
       required this.yesClicked,
       required this.step,
-      required this.steps})
-      : super(key: key);
+      required this.steps});
 
   final Function(AssetModel, double) yesClicked;
   final AssetModel file;

@@ -23,13 +23,12 @@ import 'package:uuid/uuid.dart';
 
 class MarketplaceHomeScreen extends StatefulWidget {
   const MarketplaceHomeScreen(
-      {Key? key,
+      {super.key,
       required this.assetScreenType,
       required this.getRequest,
       required this.getWallet,
       required this.setWallet,
-      required this.getFirestore})
-      : super(key: key);
+      required this.getFirestore});
 
   final void Function(XRPLWallet) setWallet;
   final DhaliWallet? Function() getWallet;

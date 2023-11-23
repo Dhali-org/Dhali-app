@@ -44,7 +44,7 @@ Future<void> selectFile(
   if (fileType == FileType.dockerImage) {
     expect(find.text("No .tar docker image asset selected"), findsOneWidget);
   } else if (fileType == FileType.readme) {
-    expect(find.text("No README selected"), findsOneWidget);
+    expect(find.text("No README/OpenAPI json selected"), findsOneWidget);
   }
   expect(find.byIcon(Icons.cloud_upload_rounded), findsNWidgets(dialogNumber));
   expect(find.byIcon(Icons.help_outline_outlined), findsNWidgets(dialogNumber));
@@ -173,7 +173,10 @@ Future<void> deploymentDemo(WidgetTester tester,
   expect(find.text("To know what you'll charge"), findsOneWidget);
   expect(find.text("API base URL"), findsOneWidget);
   expect(find.text("API key"), findsOneWidget);
-  expect(find.text("A README"), findsOneWidget);
+  expect(
+      find.text(
+          "A README or an OpenAPI endpoint specification document in json format"),
+      findsOneWidget);
 
   // Go back and forth between the radio buttons
   await tester.tap(find.byKey(const Key("dhali_hosted-radio_button")));

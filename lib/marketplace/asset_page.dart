@@ -1,12 +1,15 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dhali_wallet/dhali_wallet.dart';
-import 'package:flutter/material.dart';
-import 'package:markdown_widget/markdown_widget.dart';
-import 'package:http/http.dart';
 import 'package:dhali/analytics/analytics.dart';
 import 'package:dhali/config.dart' show Config;
 import 'package:dhali/marketplace/model/marketplace_list_data.dart';
+import 'package:dhali_wallet/dhali_wallet.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_highlight/themes/a11y-light.dart';
+import 'package:http/http.dart';
+import 'package:markdown_widget/markdown_widget.dart';
+import 'package:swagger_documentation_widget/swagger_documentation_widget.dart';
 
 class AssetPage extends StatefulWidget {
   const AssetPage(
@@ -25,6 +28,17 @@ class AssetPage extends StatefulWidget {
 
   @override
   State<AssetPage> createState() => _AssetPageState();
+}
+
+bool _isJsonParsable(String s) {
+  // I couldn't find a "better" way of doing this...
+  try {
+    json.decode(s); // Try parsing it as JSON
+    return true; // If no error, it's parsable
+  } catch (e) {
+    // If JSON parsing throws an error, it's not a valid JSON
+    return false;
+  }
 }
 
 class _AssetPageState extends State<AssetPage> {
@@ -90,6 +104,14 @@ class _AssetPageState extends State<AssetPage> {
                 builder:
                     (BuildContext context, AsyncSnapshot<Response> snapshot) {
                   if (snapshot.hasData) {
+                    final body = snapshot.data!.body;
+                    if (_isJsonParsable(body)) {
+                      return Container(
+                          margin: const EdgeInsets.all(5),
+                          child: SwaggerDocumentationWidget(
+                              jsonContent: snapshot.data!.body,
+                              title: "API Documentation"));
+                    }
                     return Container(
                         margin: const EdgeInsets.all(5),
                         child: MarkdownWidget(

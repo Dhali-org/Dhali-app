@@ -5,12 +5,12 @@ import 'package:dhali/marketplace/model/marketplace_list_data.dart';
 
 class MarketplaceListView extends StatelessWidget {
   const MarketplaceListView({
-    Key? key,
+    super.key,
     required this.callback,
     required this.marketplaceData,
     this.animationController,
     this.animation,
-  }) : super(key: key);
+  });
 
   final Function(MarketplaceListData) callback;
   final MarketplaceListData? marketplaceData;
