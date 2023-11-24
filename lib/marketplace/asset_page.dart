@@ -61,8 +61,11 @@ class _AssetPageState extends State<AssetPage> {
         uri,
       ).timeout(
         const Duration(seconds: 10),
-        onTimeout: () => timeoutFuture,
-      ); // Set the timeout to 5 seconds.;
+        onTimeout: () => get(uri).timeout(
+          const Duration(seconds: 10),
+          onTimeout: () => timeoutFuture,
+        ),
+      );
     } else {
       // typically executed when mocking
       future = widget.getReadme!(uri);
