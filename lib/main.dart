@@ -85,6 +85,8 @@ class HomeWithBanner extends StatelessWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  _MyAppState();
+
   DhaliWallet? _wallet;
 
   bool _isDark = false;
@@ -174,10 +176,7 @@ class _MyAppState extends State<MyApp> {
           platform: TargetPlatform.iOS,
           colorScheme: ColorScheme.fromSeed(
             seedColor: AppTheme.dhali_blue,
-
             brightness: _isDark ? Brightness.dark : Brightness.light,
-
-            // primary: const Color.fromARGB(255, 246, 246, 246),
           ),
         ),
         home: getHomeScreen());

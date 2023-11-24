@@ -32,14 +32,13 @@ dependencies:
     flutter_rating_bar: ^4.0.1
     animations: ^2.0.3
     flutter_dropzone: ^3.0.5
-    dotted_border: ^2.0.0+2
     flutter_spinkit: ^5.1.0
     http: ^0.13.5
     html: ^0.15.0
     logger: ^1.1.0
     universal_html: ^2.0.8
     mockito: ^5.3.2
-    fl_chart: ^0.55.2
+    fl_chart: ^0.64.0
     wakelock: ^0.6.2
     tuple: ^2.0.1
     js: ^0.6.5
@@ -55,16 +54,19 @@ dependencies:
     dhali_wallet:
       git:
         url: "https://github.com/Dhali-org/Dhali-wallet.git"
-        ref: 0.0.30
+        ref: 0.0.31
     markdown_widget: ^2.3.1
       # or
       # path: <path to local dhali directory>
+    swagger_documentation_widget: ^0.0.1
 
 dev_dependencies:
     flutter_oss_licenses: ^2.0.1
     build_runner: ^2.3.0
-    flutter_lints: ^2.0.1
+    flutter_lints: ^3.0.1
     flutter_test:
+        sdk: flutter
+    integration_test:
         sdk: flutter
 
 # For information on the generic Dart part of this file, see the

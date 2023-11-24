@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 
 class RangeSliderView extends StatefulWidget {
-  const RangeSliderView({Key? key, this.values, this.onChangeRangeValues})
-      : super(key: key);
+  const RangeSliderView({super.key, this.values, this.onChangeRangeValues});
 
   final Function(RangeValues)? onChangeRangeValues;
   final RangeValues? values;

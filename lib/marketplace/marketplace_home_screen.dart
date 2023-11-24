@@ -23,13 +23,12 @@ import 'package:uuid/uuid.dart';
 
 class MarketplaceHomeScreen extends StatefulWidget {
   const MarketplaceHomeScreen(
-      {Key? key,
+      {super.key,
       required this.assetScreenType,
       required this.getRequest,
       required this.getWallet,
       required this.setWallet,
-      required this.getFirestore})
-      : super(key: key);
+      required this.getFirestore});
 
   final void Function(XRPLWallet) setWallet;
   final DhaliWallet? Function() getWallet;
@@ -889,7 +888,8 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                         });
 
                         void onNFTOfferPoll(String nfTokenId) {
-                          // TODO: Maybe there's more validation we can do here.  This is just a PoC
+                          //  Check for any NFTs created through Dhali, and accept
+                          // them:
                           widget
                               .getWallet()!
                               .getNFTOffers(nfTokenId)
@@ -899,6 +899,19 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                               // We are transferring ownership to the creator, so we want the
                               // offer to be for free:
                               if (amount != 0) {
+                                continue;
+                              }
+
+                              // Other accounts might be relying on this offer, so do
+                              // not accept unless it's from us:
+                              if (offer.owner !=
+                                  Config.config!["DHALI_PUBLIC_ADDRESS"]) {
+                                continue;
+                              }
+
+                              // Not expected, so skip:
+                              if (offer.destination !=
+                                  widget.getWallet()!.address) {
                                 continue;
                               }
 
@@ -1101,6 +1114,7 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                 return uploadFailed(context, snapshot.data!.statusCode,
                     reason: snapshot.data!.reasonPhrase);
               }
+
               return NFTUploadingWidget(
                   context,
                   widget.getFirestore,
