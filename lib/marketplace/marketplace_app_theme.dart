@@ -1,5 +1,4 @@
 import 'package:dhali/app_theme.dart';
-import 'package:dhali/main.dart';
 import 'package:flutter/material.dart';
 
 class MarketplaceAppTheme {

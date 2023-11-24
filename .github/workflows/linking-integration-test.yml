@@ -1,0 +1,62 @@
+name: Integration Test
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-20.04
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+
+    - name: Update OpenSSL
+      run: |
+        sudo apt-get update
+        sudo apt-get install openssl
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.8' # Specify the Python version
+
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+
+    - name: Install Chrome
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libappindicator1 fonts-liberation libasound2 libatk-bridge2.0-0 libatspi2.0-0 libgtk-3-0 libnspr4 libnss3 libx11-xcb1 libxss1 xdg-utils
+        wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+        sudo dpkg -i google-chrome-stable_current_amd64.deb
+        sudo apt-get install -f
+
+    - uses: nanasess/setup-chromedriver@v2
+
+    - name: Start ChromeDriver
+      run: chromedriver --port=4444 --whitelisted-ips &
+
+    - name: Run Flutter Integration Test
+      run: |
+        flutter drive --dart-define=INTEGRATION=true --driver=test_driver/integration_test.dart --target=integration_test/linking_integration_test.dart -d web-server
+
+    - id: 'auth'
+      name: 'Authenticate to Google Cloud'
+      uses: 'google-github-actions/auth@v1'
+      with:
+        credentials_json: '${{ secrets.FIREBASE_STAGING }}'
+
+    - name: Install Python dependencies
+      run: |
+        pip install google-cloud-firestore firebase-admin dhali-py
+
+    - name: Hit created API test
+      run: |
+        PYTHONPATH=integration_test/ pytest integration_test/test_hit_linked_api.py
+
+    - name: Cleanup back-end
+      run: |
+        PYTHONPATH=integration_test/ pytest integration_test/test_validate_and_clean_firestore.py

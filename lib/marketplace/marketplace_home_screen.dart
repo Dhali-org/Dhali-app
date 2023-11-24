@@ -1114,6 +1114,7 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                 return uploadFailed(context, snapshot.data!.statusCode,
                     reason: snapshot.data!.reasonPhrase);
               }
+
               return NFTUploadingWidget(
                   context,
                   widget.getFirestore,
