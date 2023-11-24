@@ -106,7 +106,8 @@ Future<void> deploymentDemo(WidgetTester tester, int responseCode,
 
   await tester.pumpAndSettle(const Duration(seconds: 20));
   // Linking should take < 5 mins
-  await Future.delayed(const Duration(seconds: 300));
+  await Future.delayed(const Duration(seconds: 400));
+  await tester.pumpAndSettle(const Duration(seconds: 20));
 }
 
 void main() {
