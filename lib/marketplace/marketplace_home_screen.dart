@@ -898,7 +898,6 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                               int amount = offer.amount;
                               // We are transferring ownership to the creator, so we want the
                               // offer to be for free:
-                              print(amount);
                               if (amount != 0) {
                                 continue;
                               }
