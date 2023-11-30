@@ -290,8 +290,11 @@ class _DownloadFileWidgetState extends State<DownloadFileWidget> {
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(4))),
             onPressed: () async {
-              Navigator.of(context).pop();
-              Navigator.of(context).pop();
+              Navigator.of(context).popUntil((route) {
+                // Here, we assume that a Dialog doesn't have a route name (which is true by default).
+                // If you've given a custom name to your Dialog route, check against that name instead.
+                return route.settings.name != null;
+              });
             },
             icon: Icon(
               Icons.exit_to_app,
