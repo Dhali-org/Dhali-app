@@ -904,11 +904,11 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
 
                               // Other accounts might be relying on this offer, so do
                               // not accept unless it's from us:
-                              // TODO : activate this
-                              // if (offer.owner !=
-                              //     Config.config!["DHALI_PUBLIC_ADDRESS"]) {
-                              //   continue;
-                              // }
+                              if (offer.owner !=
+                                  Config
+                                      .config!["DHALI_MINTER_PUBLIC_ADDRESS"]) {
+                                continue;
+                              }
 
                               // Not expected, so skip:
                               if (offer.destination !=
