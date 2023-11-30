@@ -1966,9 +1966,11 @@ class _DataTransmissionWidgetState extends State<DataTransmissionWidget> {
                                 command: "event",
                                 target: "ExitClicked",
                                 parameters: {"from": "DataTransmissionWidget"});
-                            Navigator.of(context).pop();
-                            Navigator.of(context).pop();
-                            Navigator.of(context).pop();
+                            Navigator.of(context).popUntil((route) {
+                              // Here, we assume that a Dialog doesn't have a route name (which is true by default).
+                              // If you've given a custom name to your Dialog route, check against that name instead.
+                              return route.settings.name != null;
+                            });
                           }
                         },
                         icon: Icon(
@@ -2073,9 +2075,11 @@ Widget uploadFailed(BuildContext context, int responseCode, {String? reason}) {
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(4))),
                 onPressed: () {
-                  Navigator.of(context).pop();
-                  Navigator.of(context).pop();
-                  Navigator.of(context).pop();
+                  Navigator.of(context).popUntil((route) {
+                    // Here, we assume that a Dialog doesn't have a route name (which is true by default).
+                    // If you've given a custom name to your Dialog route, check against that name instead.
+                    return route.settings.name != null;
+                  });
                 },
                 icon: const Icon(
                   Icons.close_outlined,
@@ -2161,9 +2165,11 @@ Widget NFTUploadingWidget(
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(4))),
                       onPressed: () {
-                        Navigator.of(context).pop();
-                        Navigator.of(context).pop();
-                        Navigator.of(context).pop();
+                        Navigator.of(context).popUntil((route) {
+                          // Here, we assume that a Dialog doesn't have a route name (which is true by default).
+                          // If you've given a custom name to your Dialog route, check against that name instead.
+                          return route.settings.name != null;
+                        });
                       },
                       icon: const Icon(
                         Icons.done_outline_rounded,
