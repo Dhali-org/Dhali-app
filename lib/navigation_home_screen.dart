@@ -247,6 +247,7 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
                   color: DrawerIndex.Assets == drawerIndex
                       ? Theme.of(context).colorScheme.onSecondary
                       : Theme.of(context).colorScheme.onBackground)),
+          key: const Key("my_apis_tile"),
           onTap: () {
             drawerIndex = DrawerIndex.Assets;
             getScreenView(DrawerIndex.Assets);
