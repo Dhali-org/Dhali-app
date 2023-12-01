@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:dhali/marketplace/marketplace_home_screen.dart';
 import 'package:dhali/marketplace/marketplace_dialogs.dart';
@@ -22,7 +23,26 @@ import 'utils.dart' as utils;
 
 const String theInputAssetName = "a_badl3y_n@med-asset";
 const String theAPIURL = "a_random url with-spaces_n@med-asset";
-const String theAPIKey = "a_random key@arbitrary-c4ars";
+
+// TODO : This length variable is designed to validate that input headers cannot
+// be longer that maxLength. Annoyingly, it can't be taken beyond its current
+// value for some unknown reason. The implication is that this test is not
+// asserting that inputs beyond maxLength are not allowed
+const length = 219;
+const maxLength = 4096;
+String theUnsanitisedString =
+    "ThisIsAHeaderKey:ButItIncludesAColonA spaceAnd,Comma;Semicolon@AtSymbol\"DoubleQuote/Slash?QuestionMark=EqualsSign{CurlyBrace}AndExcessiveLength${"." * length}";
+String theSanitsedPartialString =
+    "ThisIsAHeaderKeyButItIncludesAColonA spaceAndCommaSemicolonAtSymbolDoubleQuoteSlashQuestionMarkEqualsSignCurlyBraceAndExcessiveLength";
+String theSanitsedString =
+    "$theSanitsedPartialString${"." * min(length, maxLength - theSanitsedPartialString.length)}";
+
+String theUnsantisatedAPIKeyKey = theUnsanitisedString;
+String theUnsantisatedAPIKeyValue = theUnsanitisedString.replaceFirst("T", "t");
+
+String theAPIKeyKey = theSanitsedString;
+String theAPIKeyValue = theSanitsedString.replaceFirst("T", "t");
+
 const String theAssetName = "abadl3ynmed-asset";
 const String theDhaliAssetID = "a-session-id";
 
@@ -126,30 +146,105 @@ Future<void> selectAPICredentials(
   expect(find.text("Step 3 of 5"), findsNWidgets(1));
   expect(find.text("What are your APIs details?"), findsOneWidget);
   expect(find.text("API base URL:"), findsOneWidget);
-  expect(find.text("Consider a custom service account for this.\n"),
-      findsOneWidget);
-  expect(find.text("API bearer token:"), findsOneWidget);
-
-  expect(
-      find.text("Requests will have the header \n\n"
-          "'Authorization: Bearer ...'"),
-      findsOneWidget);
+  expect(find.text("URL"), findsOneWidget);
+  expect(find.text("API header:"), findsOneWidget);
+  expect(find.text("These must not expire.\n"), findsOneWidget);
+  expect(find.byKey(const Key("add_header")), findsOneWidget);
+  expect(find.byIcon(Icons.remove), findsOneWidget);
+  expect(find.text("You must complete all headers"), findsOneWidget);
 
   expect(find.text(theAPIURL.replaceAll(" ", "")), findsNothing);
-  expect(find.text(theAPIKey), findsNothing);
-
   await tester.enterText(find.byKey(const Key("api_base_url")), theAPIURL);
-  await tester.enterText(find.byKey(const Key("api_key")), theAPIKey);
   await tester.pumpAndSettle();
-
   // No spaces should be present
   expect(find.text(theAPIURL.replaceAll(" ", "")), findsOneWidget);
 
-  // Anything goes
-  expect(find.text(theAPIKey), findsOneWidget);
+  // Should not progress to next dialog
+  await tester.tap(find.byKey(const Key("APICredentialsNext")));
+  await tester.pumpAndSettle();
+  expect(find.text("Step 4 of 5"), findsNothing);
 
-  expect(find.byKey(const Key("APICredentialsBack")), findsOneWidget);
-  expect(find.byKey(const Key("APICredentialsNext")), findsOneWidget);
+  // Remove all header inputs. Should not progress to next dialog
+  await tester.tap(find.byIcon(Icons.remove));
+  await tester.pumpAndSettle();
+  await tester.tap(find.byKey(const Key("APICredentialsNext")));
+  await tester.pumpAndSettle();
+  expect(find.text("Step 4 of 5"), findsNothing);
+  await tester.tap(find.byKey(const Key("add_header")));
+  await tester.pumpAndSettle();
+
+  // Should be one key-value input available
+  expect(find.text("Key 1"), findsOneWidget);
+  expect(find.text("Value 1"), findsOneWidget);
+  expect(find.text("You must complete all headers"), findsOneWidget);
+  // Should be one key-value input available
+  expect(find.text("Key 2"), findsNothing);
+  expect(find.text("Value 2"), findsNothing);
+
+  await tester.tap(find.byKey(const Key("add_header")));
+  await tester.pumpAndSettle();
+
+  // Pressing should reveal another input for headers
+  expect(find.text("Key 1"), findsOneWidget);
+  expect(find.text("Value 1"), findsOneWidget);
+  expect(find.text("You must complete all headers"), findsOneWidget);
+  expect(find.text("Key 2"), findsOneWidget);
+  expect(find.text("Value 2"), findsOneWidget);
+
+  await tester.tap(find.byIcon(Icons.remove));
+  await tester.pumpAndSettle();
+
+  expect(find.text("Key 2"), findsNothing);
+  expect(find.text("Value 2"), findsNothing);
+  expect(find.text("You must complete all headers"), findsOneWidget);
+  expect(find.text("Key 1"), findsOneWidget);
+  expect(find.text("Value 1"), findsOneWidget);
+
+  expect(find.text(theAPIKeyKey), findsNothing);
+  await tester.enterText(
+      find.byKey(const Key('Key 1')), theUnsantisatedAPIKeyKey);
+  await tester.pumpAndSettle();
+  // Typing only a key shouldn't reveal the hinted value that headers will take
+  expect(find.text("You must complete all headers"), findsOneWidget);
+  await tester.enterText(
+      find.byKey(const Key('Value 1')), theUnsantisatedAPIKeyValue);
+  await tester.pumpAndSettle();
+  expect(find.text("You must complete all headers"), findsNothing);
+
+  expect(find.text(theAPIKeyKey), findsOneWidget);
+
+  // Spaces can be present
+  expect(find.text(theAPIKeyValue), findsOneWidget);
+
+  expect(
+      find.text("Requests will have headers\n\n"
+          "'$theAPIKeyKey: ${theAPIKeyValue.substring(0, 10)}...'"),
+      findsOneWidget);
+
+  // Adding a header should cause the "Requests will have ..." box to vanish
+  await tester.tap(find.byKey(const Key("add_header")));
+  await tester.pumpAndSettle();
+  expect(find.text("You must complete all headers"), findsOneWidget);
+  expect(
+      find.text("Requests will have headers\n\n"
+          "'${theAPIKeyKey.replaceAll(" ", "")}: ${theAPIKeyValue.substring(0, 10)}...'"),
+      findsNothing);
+  expect(find.text("Key 2"), findsOneWidget);
+  expect(find.text("Value 2"), findsOneWidget);
+
+  // Should not progress to next dialog until unfilled headers are filled
+  await tester.tap(find.byKey(const Key("APICredentialsNext")));
+  await tester.pumpAndSettle();
+  expect(find.text("Step 4 of 5"), findsNothing);
+
+  // Should now be possible to progress
+  await tester.tap(find.byIcon(Icons.remove));
+  await tester.pumpAndSettle();
+
+  expect(find.byKey(const Key("APICredentialsNext"), skipOffstage: false),
+      findsOneWidget);
+  expect(find.byKey(const Key("APICredentialsBack"), skipOffstage: false),
+      findsOneWidget);
   await tester.tap(find.byKey(const Key("APICredentialsNext")));
   await tester.pumpAndSettle();
 }

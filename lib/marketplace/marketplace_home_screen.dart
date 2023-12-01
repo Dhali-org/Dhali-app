@@ -55,7 +55,7 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
   String? assetName;
   AssetModel? image;
   String? apiUrl;
-  String? apiKey;
+  Map<String, String>? apiKeys;
   AssetModel? readme;
   ChargingChoice? chargingChoice;
   HostingChoice? hostingChoice;
@@ -758,8 +758,8 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
               child: LinkedAPIDetailsWidget(
                 step: 3,
                 steps: 5,
-                onNextClicked: (apiUrl, apiKey) {
-                  this.apiKey = apiKey;
+                onNextClicked: (apiUrl, apiKeys) {
+                  this.apiKeys = apiKeys;
                   this.apiUrl = apiUrl;
                   showReadmeSelectionDialog();
                 },
@@ -1079,8 +1079,10 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
           "apiEarningType": chargingChoice == ChargingChoice.perRequest
               ? "per_request"
               : "per_second",
-          "apiCredentials": jsonEncode(
-              {"url": apiUrl!, "Authorization": "Bearer ${apiKey!}"}),
+          "apiCredentials": jsonEncode({
+            ...{"url": apiUrl!},
+            ...apiKeys!
+          }),
         };
 
         request.bodyFields = body;
