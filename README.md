@@ -36,6 +36,31 @@ flutter run --dart-define=ENTRY_POINT_URL_ROOT=<URL to local server>
 
 ### Testing
 
+To run our unit tests, you can execute the following command:
 ```
 flutter test --platform chrome
 ```
+
+To run our integration tests, please follow these steps:
+
+1. Download the required dependencies.  This will depend upon your testing environment, to install then on Ubuntu you can execute:
+```bash
+sudo apt-get install -y libappindicator1 fonts-liberation libasound2 libatk-bridge2.0-0 libatspi2.0-0 libgtk-3-0 libnspr4 libnss3 libx11-xcb1 libxss1 xdg-utils
+        wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+        sudo dpkg -i google-chrome-stable_current_amd64.deb
+        sudo apt-get install -f
+```
+
+You may also need to install `chromedriver`. To do this, please refer to instructions specific to your testing environment.
+
+2. Start `chromedriver`:
+```bash
+chromedriver --port=4444 --whitelisted-ips &
+```
+
+3. Execute the integration tests:
+```bash
+flutter drive --dart-define=INTEGRATION=true --driver=test_driver/integration_test.dart --target=integration_test/linking_integration_test.dart -d web-server
+```
+
+4. `flutter drive` will output a url such as: `http://localhost:43307`.  Open this in your web browser to begin the tests.
