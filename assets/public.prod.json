@@ -1,9 +1,9 @@
 {
     "MINTED_NFTS_DOCUMENT_KEYS": {
-        "NUMBER_OF_SUCCESSFUL_REQUESTS": "num_successful_requests", 
-        "ASSET_CREATOR_ACCOUNT": "asset_creator_account", 
-        "AVERAGE_INFERENCE_TIME_MS": "average_inference_time_ms", 
-        "CATEGORY": "category", 
+        "NUMBER_OF_SUCCESSFUL_REQUESTS": "num_successful_requests",
+        "ASSET_CREATOR_ACCOUNT": "asset_creator_account",
+        "AVERAGE_INFERENCE_TIME_MS": "average_inference_time_ms",
+        "CATEGORY": "category",
         "ENDPOINT_URL": "endpoint_url",
         "EXPECTED_INFERENCE_COST": "average_cost",
         "AVERAGE_EARNINGS": "average_earnings",
@@ -25,7 +25,7 @@
     "DHALI_ID": "Dhali-ID",
     "PAYMENT_CLAIM_HEADER_KEY": "Payment-Claim",
     "CURRENCY_KEYS": {
-        "CODE": "code", 
+        "CODE": "code",
         "SCALE": "scale"
     },
     "GET_READMES_ROUTE": "readme",
@@ -38,6 +38,7 @@
     "ROOT_CONSUMER_URL": "https://dhali-prod-consumer-dauenf0n.uc.gateway.dev",
     "ROOT_RUN_URL": "https://run.api.dhali.io",
     "DHALI_PUBLIC_ADDRESS": "rstbSTpPcyxMsiXwkBxS9tFTrg2JsDNxWk",
+    "DHALI_MINTER_PUBLIC_ADDRESS": "rDpxccfcSsaEvaZFMnGh4nBBJ2FQYW98KW",
     "DHALI_DEPLOYMENT_COST_PER_CHUNK_DROPS": 2000,
     "DHALI_CPU_INFERENCE_COST_PER_MS": 0.1,
     "DHALI_EARNINGS_PERCENTAGE_PER_INFERENCE": 5,

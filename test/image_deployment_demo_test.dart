@@ -277,9 +277,44 @@ Future<void> deploymentDemo(WidgetTester tester,
     expect(find.byKey(const Key("upload_failed_warning")), findsOneWidget);
   }
   await tester.tap(find.byKey(const Key("exit_deployment_dialogs")));
-  await tester.pump();
+  await tester.pumpAndSettle();
   expect(find.byType(DataTransmissionWidget), findsNothing);
   expect(find.byType(MarketplaceHomeScreen), findsOneWidget);
+
+  expect(find.byKey(const Key("APICredentialsBack")), findsNothing);
+  expect(find.byKey(const Key("APICredentialsNext")), findsNothing);
+  expect(find.byKey(const Key("AssetNameBack")), findsNothing);
+  expect(find.byKey(const Key("AssetNameNext")), findsNothing);
+  expect(find.byKey(const Key("DeploymentCostWidgetBack")), findsNothing);
+  expect(find.byKey(const Key("DockerDropZoneDeployNext")), findsNothing);
+  expect(find.byKey(const Key("DropZoneDeployBack")), findsNothing);
+  expect(find.byKey(const Key("DropZoneDeployNext")), findsNothing);
+  expect(find.byKey(const Key("DropZoneRunNext")), findsNothing);
+  expect(find.byKey(const Key("ImageCostBack")), findsNothing);
+  expect(find.byKey(const Key("ImageCostNext")), findsNothing);
+  expect(find.byKey(const Key("ImageScanningBack")), findsNothing);
+  expect(find.byKey(const Key("ImageScanningNext")), findsNothing);
+  expect(find.byKey(const Key("Per request")), findsNothing);
+  expect(find.byKey(const Key("Per second")), findsNothing);
+  expect(find.byKey(const Key("ReadmeDropZoneDeployNext")), findsNothing);
+  expect(find.byKey(const Key("api_base_url")), findsNothing);
+  expect(find.byKey(const Key("api_key")), findsNothing);
+  expect(find.byKey(const Key("asset_name_input_field")), findsNothing);
+  expect(find.byKey(const Key("choose_docker_image_button")), findsNothing);
+  expect(find.byKey(const Key("choose_readme_button")), findsNothing);
+  expect(find.byKey(const Key("choose_run_input")), findsNothing);
+  expect(find.byKey(const Key("deploying_in_progress_dialog")), findsNothing);
+  expect(find.byKey(const Key("dhali_hosted-radio_button")), findsNothing);
+  expect(find.byKey(const Key("exit_deployment_dialogs")), findsNothing);
+  expect(find.byKey(const Key("minting_nft_spinner")), findsNothing);
+  expect(find.byKey(const Key("percentage_earnings_input")), findsNothing);
+  expect(find.byKey(const Key("self_hosted-radio_button")), findsNothing);
+  expect(find.byKey(const Key("upload_failed_warning")), findsNothing);
+  expect(find.byKey(const Key("upload_failed_warning")), findsNothing);
+  expect(find.byKey(const Key("upload_success_info")), findsNothing);
+  expect(find.byKey(const Key("upload_success_info")), findsNothing);
+  expect(find.byKey(const Key("use_docker_image_button")), findsNothing);
+  expect(find.byKey(const Key("use_docker_image_button")), findsNothing);
 }
 
 @GenerateMocks([Request, MultipartRequest, XRPLWallet])
@@ -319,8 +354,8 @@ void main() async {
     });
     when(mockWallet.getNFTOffers("some_NFToken_id")).thenAnswer((_) async {
       return Future.value([
-        NFTOffer(
-            0, Config.config!["DHALI_PUBLIC_ADDRESS"], mockWallet.address, "0")
+        NFTOffer(0, Config.config!["DHALI_MINTER_PUBLIC_ADDRESS"],
+            mockWallet.address, "0")
       ]);
     });
     when(mockWallet.getOpenPaymentChannels(
@@ -486,7 +521,7 @@ void main() async {
 
       when(mockWallet.getNFTOffers("some_NFToken_id")).thenAnswer((_) async {
         return Future.value([
-          NFTOffer(1, Config.config!["DHALI_PUBLIC_ADDRESS"],
+          NFTOffer(1, Config.config!["DHALI_MINTER_PUBLIC_ADDRESS"],
               mockWallet.address, "0")
         ]);
       });
@@ -580,7 +615,7 @@ void main() async {
 
       when(mockWallet.getNFTOffers("some_NFToken_id")).thenAnswer((_) async {
         return Future.value([
-          NFTOffer(0, Config.config!["DHALI_PUBLIC_ADDRESS"],
+          NFTOffer(0, Config.config!["DHALI_MINTER_PUBLIC_ADDRESS"],
               "some_incorrect_address", "0")
         ]);
       });
@@ -629,9 +664,9 @@ void main() async {
 
       when(mockWallet.getNFTOffers("some_NFToken_id")).thenAnswer((_) async {
         return Future.value([
-          NFTOffer(0, Config.config!["DHALI_PUBLIC_ADDRESS"],
+          NFTOffer(0, Config.config!["DHALI_MINTER_PUBLIC_ADDRESS"],
               "some_incorrect_address", "0"),
-          NFTOffer(0, Config.config!["DHALI_PUBLIC_ADDRESS"],
+          NFTOffer(0, Config.config!["DHALI_MINTER_PUBLIC_ADDRESS"],
               mockWallet.address, "1"),
           NFTOffer(0, "some_incorrect_address", mockWallet.address, "2")
         ]);

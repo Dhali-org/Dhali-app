@@ -107,6 +107,16 @@ Future<void> deploymentDemo(WidgetTester tester, int responseCode,
   await tester.pumpAndSettle(const Duration(seconds: 20));
   // Linking should take < 5 mins
   await Future.delayed(const Duration(seconds: 300));
+
+  await tester.pumpAndSettle();
+  await tester.tap(find.byKey(const Key("exit_deployment_dialogs")));
+
+  await tester.pumpAndSettle();
+  await tester.tap(find.text("Marketplace"));
+  await tester.pumpAndSettle();
+  await tester.tap(find.byKey(const Key("my_apis_tile")));
+  await tester.pumpAndSettle();
+  expect(find.text(theInputAssetName), findsOneWidget);
 }
 
 void main() {

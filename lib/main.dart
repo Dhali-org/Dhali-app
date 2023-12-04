@@ -13,6 +13,7 @@ import 'package:dhali/config.dart' show Config;
 
 import 'package:dhali/marketplace/asset_page.dart';
 import 'package:dhali/marketplace/model/marketplace_list_data.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> initializeApp() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -90,6 +91,21 @@ class _MyAppState extends State<MyApp> {
   DhaliWallet? _wallet;
 
   bool _isDark = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      SharedPreferences.getInstance().then((value) {
+        final themeString = value.getString('theme');
+        if (themeString != null && themeString == "dark") {
+          setDarkTheme(true);
+        } else {
+          setDarkTheme(false);
+        }
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -202,6 +218,11 @@ class _MyAppState extends State<MyApp> {
   void setDarkTheme(bool value) {
     setState(() {
       _isDark = value;
+    });
+    SharedPreferences.getInstance().then((pref) async {
+      await pref
+          .setString('theme', _isDark ? "dark" : "light")
+          .then((address) async {});
     });
   }
 
