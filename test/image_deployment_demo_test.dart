@@ -174,9 +174,7 @@ Future<void> deploymentDemo(WidgetTester tester,
   expect(find.text("API base URL"), findsOneWidget);
   expect(find.text("API key"), findsOneWidget);
   expect(
-      find.text(
-          "A README or an OpenAPI endpoint specification document in json format"),
-      findsOneWidget);
+      find.text("A README or an OpenAPI json specification"), findsOneWidget);
 
   // Go back and forth between the radio buttons
   await tester.tap(find.byKey(const Key("dhali_hosted-radio_button")));

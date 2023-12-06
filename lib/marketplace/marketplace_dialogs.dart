@@ -550,7 +550,7 @@ class _HostingRadioState extends State<HostingRadio> {
                                 bulletPointItem(context,
                                     'A docker image (please see docs)'),
                                 bulletPointItem(context,
-                                    'A README or OpenAPI endpoint specification document in json format'),
+                                    'A README or an OpenAPI json specification'),
                               ],
                             )
                           : Column(
@@ -562,7 +562,7 @@ class _HostingRadioState extends State<HostingRadio> {
                                 bulletPointItem(context, 'API base URL'),
                                 bulletPointItem(context, 'API key'),
                                 bulletPointItem(context,
-                                    'A README or an OpenAPI endpoint specification document in json format'),
+                                    'A README or an OpenAPI json specification'),
                               ],
                             )
                     ],
