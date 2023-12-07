@@ -46,12 +46,6 @@ Future<void> selectImage(WidgetTester tester) async {
 }
 
 Future<void> selectAPICredentials(WidgetTester tester) async {
-  await tester.tap(find.byKey(const Key("add_header")));
-  await tester.pumpAndSettle();
-  await tester.tap(find.byKey(const Key("add_header")));
-  await tester.pumpAndSettle();
-  await tester.tap(find.byIcon(Icons.remove));
-  await tester.pumpAndSettle();
   await tester.enterText(find.byKey(const Key("api_base_url")), theAPIURL);
   await tester.enterText(find.byKey(const Key('Key 1')), theAPIKeyKey);
   await tester.enterText(find.byKey(const Key('Value 1')), theAPIKeyValue);
