@@ -6,8 +6,12 @@ import 'package:uuid/uuid.dart';
 
 var uuid = const Uuid();
 String theInputAssetName = "integration-test-api";
-const String theAPIURL = "https://api.xrpldata.com/api/v1";
-const String theAPIKey = "integration-test-key";
+// The whitespace should not be entered
+const String theAPIURL = "https://api.xrplda ta.com/api/v1";
+// The whitespace should not be entered
+const String theAPIKeyKey = "integration-test-key key-with-space";
+// The whitespace should be entered
+const String theAPIKeyValue = "integration-test-key value-with-space";
 
 enum FileType { readme, dockerImage }
 
@@ -43,7 +47,8 @@ Future<void> selectImage(WidgetTester tester) async {
 
 Future<void> selectAPICredentials(WidgetTester tester) async {
   await tester.enterText(find.byKey(const Key("api_base_url")), theAPIURL);
-  await tester.enterText(find.byKey(const Key("api_key")), theAPIKey);
+  await tester.enterText(find.byKey(const Key('Key 1')), theAPIKeyKey);
+  await tester.enterText(find.byKey(const Key('Value 1')), theAPIKeyValue);
   await tester.pumpAndSettle();
   await tester.tap(find.byKey(const Key("APICredentialsNext")));
   await tester.pumpAndSettle();

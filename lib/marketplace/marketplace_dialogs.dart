@@ -528,8 +528,10 @@ class _HostingRadioState extends State<HostingRadio> {
             children: [
               Container(
                   decoration: BoxDecoration(
-                    border: Border.all(color: Colors.blue, width: 2.0),
-                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                        color: Theme.of(context).colorScheme.primary,
+                        width: 2.0),
+                    borderRadius: BorderRadius.circular(30),
                   ),
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
@@ -550,7 +552,7 @@ class _HostingRadioState extends State<HostingRadio> {
                                 bulletPointItem(context,
                                     'A docker image (please see docs)'),
                                 bulletPointItem(context,
-                                    'A README or OpenAPI endpoint specification document in json format'),
+                                    'A README or an OpenAPI json specification'),
                               ],
                             )
                           : Column(
@@ -562,7 +564,7 @@ class _HostingRadioState extends State<HostingRadio> {
                                 bulletPointItem(context, 'API base URL'),
                                 bulletPointItem(context, 'API key'),
                                 bulletPointItem(context,
-                                    'A README or an OpenAPI endpoint specification document in json format'),
+                                    'A README or an OpenAPI json specification'),
                               ],
                             )
                     ],
@@ -1208,8 +1210,10 @@ class _ChargeWidgetState extends State<ChargeWidget> {
               children: [
                 Container(
                   decoration: BoxDecoration(
-                    border: Border.all(color: Colors.blue, width: 2.0),
-                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                        color: Theme.of(context).colorScheme.primary,
+                        width: 2.0),
+                    borderRadius: BorderRadius.circular(30),
                   ),
                   padding: const EdgeInsets.all(16.0),
                   child: Text(
@@ -1294,8 +1298,205 @@ class _ChargeWidgetState extends State<ChargeWidget> {
   }
 }
 
+class KeyValuePairsPage extends StatefulWidget {
+  const KeyValuePairsPage(
+      {super.key,
+      required this.width,
+      required this.getKeyControllers,
+      required this.setKeyControllers,
+      required this.getValueControllers,
+      required this.setValueControllers});
+
+  final List<TextEditingController> Function() getKeyControllers;
+  final void Function(List<TextEditingController>) setKeyControllers;
+  final List<TextEditingController> Function() getValueControllers;
+  final void Function(List<TextEditingController>) setValueControllers;
+
+  final double width;
+  @override
+  _KeyValuePairsPageState createState() => _KeyValuePairsPageState();
+}
+
+class _KeyValuePairsPageState extends State<KeyValuePairsPage> {
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  void addKeyValueControllers() {
+    var keyControllers = widget.getKeyControllers();
+    var valueControllers = widget.getValueControllers();
+
+    keyControllers.add(TextEditingController());
+    valueControllers.add(TextEditingController());
+
+    widget.setKeyControllers(keyControllers);
+    widget.setValueControllers(valueControllers);
+  }
+
+  void removeKeyValueControllers() {
+    var keyControllers = widget.getKeyControllers();
+    var valueControllers = widget.getValueControllers();
+
+    keyControllers.removeLast();
+    valueControllers.removeLast();
+
+    widget.setKeyControllers(keyControllers);
+    widget.setValueControllers(valueControllers);
+  }
+
+  Widget keyValueWidget(int index) {
+    var valueRegExp = RegExp(r'[a-zA-Z0-9\s\-_\.]*');
+    var keyRegExp = RegExp(r'[a-zA-Z0-9\-_\.]*'); // No whitespace either
+    const maxLength = 4096;
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Flexible(
+            child: TextField(
+          key: Key('Key ${index + 1}'),
+          inputFormatters: [
+            FilteringTextInputFormatter.allow(keyRegExp),
+            LengthLimitingTextInputFormatter(maxLength),
+          ],
+          onChanged: (value) {
+            // Because buildHeaderString() builds a static string, whenever the
+            // user inputs new text, we must call the following so that setState
+            // is called
+            widget.setKeyControllers(widget.getKeyControllers());
+          },
+          controller: widget.getKeyControllers()[index],
+          decoration: InputDecoration(
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(
+                  20), // Increase this value for more rounded corners
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius:
+                  BorderRadius.circular(20), // Also apply for the enabled state
+              borderSide: const BorderSide(
+                color: Colors.grey, // You can change the border color here
+              ),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius:
+                  BorderRadius.circular(20), // And for the focused state
+              borderSide: BorderSide(
+                width: 3,
+                color: Theme.of(context)
+                    .colorScheme
+                    .primary, // And the border color when the TextField is focused
+              ),
+            ),
+            labelText: 'Key ${index + 1}',
+          ),
+        )),
+        const SizedBox(
+          height: 5,
+          width: 10,
+        ),
+        Flexible(
+            child: TextField(
+          inputFormatters: [
+            FilteringTextInputFormatter.allow(valueRegExp),
+            LengthLimitingTextInputFormatter(maxLength),
+          ],
+          key: Key('Value ${index + 1}'),
+          onChanged: (value) {
+            // Because buildHeaderString() builds a static string, whenever the
+            // user inputs new text, we must call the following so that setState
+            // is called
+            widget.setValueControllers(widget.getValueControllers());
+          },
+          controller: widget.getValueControllers()[index],
+          decoration: InputDecoration(
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(
+                  20), // Increase this value for more rounded corners
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius:
+                  BorderRadius.circular(20), // Also apply for the enabled state
+              borderSide: const BorderSide(
+                color: Colors.grey, // You can change the border color here
+              ),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius:
+                  BorderRadius.circular(20), // And for the focused state
+              borderSide: BorderSide(
+                width: 3,
+                color: Theme.of(context)
+                    .colorScheme
+                    .primary, // And the border color when the TextField is focused
+              ),
+            ),
+            labelText: 'Value ${index + 1}',
+          ),
+        )),
+      ],
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        ConstrainedBox(
+          constraints: BoxConstraints(
+            maxHeight: 250, // maximum height
+            minWidth: widget.width, // minimum width as per your requirement
+          ),
+          child: Scrollbar(
+              thickness: 10,
+              trackVisibility: true,
+              thumbVisibility: true,
+              controller: _scrollController,
+              child: ListView.builder(
+                controller: _scrollController,
+                shrinkWrap: true,
+                itemCount: 2 * widget.getKeyControllers().length,
+                itemBuilder: (context, index) => index % 2 == 0
+                    ? keyValueWidget((index / 2).floor())
+                    : const SizedBox(
+                        height: 10,
+                      ),
+              )),
+        ),
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(
+              child: ElevatedButton(
+                onPressed: () {
+                  setState(removeKeyValueControllers);
+                },
+                child: const Icon(Icons.remove),
+              ),
+            ),
+            const SizedBox(
+              height: 5,
+              width: 5,
+            ),
+            ElevatedButton(
+              onPressed: () {
+                setState(addKeyValueControllers);
+              },
+              child: const Icon(Icons.add, key: Key("add_header")),
+            )
+          ],
+        ),
+        const SizedBox(height: 16),
+      ],
+    );
+  }
+}
+
 class LinkedAPIDetailsWidget extends StatefulWidget {
-  final Function(String, String) onNextClicked;
+  final Function(String, Map<String, String>) onNextClicked;
   final int step;
   final int steps;
 
@@ -1310,7 +1511,10 @@ class LinkedAPIDetailsWidget extends StatefulWidget {
 
 class _LinkedAPIDetailsWidgetState extends State<LinkedAPIDetailsWidget> {
   final apiBaseUrlController = TextEditingController();
-  final apiKeyController = TextEditingController();
+  List<TextEditingController> apiKeyKeyControllers = [TextEditingController()];
+  List<TextEditingController> apiKeyValueControllers = [
+    TextEditingController()
+  ];
   bool scanning = true;
 
   @override
@@ -1318,76 +1522,138 @@ class _LinkedAPIDetailsWidgetState extends State<LinkedAPIDetailsWidget> {
     super.initState();
   }
 
+  bool allHeadersAreComplete() {
+    if (apiKeyKeyControllers.isEmpty) {
+      return false;
+    }
+    for (int i = 0; i < apiKeyKeyControllers.length; i++) {
+      if (apiKeyKeyControllers[i].text.isEmpty ||
+          apiKeyValueControllers[i].text.isEmpty) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  String buildHeaderString() {
+    const maxCharsOfKey = 10;
+    List<String> lines = [];
+    for (int i = 0; i < apiKeyKeyControllers.length; i++) {
+      if (apiKeyKeyControllers[i].text.isNotEmpty ||
+          apiKeyValueControllers[i].text.isNotEmpty) {
+        String key = apiKeyKeyControllers[i].text;
+        String value = apiKeyValueControllers[i].text;
+        String shortenedValue =
+            value.substring(0, min(maxCharsOfKey, value.length));
+        String line =
+            "'$key: ${value.length > maxCharsOfKey ? "$shortenedValue..." : value}'";
+        lines.add(line);
+      }
+    }
+    if (allHeadersAreComplete()) {
+      return "Requests will have headers\n\n${lines.join("\n")}";
+    }
+    return "You must complete all headers";
+  }
+
   @override
   Widget build(BuildContext context) {
+    var width = isDesktopResolution(context) ? 600.0 : 250.0;
     return getDialogTemplate(
       step: widget.step,
       steps: widget.steps,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+      child: ListView(
         children: [
+          const SizedBox(
+            height: 100,
+          ),
           const Text(
             "What are your APIs details?",
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            textAlign: TextAlign.start,
+            textAlign: TextAlign.center,
           ),
           const SizedBox(
             height: 16,
           ),
-          const Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-            Text(
-              "API base URL:",
-              style: TextStyle(fontSize: 18),
-              textAlign: TextAlign.start,
-            )
+          SizedBox(
+              width: width,
+              child: const Text(
+                "API base URL:",
+                style: TextStyle(fontSize: 18),
+                textAlign: TextAlign.center,
+              )),
+          Row(mainAxisSize: MainAxisSize.min, children: [
+            Flexible(child: Container()),
+            SizedBox(
+                width: width,
+                child: TextField(
+                  key: const Key("api_base_url"),
+                  controller: apiBaseUrlController,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(RegExp(
+                        r'[^\s]+')), // This regex disallows any whitespace
+                  ],
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(
+                          20), // Increase this value for more rounded corners
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(
+                          20), // Also apply for the enabled state
+                      borderSide: const BorderSide(
+                        color:
+                            Colors.grey, // You can change the border color here
+                      ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(
+                          20), // And for the focused state
+                      borderSide: BorderSide(
+                        width: 3,
+                        color: Theme.of(context)
+                            .colorScheme
+                            .primary, // And the border color when the TextField is focused
+                      ),
+                    ),
+                    labelText: 'URL',
+                  ),
+                )),
+            Flexible(child: Container()),
           ]),
-          TextField(
-            key: const Key("api_base_url"),
-            inputFormatters: [
-              FilteringTextInputFormatter.allow(
-                  RegExp(r'[^\s]+')), // This regex disallows any whitespace
-            ],
-            onChanged: (value) => setState(() {}),
-            controller: apiBaseUrlController,
-            // ignore: prefer_const_constructors
-            decoration: InputDecoration(
-              labelStyle: const TextStyle(fontSize: 20),
-              helperStyle: const TextStyle(fontWeight: FontWeight.bold),
+          const SizedBox(
+            height: 16,
+          ),
+          SizedBox(
+            width: width,
+            child: const Text(
+              "API header:",
+              style: TextStyle(fontSize: 18),
+              textAlign: TextAlign.center,
             ),
           ),
-          const SizedBox(
-            height: 16,
-          ),
-          const Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Text(
-                "API bearer token:",
-                style: TextStyle(fontSize: 18),
-                textAlign: TextAlign.start,
-              ),
-            ],
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Text(
-                "Consider a custom service account for this.\n",
-                textAlign: TextAlign.start,
+          SizedBox(
+              width: width,
+              child: Text(
+                "These must not expire.\n",
+                textAlign: TextAlign.center,
                 style:
                     TextStyle(fontSize: isDesktopResolution(context) ? 14 : 12),
-              )
-            ],
-          ),
-          TextField(
-            key: const Key("api_key"),
-            onChanged: (value) => setState(() {}),
-            controller: apiKeyController,
-            // ignore: prefer_const_constructors
-            decoration: InputDecoration(
-              labelStyle: const TextStyle(fontSize: 20),
-              helperStyle: const TextStyle(fontWeight: FontWeight.bold),
-            ),
+              )),
+          KeyValuePairsPage(
+            width: width,
+            setKeyControllers: (value) {
+              setState(() {
+                apiKeyKeyControllers = value;
+              });
+            },
+            setValueControllers: (value) {
+              setState(() {
+                apiKeyValueControllers = value;
+              });
+            },
+            getKeyControllers: () => apiKeyKeyControllers,
+            getValueControllers: () => apiKeyValueControllers,
           ),
           const SizedBox(
             height: 16,
@@ -1397,14 +1663,16 @@ class _LinkedAPIDetailsWidgetState extends State<LinkedAPIDetailsWidget> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
+                  width: width,
                   decoration: BoxDecoration(
-                    border: Border.all(color: Colors.blue, width: 2.0),
-                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                        color: Theme.of(context).colorScheme.primary,
+                        width: 2.0),
+                    borderRadius: BorderRadius.circular(30),
                   ),
                   padding: const EdgeInsets.all(16.0),
                   child: Text(
-                    "Requests will have the header \n\n"
-                    "'Authorization: Bearer ${apiKeyController.text.substring(0, min(10, apiKeyController.text.length))}...'",
+                    buildHeaderString(),
                     style: TextStyle(
                         fontSize: isDesktopResolution(context) ? 18 : 12),
                     softWrap: true,
@@ -1453,14 +1721,21 @@ class _LinkedAPIDetailsWidgetState extends State<LinkedAPIDetailsWidget> {
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(4))),
                 onPressed: apiBaseUrlController.text.isNotEmpty &&
-                        apiKeyController.text.isNotEmpty
+                        allHeadersAreComplete()
                     ? () {
+                        Map<String, String> keyValueMap = {};
+                        for (int idx = 0;
+                            idx < apiKeyKeyControllers.length;
+                            idx++) {
+                          keyValueMap[apiKeyKeyControllers[idx].text] =
+                              apiKeyValueControllers[idx].text;
+                        }
                         gtag(
                             command: "event",
                             target: "NextClicked",
                             parameters: {"from": "LinkedAPIDetailsWidget"});
                         widget.onNextClicked(
-                            apiBaseUrlController.text, apiKeyController.text);
+                            apiBaseUrlController.text, keyValueMap);
                       }
                     : null,
                 icon: Icon(
