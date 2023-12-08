@@ -40,8 +40,10 @@ String theSanitsedString =
 String theUnsantisatedAPIKeyKey = theUnsanitisedString;
 String theUnsantisatedAPIKeyValue = theUnsanitisedString.replaceFirst("T", "t");
 
-String theAPIKeyKey = theSanitsedString;
-String theAPIKeyValue = theSanitsedString.replaceFirst("T", "t");
+String theAPIKeyKey =
+    theSanitsedString.replaceAll(" ", ""); // No whitespace allowed in keys
+String theAPIKeyValue = theSanitsedString.replaceFirst("T",
+    "t"); // Whitespace allowed, but also replace the character to make sure expected key/value gststrings are different
 
 const String theAssetName = "abadl3ynmed-asset";
 const String theDhaliAssetID = "a-session-id";
