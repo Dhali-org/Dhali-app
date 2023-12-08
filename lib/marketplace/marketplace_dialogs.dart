@@ -1348,7 +1348,8 @@ class _KeyValuePairsPageState extends State<KeyValuePairsPage> {
   }
 
   Widget keyValueWidget(int index) {
-    var regExp = RegExp(r'[a-zA-Z0-9\s\-_\.]*');
+    var valueRegExp = RegExp(r'[a-zA-Z0-9\s\-_\.]*');
+    var keyRegExp = RegExp(r'[a-zA-Z0-9\-_\.]*'); // No whitespace either
     const maxLength = 4096;
     return Row(
       mainAxisSize: MainAxisSize.min,
@@ -1357,7 +1358,7 @@ class _KeyValuePairsPageState extends State<KeyValuePairsPage> {
             child: TextField(
           key: Key('Key ${index + 1}'),
           inputFormatters: [
-            FilteringTextInputFormatter.allow(regExp),
+            FilteringTextInputFormatter.allow(keyRegExp),
             LengthLimitingTextInputFormatter(maxLength),
           ],
           onChanged: (value) {
@@ -1399,7 +1400,7 @@ class _KeyValuePairsPageState extends State<KeyValuePairsPage> {
         Flexible(
             child: TextField(
           inputFormatters: [
-            FilteringTextInputFormatter.allow(regExp),
+            FilteringTextInputFormatter.allow(valueRegExp),
             LengthLimitingTextInputFormatter(maxLength),
           ],
           key: Key('Value ${index + 1}'),
