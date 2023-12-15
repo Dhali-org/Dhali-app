@@ -119,7 +119,7 @@ Future<void> deploymentDemo(WidgetTester tester, int responseCode,
   await tester.pumpAndSettle();
   await tester.tap(find.text("Marketplace"));
   await tester.pumpAndSettle();
-  await tester.tap(find.byKey(const Key("my_apis_tile")));
+  await tester.tap(find.byKey(const Key("my_apis_drawer_entry")));
   await tester.pumpAndSettle();
   expect(find.text(theInputAssetName), findsOneWidget);
 }
