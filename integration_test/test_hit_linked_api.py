@@ -17,6 +17,7 @@ def make_request_and_measure_time(url, headers):
     response = requests.get(url, headers=headers)
     print(response.status_code)
     end_time = time.time()
+    time.sleep(10)
     return end_time - start_time
 
 def test_main():
