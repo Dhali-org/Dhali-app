@@ -71,14 +71,14 @@ void main() async {
     });
     when(mockWallet.mnemonic).thenReturn("memorable words");
     when(mockWallet.getOpenPaymentChannels(
-            destination_address: "rstbSTpPcyxMsiXwkBxS9tFTrg2JsDNxWk"))
+            destination_address: "rhtfMhppuk5siMi8jvkencnCTyjciArCh7"))
         .thenAnswer((_) async {
       return Future.value(
           [PaymentChannelDescriptor("CHANNEL_ID_STRING", 10000000)]);
     });
     when(mockWallet.preparePayment(
             context: null,
-            destinationAddress: "rstbSTpPcyxMsiXwkBxS9tFTrg2JsDNxWk",
+            destinationAddress: "rhtfMhppuk5siMi8jvkencnCTyjciArCh7",
             authAmount: anyNamed("authAmount"),
             channelDescriptor: anyNamed("channelDescriptor")))
         .thenAnswer((_) {

@@ -9,7 +9,7 @@ from dhali import payment_claim_generator as pcg
 
 
 wallet = pcg.get_xrpl_wallet()
-payment_claim = json.dumps(pcg.get_xrpl_payment_claim(wallet.seed, "rstbSTpPcyxMsiXwkBxS9tFTrg2JsDNxWk", "10000000", wallet.sequence, "100000000"))
+payment_claim = json.dumps(pcg.get_xrpl_payment_claim(wallet.seed, "rhtfMhppuk5siMi8jvkencnCTyjciArCh7", "10000000", wallet.sequence, "100000000"))
 
 
 def make_request_and_measure_time(url, headers):
@@ -17,6 +17,7 @@ def make_request_and_measure_time(url, headers):
     response = requests.get(url, headers=headers)
     print(response.status_code)
     end_time = time.time()
+    time.sleep(10)
     return end_time - start_time
 
 def test_main():
