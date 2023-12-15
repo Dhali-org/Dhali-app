@@ -172,7 +172,23 @@ class _MyAppState extends State<MyApp> {
                       future: Future.delayed(const Duration(seconds: 2)),
                     );
                   }
+
+                  double paidOut = snapshot.data!.data()!.containsKey(
+                          Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]
+                              ["TOTAL_PAID_OUT"])
+                      ? snapshot.data![
+                          Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]
+                              ["TOTAL_PAID_OUT"]]
+                      : 0;
+                  double earnings = snapshot.data!.data()!.containsKey(
+                          Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]
+                              ["TOTAL_PAID_OUT"])
+                      ? snapshot.data![Config
+                          .config!["MINTED_NFTS_DOCUMENT_KEYS"]["TOTAL_EARNED"]]
+                      : 0;
                   MarketplaceListData element = MarketplaceListData(
+                      paidOut: paidOut,
+                      earnings: earnings,
                       assetID: pathList[2],
                       assetName: snapshot.data![Config
                           .config!["MINTED_NFTS_DOCUMENT_KEYS"]["ASSET_NAME"]],

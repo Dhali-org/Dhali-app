@@ -8,6 +8,8 @@ class MarketplaceListData {
     this.reviews = 80,
     this.numberOfSuccessfullRequests = 4.5,
     this.pricePerRun = 180,
+    this.earnings = 0,
+    this.paidOut = 0,
   });
 
   String assetID;
@@ -18,6 +20,8 @@ class MarketplaceListData {
   double numberOfSuccessfullRequests;
   int reviews;
   double pricePerRun;
+  double earnings;
+  double paidOut;
 
   static List<MarketplaceListData> marketplaceList = <MarketplaceListData>[
     MarketplaceListData(
