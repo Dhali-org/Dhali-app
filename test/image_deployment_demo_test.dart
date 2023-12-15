@@ -454,7 +454,7 @@ void main() async {
       ]);
     });
     when(mockWallet.getOpenPaymentChannels(
-            destination_address: "rstbSTpPcyxMsiXwkBxS9tFTrg2JsDNxWk"))
+            destination_address: "rhtfMhppuk5siMi8jvkencnCTyjciArCh7"))
         .thenAnswer((_) async {
       return Future.value(
           [PaymentChannelDescriptor("CHANNEL_ID_STRING", 10000000)]);
@@ -473,7 +473,7 @@ void main() async {
     });
     when(mockWallet.preparePayment(
             context: anyNamed("context"),
-            destinationAddress: "rstbSTpPcyxMsiXwkBxS9tFTrg2JsDNxWk",
+            destinationAddress: "rhtfMhppuk5siMi8jvkencnCTyjciArCh7",
             authAmount: anyNamed("authAmount"),
             channelDescriptor: anyNamed("channelDescriptor")))
         .thenAnswer((_) {
