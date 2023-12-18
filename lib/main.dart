@@ -54,8 +54,8 @@ class MyApp extends StatefulWidget {
 }
 
 class HomeWithBanner extends StatefulWidget {
-  const HomeWithBanner({super.key, required this.child});
-  final Widget child;
+  const HomeWithBanner({super.key, required this.childBuilder});
+  final Widget Function() childBuilder;
 
   @override
   State<HomeWithBanner> createState() => _HomeWithBannerState();
@@ -63,13 +63,22 @@ class HomeWithBanner extends StatefulWidget {
 
 class _HomeWithBannerState extends State<HomeWithBanner> {
   bool displayBanner = true;
+  late final Widget child; // Declare a final variable for the child widget
+
+  @override
+  void initState() {
+    super.initState();
+    child =
+        widget.childBuilder(); // Initialize the child widget once in initState
+  }
 
   @override
   Widget build(BuildContext context) {
-    if (displayBanner) {
-      return Stack(
-        children: [
-          widget.child,
+    // Use the already initialized child widget in the build method
+    return Stack(
+      children: [
+        child,
+        if (displayBanner) // Use the 'if' inside the children list for conditionally displaying the banner
           MaterialBanner(
             padding: const EdgeInsets.all(20),
             content: const Text(
@@ -88,11 +97,9 @@ class _HomeWithBannerState extends State<HomeWithBanner> {
                 child: const Text('DISMISS'),
               ),
             ],
-          )
-        ],
-      );
-    }
-    return widget.child;
+          ),
+      ],
+    );
   }
 }
 
@@ -102,6 +109,8 @@ class _MyAppState extends State<MyApp> {
   DhaliWallet? _wallet;
 
   bool _isDark = false;
+
+  Widget? _child;
 
   @override
   void initState() {
@@ -209,16 +218,22 @@ class _MyAppState extends State<MyApp> {
         home: getHomeScreen());
   }
 
+  Widget getChild() {
+    return _child!;
+  }
+
   Widget getHomeScreen({Map<String, String>? queryParams}) {
+    _child = NavigationHomeScreen(
+        setDarkTheme: setDarkTheme,
+        isDarkTheme: isDarkTheme,
+        getWallet: getWallet,
+        setWallet: setWallet,
+        firestore: FirebaseFirestore.instance,
+        getRequest: widget.getRequest,
+        queryParams: queryParams);
+
     return HomeWithBanner(
-      child: NavigationHomeScreen(
-          setDarkTheme: setDarkTheme,
-          isDarkTheme: isDarkTheme,
-          getWallet: getWallet,
-          setWallet: setWallet,
-          firestore: FirebaseFirestore.instance,
-          getRequest: widget.getRequest,
-          queryParams: queryParams),
+      childBuilder: getChild,
     );
   }
 
