@@ -121,6 +121,8 @@ Future<void> deploymentDemo(WidgetTester tester, int responseCode,
   await tester.pumpAndSettle();
   await tester.tap(find.byKey(const Key("my_apis_drawer_entry")));
   await tester.pumpAndSettle();
+  await tester
+      .pumpAndSettle(); // Add an extra pump and settle to allow for slower XRPL node response
   expect(find.text(theInputAssetName), findsOneWidget);
 }
 
