@@ -53,35 +53,46 @@ class MyApp extends StatefulWidget {
   State<MyApp> createState() => _MyAppState();
 }
 
-class HomeWithBanner extends StatelessWidget {
+class HomeWithBanner extends StatefulWidget {
+  const HomeWithBanner({super.key, required this.child});
   final Widget child;
 
-  const HomeWithBanner({super.key, required this.child});
+  @override
+  State<HomeWithBanner> createState() => _HomeWithBannerState();
+}
+
+class _HomeWithBannerState extends State<HomeWithBanner> {
+  bool displayBanner = true;
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        child,
-        Positioned(
-          bottom: 0.0,
-          left: 0.0,
-          right: 0.0,
-          child: Container(
-            color: const Color.fromARGB(255, 248, 149, 36),
-            child: const Padding(
-              padding: EdgeInsets.all(8.0),
-              child: FittedBox(
-                  fit: BoxFit.fitWidth,
-                  child: Text(
-                      "Warning!  This is a preview, and uses the XRPL testnet.  Please only use testnet wallets.  Created assets may not persist!",
-                      style: TextStyle(),
-                      textAlign: TextAlign.center)),
+    if (displayBanner) {
+      return Stack(
+        children: [
+          widget.child,
+          MaterialBanner(
+            padding: const EdgeInsets.all(20),
+            content: const Text(
+              "This is a preview. Please only use testnet wallets.",
+              style: TextStyle(fontSize: 18),
             ),
-          ),
-        ),
-      ],
-    );
+            leading: const Icon(Icons.warning),
+            backgroundColor: const Color.fromARGB(255, 255, 146, 22),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  setState(() {
+                    displayBanner = false;
+                  });
+                },
+                child: const Text('DISMISS'),
+              ),
+            ],
+          )
+        ],
+      );
+    }
+    return widget.child;
   }
 }
 
