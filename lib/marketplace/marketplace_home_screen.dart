@@ -61,8 +61,7 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
   HostingChoice? hostingChoice;
   double? earningsRate;
 
-  @override
-  void initState() {
+  void setStream() {
     if (widget.assetScreenType == AssetScreenType.MyAssets) {
       stream = widget
           .getFirestore()!
@@ -76,6 +75,11 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
           .limit(20)
           .snapshots();
     }
+  }
+
+  @override
+  void initState() {
+    setStream();
     animationController = AnimationController(
         duration: const Duration(milliseconds: 1000), vsync: this);
     super.initState();
@@ -972,6 +976,13 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
       String exceptionString,
       void Function(String) onNFTOfferPoll) {
     return DataTransmissionWidget(
+      onExitClicked: () {
+        setState(() {
+          // We set the stream here to make the page refresh and show the user
+          // their deployed API
+          setStream();
+        });
+      },
       getUploader: (
           {required payment,
           required getRequest,
@@ -1009,11 +1020,19 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
         }
 
         return NFTUploadingWidget(
-            context,
-            widget.getFirestore,
-            onNFTOfferPoll,
-            () => response
-                .headers[Config.config!["DHALI_ID"].toString().toLowerCase()]);
+          context,
+          widget.getFirestore,
+          onNFTOfferPoll,
+          () => response
+              .headers[Config.config!["DHALI_ID"].toString().toLowerCase()],
+          onExitClicked: () {
+            setState(() {
+              // We set the stream here to make the page refresh and show the user
+              // their deployed API
+              setStream();
+            });
+          },
+        );
       },
     );
   }
@@ -1024,6 +1043,13 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
       String exceptionString,
       void Function(String) onNFTOfferPoll) {
     return DataTransmissionWidget(
+      onExitClicked: () {
+        setState(() {
+          // We set the stream here to make the page refresh and show the user
+          // their deployed API
+          setStream();
+        });
+      },
       getUploader: (
           {required payment,
           required getRequest,
@@ -1119,11 +1145,19 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
               }
 
               return NFTUploadingWidget(
-                  context,
-                  widget.getFirestore,
-                  onNFTOfferPoll,
-                  () => response.headers[
-                      Config.config!["DHALI_ID"].toString().toLowerCase()]);
+                context,
+                widget.getFirestore,
+                onNFTOfferPoll,
+                () => response.headers[
+                    Config.config!["DHALI_ID"].toString().toLowerCase()],
+                onExitClicked: () {
+                  setState(() {
+                    // We set the stream here to make the page refresh and show the user
+                    // their deployed API
+                    setStream();
+                  });
+                },
+              );
             });
       },
     );
