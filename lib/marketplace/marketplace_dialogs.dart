@@ -2086,6 +2086,7 @@ class DeploymentCostWidget extends StatelessWidget {
 class DataTransmissionWidget extends StatefulWidget {
   final List<DataEndpointPair> data;
   final Function(List<DataEndpointPair>) onNextClicked;
+  final Function()? onExitClicked;
   final BaseRequest Function<T extends BaseRequest>(String method, String path)
       getRequest;
   final Widget? Function(BuildContext context, BaseResponse?)?
@@ -2103,6 +2104,7 @@ class DataTransmissionWidget extends StatefulWidget {
     required this.payment,
     required this.getUploader,
     required this.getOnSuccessWidget,
+    this.onExitClicked,
   });
 
   @override
@@ -2226,6 +2228,9 @@ class _DataTransmissionWidgetState extends State<DataTransmissionWidget> {
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(4))),
                         onPressed: () {
+                          if (widget.onExitClicked != null) {
+                            widget.onExitClicked!();
+                          }
                           if (deploying) {
                             gtag(
                                 command: "event",
@@ -2376,7 +2381,8 @@ Widget NFTUploadingWidget(
     BuildContext context,
     FirebaseFirestore? Function() getFirestore,
     void Function(String nfTokenId) onNFTOfferPoll,
-    String? Function() getSessionID) {
+    String? Function() getSessionID,
+    {void Function()? onExitClicked}) {
   var nfTokenIdStream = getFirestore()!
       .collection(Config.config!["MINTED_NFTS_COLLECTION_NAME"])
       .doc(getSessionID())
@@ -2440,6 +2446,9 @@ Widget NFTUploadingWidget(
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(4))),
                       onPressed: () {
+                        if (onExitClicked != null) {
+                          onExitClicked();
+                        }
                         Navigator.of(context).popUntil((route) {
                           // Here, we assume that a Dialog doesn't have a route name (which is true by default).
                           // If you've given a custom name to your Dialog route, check against that name instead.
