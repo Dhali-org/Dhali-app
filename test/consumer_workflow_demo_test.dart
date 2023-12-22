@@ -31,6 +31,8 @@ const String dhaliAccount = "${creatorAccount}diff";
 const double inferenceTime = 1.0;
 const List<String> categories = ["A category"];
 const double cost = 1000000;
+const double earnings = 10102;
+const double paidOut = 10101;
 const numSuccessfulRequests = 10.0;
 const endpointUrl = "a random url";
 
@@ -126,6 +128,8 @@ void main() async {
           getReadme: (path) => Future.value(Response("# A markdown", 200)),
           getFirestore: () => firebaseMockInstance,
           asset: MarketplaceListData(
+              earnings: earnings,
+              paidOut: paidOut,
               assetID: theAssetID,
               assetName: theAssetName,
               assetCategories: categories,

@@ -326,7 +326,19 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
         animationController?.forward();
         Map<String, dynamic> elementData =
             docs[index].data() as Map<String, dynamic>;
+        double paidOut = elementData.containsKey(
+                Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]["TOTAL_PAID_OUT"])
+            ? elementData[Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]
+                ["TOTAL_PAID_OUT"]]
+            : 0;
+        double earnings = elementData.containsKey(
+                Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]["TOTAL_PAID_OUT"])
+            ? elementData[Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]
+                ["TOTAL_EARNED"]]
+            : 0;
         MarketplaceListData element = MarketplaceListData(
+            paidOut: paidOut,
+            earnings: earnings,
             assetID: docs[index].id,
             assetName: elementData[Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]
                 ["ASSET_NAME"]],
