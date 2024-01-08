@@ -42,7 +42,7 @@ dependencies:
     wakelock: ^0.6.2
     tuple: ^2.0.1
     js: ^0.6.5
-    cloud_firestore: ^4.4.0
+    cloud_firestore: 4.9.3 # TODO : Remove this pin once this is resolved - https://github.com/atn832/fake_cloud_firestore/issues/289
     fake_cloud_firestore: ^2.4.0
     node_interop: ^2.1.0
     xrpl: ^0.0.7
