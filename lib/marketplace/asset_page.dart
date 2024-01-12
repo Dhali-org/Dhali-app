@@ -174,6 +174,34 @@ class _AssetPageState extends State<AssetPage> {
                             style: const TextStyle(fontSize: 15),
                             children: <TextSpan>[
                               const TextSpan(
+                                  text: 'Earnings: ',
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.bold)),
+                              TextSpan(
+                                  text:
+                                      '~${(widget.asset.earnings / 1000000).toStringAsFixed(4)} XRP'),
+                            ],
+                          ),
+                        ),
+                        SelectableText.rich(
+                          TextSpan(
+                            style: const TextStyle(fontSize: 15),
+                            children: <TextSpan>[
+                              const TextSpan(
+                                  text: 'Paid out: ',
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.bold)),
+                              TextSpan(
+                                  text:
+                                      '~${(widget.asset.paidOut / 1000000).toStringAsFixed(4)} XRP'),
+                            ],
+                          ),
+                        ),
+                        SelectableText.rich(
+                          TextSpan(
+                            style: const TextStyle(fontSize: 15),
+                            children: <TextSpan>[
+                              const TextSpan(
                                   text: 'Used: ',
                                   style:
                                       TextStyle(fontWeight: FontWeight.bold)),

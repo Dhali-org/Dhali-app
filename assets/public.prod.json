@@ -12,7 +12,8 @@
         "NFTOKEN_ID": "NFTokenId",
         "EARNING_RATE": "asset_earning_rate",
         "EARNING_TYPE": "asset_earning_type",
-        "CANONICAL_API": "canonical_api"
+        "CANONICAL_API": "canonical_api",
+        "API_EARNINGS": "api_earnings"
     },
     "MINTED_NFTS_COLLECTION_NAME": "public_minted_nfts",
     "PAYMENT_CLAIM_KEYS": {
