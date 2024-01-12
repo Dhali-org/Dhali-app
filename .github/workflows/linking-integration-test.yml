@@ -51,7 +51,7 @@ jobs:
 
     - name: Install Python dependencies
       run: |
-        pip install google-cloud-firestore firebase-admin dhali-py
+        pip install google-cloud-firestore firebase-admin dhali-py==0.0.41
 
     - name: Hit created API test
       run: |
