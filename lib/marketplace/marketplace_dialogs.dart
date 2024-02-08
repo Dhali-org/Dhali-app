@@ -330,9 +330,6 @@ class _AssetNameWidgetState extends State<AssetNameWidget> {
             const SizedBox(
               height: 25,
             ),
-            const Text("How will your API be hosted?",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                textAlign: TextAlign.start),
             HostingRadio(
               onChoiceSelected: (choice) {
                 _choice = choice;
@@ -497,31 +494,6 @@ class _HostingRadioState extends State<HostingRadio> {
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        SizedBox(
-            width: 250,
-            child: RadioListTile<HostingChoice>(
-              key: const Key("self_hosted-radio_button"),
-              title: const Text('Self hosted'),
-              value: HostingChoice.selfHosted,
-              groupValue: _choice,
-              onChanged: (HostingChoice? value) {
-                setChoice(value);
-              },
-            )),
-        SizedBox(
-            width: 250,
-            child: RadioListTile<HostingChoice>(
-              key: const Key("dhali_hosted-radio_button"),
-              title: const Text('Hosted by Dhali'),
-              value: HostingChoice.hostedByDhali,
-              groupValue: _choice,
-              onChanged: (HostingChoice? value) {
-                setChoice(value);
-              },
-            )),
-        const SizedBox(
-          height: 20,
-        ),
         Row(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
@@ -542,20 +514,7 @@ class _HostingRadioState extends State<HostingRadio> {
                           style: TextStyle(
                               fontSize: isDesktopResolution(context) ? 18 : 14),
                           textAlign: TextAlign.start),
-                      _choice == HostingChoice.hostedByDhali
-                          ? Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                bulletPointItem(
-                                    context, 'To know what you\'ll charge'),
-                                bulletPointItem(context,
-                                    'A docker image (please see docs)'),
-                                bulletPointItem(context,
-                                    'A README or an OpenAPI json specification'),
-                              ],
-                            )
-                          : Column(
+                      Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
