@@ -74,17 +74,17 @@ class APIAdminGatewayClient {
     };
 
     if (baseUrl != null || apiHeaders != null) {
-      Map<String, dynamic> api_credentials;
-      api_credentials = {"api_credentials": {}};
+      Map<String, dynamic> apiCredentials;
+      apiCredentials = {"api_credentials": {}};
 
       if (baseUrl != null) {
-        api_credentials["api_credentials"]["url"] = baseUrl;
+        apiCredentials["api_credentials"]["url"] = baseUrl;
       }
 
       if (apiHeaders != null) {
-        api_credentials["api_credentials"].addAll(apiHeaders);
+        apiCredentials["api_credentials"].addAll(apiHeaders);
       }
-      message["updates"].addAll(api_credentials);
+      message["updates"].addAll(apiCredentials);
     }
 
     if (apiName != null) {

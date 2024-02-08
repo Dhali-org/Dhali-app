@@ -126,7 +126,6 @@ void main() async {
         ),
         home: AssetPage(
           getReadme: (path) => Future.value(Response("# A markdown", 200)),
-          getFirestore: () => firebaseMockInstance,
           asset: MarketplaceListData(
               earnings: earnings,
               paidOut: paidOut,

@@ -10,7 +10,7 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 import 'authentication_client_test.mocks.dart';
 
 class MockDisplayQrAuth extends Mock {
-  void call(String qrUrl, String deep_link);
+  void call(String qrUrl, String deepLink);
 }
 
 class MockPrefillHeaders extends Mock {
@@ -31,8 +31,7 @@ void main() {
     late MockWebSocketChannel mockChannel;
     late MockStream mockStream;
     late APIAdminGatewayClient client;
-    late StreamController<dynamic>
-        streamController; // Use dynamic or the specific type you expect
+    late StreamController<dynamic> streamController;
 
     late MockDisplayQrAuth mockDisplayQrAuth;
     late MockPrefillHeaders mockPrefillHeaders;
@@ -79,7 +78,7 @@ void main() {
           onDone: anyNamed('onDone'), onError: anyNamed('onError')));
       client.connectAndPrefillPrivateMetadata();
 
-      await Future.delayed(Duration(milliseconds: 100));
+      await Future.delayed(const Duration(milliseconds: 100));
 
       verify(mockStream.listen(any,
               onDone: anyNamed('onDone'),
@@ -97,7 +96,7 @@ void main() {
         "deep_link": "https://example.com/deep_link"
       });
 
-      await Future.delayed(Duration(milliseconds: 100));
+      await Future.delayed(const Duration(milliseconds: 100));
 
       // Verify that displayQrAuth was called exactly once
       verify(mockDisplayQrAuth.call(
@@ -120,7 +119,7 @@ void main() {
         "schema_version": "1.0",
       };
 
-      await Future.delayed(Duration(milliseconds: 100));
+      await Future.delayed(const Duration(milliseconds: 100));
 
       verify(webSocketSink.add(jsonEncode(message))).called(1);
     });
@@ -137,7 +136,7 @@ void main() {
         "pre_fill_data": {"base_url": baseUrl, "headers": headers}
       });
 
-      await Future.delayed(Duration(milliseconds: 100));
+      await Future.delayed(const Duration(milliseconds: 100));
 
       verify(mockPrefillBaseUrl.call(baseUrl)).called(1);
       verify(mockPrefillHeaders.call(headers)).called(1);
@@ -152,7 +151,7 @@ void main() {
         "failed_updates": ["D", "E", "F"]
       });
 
-      await Future.delayed(Duration(milliseconds: 100));
+      await Future.delayed(const Duration(milliseconds: 100));
 
       verify(mockOnUpdated.call(["A", "B", "C"], ["D", "E", "F"])).called(1);
     });

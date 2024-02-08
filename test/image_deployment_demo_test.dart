@@ -16,6 +16,7 @@ import 'package:mockito/mockito.dart';
 
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 
+import 'authentication_client_test.mocks.dart';
 import 'image_deployment_demo_test.mocks.dart';
 
 import 'package:dhali/config.dart' show Config;
@@ -404,6 +405,7 @@ void main() async {
   late MockXRPLWallet mockWallet;
   late MockRequest mockRequester;
   late MockMultipartRequest mockMultipartRequester;
+  late MockWebSocketChannel mockChannel;
 
   BaseRequest getRequest<T extends BaseRequest>(String method, String path) {
     if (T == MultipartRequest) {
@@ -419,6 +421,7 @@ void main() async {
     mockRequester = MockRequest();
     mockMultipartRequester = MockMultipartRequest();
     firebaseMockInstance = FakeFirebaseFirestore();
+    mockChannel = MockWebSocketChannel();
 
     const String theAssetName = "abadl3ynmed-asset";
     when(mockWallet.balance).thenReturn(ValueNotifier("1000000"));
@@ -492,6 +495,8 @@ void main() async {
           platform: TargetPlatform.iOS,
         ),
         home: NavigationHomeScreen(
+            getDisplayQRCodeFrom: (_, __) => (___, ____) => {},
+            getWebSocketChannel: (_) => mockChannel,
             setDarkTheme: (value) {},
             isDarkTheme: () => true,
             firestore: firebaseMockInstance,
@@ -532,6 +537,8 @@ void main() async {
           platform: TargetPlatform.iOS,
         ),
         home: NavigationHomeScreen(
+            getDisplayQRCodeFrom: (_, __) => (___, ____) => {},
+            getWebSocketChannel: (_) => mockChannel,
             setDarkTheme: (value) {},
             isDarkTheme: () => true,
             firestore: firebaseMockInstance,
@@ -577,6 +584,8 @@ void main() async {
           platform: TargetPlatform.iOS,
         ),
         home: NavigationHomeScreen(
+            getDisplayQRCodeFrom: (_, __) => (___, ____) => {},
+            getWebSocketChannel: (_) => mockChannel,
             setDarkTheme: (value) {},
             isDarkTheme: () => true,
             firestore: firebaseMockInstance,
@@ -627,6 +636,8 @@ void main() async {
           platform: TargetPlatform.iOS,
         ),
         home: NavigationHomeScreen(
+            getDisplayQRCodeFrom: (_, __) => (___, ____) => {},
+            getWebSocketChannel: (_) => mockChannel,
             setDarkTheme: (value) {},
             isDarkTheme: () => true,
             firestore: firebaseMockInstance,
@@ -673,6 +684,8 @@ void main() async {
           platform: TargetPlatform.iOS,
         ),
         home: NavigationHomeScreen(
+            getDisplayQRCodeFrom: (_, __) => (___, ____) => {},
+            getWebSocketChannel: (_) => mockChannel,
             setDarkTheme: (value) {},
             isDarkTheme: () => true,
             firestore: firebaseMockInstance,
@@ -721,6 +734,8 @@ void main() async {
           platform: TargetPlatform.iOS,
         ),
         home: NavigationHomeScreen(
+            getDisplayQRCodeFrom: (_, __) => (___, ____) => {},
+            getWebSocketChannel: (_) => mockChannel,
             setDarkTheme: (value) {},
             isDarkTheme: () => true,
             firestore: firebaseMockInstance,
@@ -773,6 +788,8 @@ void main() async {
           platform: TargetPlatform.iOS,
         ),
         home: NavigationHomeScreen(
+            getDisplayQRCodeFrom: (_, __) => (___, ____) => {},
+            getWebSocketChannel: (_) => mockChannel,
             setDarkTheme: (value) {},
             isDarkTheme: () => true,
             firestore: firebaseMockInstance,

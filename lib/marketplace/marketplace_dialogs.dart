@@ -272,13 +272,15 @@ class AssetNameWidget extends StatefulWidget {
   final Function(String, HostingChoice) onNextClicked;
   final int step;
   final int steps;
+  final String? defaultName;
 
   const AssetNameWidget(
       {super.key,
       required this.onDroppedFile,
       required this.onNextClicked,
       required this.step,
-      required this.steps});
+      required this.steps,
+      this.defaultName});
   @override
   _AssetNameWidgetState createState() => _AssetNameWidgetState();
 }
@@ -287,6 +289,13 @@ class _AssetNameWidgetState extends State<AssetNameWidget> {
   final textController = TextEditingController();
 
   HostingChoice _choice = HostingChoice.selfHosted;
+  @override
+  void initState() {
+    if (widget.defaultName != null) {
+      textController.text = widget.defaultName!;
+    }
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -515,17 +524,17 @@ class _HostingRadioState extends State<HostingRadio> {
                               fontSize: isDesktopResolution(context) ? 18 : 14),
                           textAlign: TextAlign.start),
                       Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                bulletPointItem(
-                                    context, 'To know what you\'ll charge'),
-                                bulletPointItem(context, 'API base URL'),
-                                bulletPointItem(context, 'API key'),
-                                bulletPointItem(context,
-                                    'A README or an OpenAPI json specification'),
-                              ],
-                            )
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          bulletPointItem(
+                              context, 'To know what you\'ll charge'),
+                          bulletPointItem(context, 'API base URL'),
+                          bulletPointItem(context, 'API key'),
+                          bulletPointItem(context,
+                              'A README or an OpenAPI json specification'),
+                        ],
+                      )
                     ],
                   )),
             ]),
@@ -1458,12 +1467,16 @@ class LinkedAPIDetailsWidget extends StatefulWidget {
   final Function(String, Map<String, String>) onNextClicked;
   final int step;
   final int steps;
+  final Map<String, String>? defaultHeaders;
+  final String? defaultUrl;
 
   const LinkedAPIDetailsWidget(
       {super.key,
       required this.onNextClicked,
       required this.step,
-      required this.steps});
+      required this.steps,
+      this.defaultHeaders,
+      this.defaultUrl});
   @override
   _LinkedAPIDetailsWidgetState createState() => _LinkedAPIDetailsWidgetState();
 }
@@ -1478,6 +1491,18 @@ class _LinkedAPIDetailsWidgetState extends State<LinkedAPIDetailsWidget> {
 
   @override
   void initState() {
+    if (widget.defaultUrl != null) {
+      apiBaseUrlController.text = widget.defaultUrl!;
+    }
+    if (widget.defaultHeaders != null) {
+      apiKeyKeyControllers = [];
+      apiKeyValueControllers = [];
+      for (var header in widget.defaultHeaders!.keys) {
+        apiKeyKeyControllers.add(TextEditingController(text: header));
+        apiKeyValueControllers
+            .add(TextEditingController(text: widget.defaultHeaders![header]));
+      }
+    }
     super.initState();
   }
 

@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:dhali_wallet/dhali_wallet.dart';
+import 'package:dhali_wallet/xumm_wallet.dart';
 import 'package:http/http.dart';
 import 'package:dhali/app_theme.dart';
 import 'package:flutter/material.dart';
@@ -14,6 +15,7 @@ import 'package:dhali/config.dart' show Config;
 import 'package:dhali/marketplace/asset_page.dart';
 import 'package:dhali/marketplace/model/marketplace_list_data.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 
 Future<void> initializeApp() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -29,6 +31,11 @@ Future<void> initializeApp() async {
   ]);
 }
 
+WebSocketChannel getWebSocketChannel(String uuid) {
+  String url = Config.config!["ROOT_API_ADMIN_URL"];
+  return WebSocketChannel.connect(Uri.parse("$url/$uuid/update"));
+}
+
 BaseRequest getRequest<T extends BaseRequest>(String method, String path) {
   if (T == MultipartRequest) {
     return MultipartRequest(method, Uri.parse(path)) as T;
@@ -36,6 +43,18 @@ BaseRequest getRequest<T extends BaseRequest>(String method, String path) {
     return Request(method, Uri.parse(path)) as T;
   }
   throw ArgumentError('Unsupported request type: $T');
+}
+
+Function(String, String) getQRCodeToBeScanned(
+    BuildContext context, DhaliWallet wallet) {
+  void qRCodeToBeScanned(String qrUrl, String deepLink) {
+    displayQRCodeFrom("Verify your identity", context, {
+      "refs": {"qr_png": qrUrl},
+      "next": {"always": deepLink}
+    });
+  }
+
+  return qRCodeToBeScanned;
 }
 
 void main() async {
@@ -203,7 +222,6 @@ class _MyAppState extends State<MyApp> {
                       pricePerRun: snapshot.data![Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]["EXPECTED_INFERENCE_COST"]]);
                   return AssetPage(
                     asset: element,
-                    getFirestore: () => FirebaseFirestore.instance,
                     getRequest: widget.getRequest,
                     getWallet: getWallet,
                   );
@@ -240,6 +258,8 @@ class _MyAppState extends State<MyApp> {
 
   Widget getHomeScreen({Map<String, String>? queryParams}) {
     _child = NavigationHomeScreen(
+        getDisplayQRCodeFrom: getQRCodeToBeScanned,
+        getWebSocketChannel: getWebSocketChannel,
         setDarkTheme: setDarkTheme,
         isDarkTheme: isDarkTheme,
         getWallet: getWallet,
