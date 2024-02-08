@@ -176,9 +176,9 @@ class _MyAppState extends State<MyApp> {
                   double paidOut = snapshot.data!.data()!.containsKey(
                           Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]
                               ["TOTAL_PAID_OUT"])
-                      ? snapshot.data![
+                      ? double.parse(snapshot.data![
                           Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]
-                              ["TOTAL_PAID_OUT"]]
+                              ["TOTAL_PAID_OUT"]])
                       : 0;
                   double earnings = snapshot.data!.data()!.containsKey(
                           Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]
