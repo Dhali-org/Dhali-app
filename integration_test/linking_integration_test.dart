@@ -72,21 +72,6 @@ Future<void> deploymentDemo(WidgetTester tester, int responseCode,
 
   await tester.tap(find.text('Monetise my API', skipOffstage: false));
   await tester.pumpAndSettle();
-  // Go back and forth between the radio buttons
-  await tester.tap(find.byKey(const Key("dhali_hosted-radio_button")));
-  await tester.pumpAndSettle();
-  await tester.tap(find.byKey(const Key("self_hosted-radio_button")));
-  await tester.pumpAndSettle();
-  await tester.tap(find.byKey(const Key("dhali_hosted-radio_button")));
-  await tester.pumpAndSettle();
-  await tester.tap(find.byKey(const Key("self_hosted-radio_button")));
-  await tester.pumpAndSettle();
-  if (isSelfHosted) {
-    await tester.tap(find.byKey(const Key("self_hosted-radio_button")));
-  } else {
-    await tester.tap(find.byKey(const Key("dhali_hosted-radio_button")));
-  }
-  await tester.pumpAndSettle();
   await tester.tap(find.text("API name"));
   await tester.enterText(
       find.byKey(const Key("asset_name_input_field")), theInputAssetName);
