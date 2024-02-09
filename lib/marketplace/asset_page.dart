@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dhali/analytics/analytics.dart';
 import 'package:dhali/config.dart' show Config;
 import 'package:dhali/marketplace/model/marketplace_list_data.dart';
@@ -11,17 +10,19 @@ import 'package:http/http.dart';
 import 'package:markdown_widget/markdown_widget.dart';
 import 'package:swagger_documentation_widget/swagger_documentation_widget.dart';
 
+import 'package:dhali_wallet/widgets/buttons.dart' as buttons;
+
 class AssetPage extends StatefulWidget {
   const AssetPage(
       {super.key,
       required this.asset,
       required this.getWallet,
       required this.getRequest,
-      required this.getFirestore,
+      this.administrateEntireAPI,
       this.getReadme});
   final MarketplaceListData asset;
   final DhaliWallet? Function() getWallet;
-  final FirebaseFirestore? Function() getFirestore;
+  final void Function()? administrateEntireAPI;
   final BaseRequest Function<T extends BaseRequest>(String method, String path)
       getRequest;
   final Future<Response> Function(Uri path)? getReadme;
@@ -45,10 +46,10 @@ class _AssetPageState extends State<AssetPage> {
   @override
   Widget build(BuildContext context) {
     Future<Response> future;
-    Future<Response> timeoutFuture;
     var uri = Uri.parse(
         "${Config.config!["ROOT_CONSUMER_URL"]}/${widget.asset.assetID}/${Config.config!['GET_READMES_ROUTE']}");
     if (widget.getReadme == null) {
+      Future<Response> timeoutFuture;
       // This will make two requests at most. If the second fails, the user will
       // be shown a 404 error.
       timeoutFuture = get(
@@ -93,6 +94,9 @@ class _AssetPageState extends State<AssetPage> {
                 key: const Key("categories_in_asset_page"),
                 style: const TextStyle(fontSize: 20),
               ),
+              if (widget.administrateEntireAPI != null)
+                buttons.getTextButton("Edit",
+                    onPressed: () => widget.administrateEntireAPI!())
             ],
           ),
         ),

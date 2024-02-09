@@ -1,1 +1,1 @@
-test/*.mocks.dart
+test/*.mocks.dart -diff -merge -text

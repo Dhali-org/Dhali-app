@@ -18,6 +18,7 @@ import 'package:dhali_wallet/xrpl_wallet.dart';
 import 'package:dhali_wallet/xumm_wallet.dart';
 
 import 'package:url_launcher/url_launcher.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 
 enum DrawerIndex {
   Wallet,
@@ -33,18 +34,25 @@ class NavigationHomeScreen extends StatefulWidget {
       required this.getWallet,
       required this.setWallet,
       required this.getRequest,
+      required this.getWebSocketChannel,
       required this.firestore,
       required this.setDarkTheme,
       required this.isDarkTheme,
-      this.queryParams});
+      required this.getDisplayQRCodeFrom,
+      this.queryParams,
+      this.getReadme});
 
+  final Function(String, String) Function(BuildContext, DhaliWallet)
+      getDisplayQRCodeFrom;
   final BaseRequest Function<T extends BaseRequest>(String method, String path)
       getRequest;
+  final WebSocketChannel Function(String) getWebSocketChannel;
   final FirebaseFirestore firestore;
   final Map<String, String>? queryParams;
 
   final DrawerIndex? drawerIndex;
   final DhaliWallet? Function() getWallet;
+  final Future<Response> Function(Uri path)? getReadme;
   final Function(DhaliWallet?) setWallet;
   final void Function(bool) setDarkTheme;
   final bool Function() isDarkTheme;
@@ -355,6 +363,9 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
   Widget? getScreenView(drawerIndex) {
     Future(() => ScaffoldMessenger.of(context).hideCurrentSnackBar());
     screenView = MarketplaceHomeScreen(
+        getDisplayQRCodeFrom: widget.getDisplayQRCodeFrom,
+        getReadme: widget.getReadme,
+        getWebSocketChannel: widget.getWebSocketChannel,
         key: const Key("Marketplace"), // Key used to force State rebuild
         getRequest: widget.getRequest,
         assetScreenType: AssetScreenType.Marketplace,
@@ -427,6 +438,9 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
 
         setState(() {
           screenView = MarketplaceHomeScreen(
+            getDisplayQRCodeFrom: widget.getDisplayQRCodeFrom,
+            getReadme: widget.getReadme,
+            getWebSocketChannel: widget.getWebSocketChannel,
             key: const Key("My APIs"), // Key used to force State rebuild
             getRequest: widget.getRequest,
             assetScreenType: AssetScreenType.MyAssets,
@@ -443,6 +457,9 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
             parameters: {"walletIsLinked": _walletIsLinked});
         setState(() {
           screenView = MarketplaceHomeScreen(
+              getDisplayQRCodeFrom: widget.getDisplayQRCodeFrom,
+              getReadme: widget.getReadme,
+              getWebSocketChannel: widget.getWebSocketChannel,
               key: const Key("Marketplace"), // Key used to force State rebuild
               getRequest: widget.getRequest,
               assetScreenType: AssetScreenType.Marketplace,

@@ -57,9 +57,8 @@ dependencies:
         url: "https://github.com/Dhali-org/Dhali-wallet.git"
         ref: 0.0.34
     markdown_widget: ^2.3.1
-      # or
-      # path: <path to local dhali directory>
     swagger_documentation_widget: ^0.0.1
+    web_socket_channel: ^2.4.0
 
 dev_dependencies:
     flutter_oss_licenses: ^2.0.1
