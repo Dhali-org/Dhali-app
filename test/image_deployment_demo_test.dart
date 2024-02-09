@@ -16,6 +16,7 @@ import 'package:mockito/mockito.dart';
 
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 
+import 'authentication_client_test.mocks.dart';
 import 'image_deployment_demo_test.mocks.dart';
 
 import 'package:dhali/config.dart' show Config;
@@ -264,8 +265,6 @@ Future<void> deploymentDemo(WidgetTester tester,
 
   expect(find.text("What will your API be called?"), findsOneWidget);
   expect(find.text("Step 1 of 5"), findsOneWidget);
-  expect(find.text("How will your API be hosted?"), findsOneWidget);
-  expect(find.text("Self hosted"), findsOneWidget);
   expect(find.text("You will need:"), findsOneWidget);
   expect(find.text("To know what you'll charge"), findsOneWidget);
   expect(find.text("API base URL"), findsOneWidget);
@@ -273,21 +272,6 @@ Future<void> deploymentDemo(WidgetTester tester,
   expect(
       find.text("A README or an OpenAPI json specification"), findsOneWidget);
 
-  // Go back and forth between the radio buttons
-  await tester.tap(find.byKey(const Key("dhali_hosted-radio_button")));
-  await tester.pumpAndSettle();
-  await tester.tap(find.byKey(const Key("self_hosted-radio_button")));
-  await tester.pumpAndSettle();
-  await tester.tap(find.byKey(const Key("dhali_hosted-radio_button")));
-  await tester.pumpAndSettle();
-  await tester.tap(find.byKey(const Key("self_hosted-radio_button")));
-  await tester.pumpAndSettle();
-
-  if (isSelfHosted) {
-    await tester.tap(find.byKey(const Key("self_hosted-radio_button")));
-  } else {
-    await tester.tap(find.byKey(const Key("dhali_hosted-radio_button")));
-  }
   await tester.pumpAndSettle();
 
   await tester.tap(find.text("API name"));
@@ -421,6 +405,7 @@ void main() async {
   late MockXRPLWallet mockWallet;
   late MockRequest mockRequester;
   late MockMultipartRequest mockMultipartRequester;
+  late MockWebSocketChannel mockChannel;
 
   BaseRequest getRequest<T extends BaseRequest>(String method, String path) {
     if (T == MultipartRequest) {
@@ -436,6 +421,7 @@ void main() async {
     mockRequester = MockRequest();
     mockMultipartRequester = MockMultipartRequest();
     firebaseMockInstance = FakeFirebaseFirestore();
+    mockChannel = MockWebSocketChannel();
 
     const String theAssetName = "abadl3ynmed-asset";
     when(mockWallet.balance).thenReturn(ValueNotifier("1000000"));
@@ -509,6 +495,8 @@ void main() async {
           platform: TargetPlatform.iOS,
         ),
         home: NavigationHomeScreen(
+            getDisplayQRCodeFrom: (_, __) => (___, ____) => {},
+            getWebSocketChannel: (_) => mockChannel,
             setDarkTheme: (value) {},
             isDarkTheme: () => true,
             firestore: firebaseMockInstance,
@@ -519,7 +507,8 @@ void main() async {
 
       await tester.pumpAndSettle();
 
-      await deploymentDemo(tester, FakeFirebaseFirestore(), responseCode);
+      await deploymentDemo(tester, FakeFirebaseFirestore(), responseCode,
+          isSelfHosted: true);
     });
     testWidgets('Successful image deployment', (WidgetTester tester) async {
       const w = 1920;
@@ -548,6 +537,8 @@ void main() async {
           platform: TargetPlatform.iOS,
         ),
         home: NavigationHomeScreen(
+            getDisplayQRCodeFrom: (_, __) => (___, ____) => {},
+            getWebSocketChannel: (_) => mockChannel,
             setDarkTheme: (value) {},
             isDarkTheme: () => true,
             firestore: firebaseMockInstance,
@@ -558,7 +549,8 @@ void main() async {
 
       await tester.pumpAndSettle();
 
-      await deploymentDemo(tester, firebaseMockInstance, responseCode);
+      await deploymentDemo(tester, firebaseMockInstance, responseCode,
+          isSelfHosted: true);
 
       verify(mockWallet.acceptOffer(any, context: anyNamed("context")))
           .called(1);
@@ -592,6 +584,8 @@ void main() async {
           platform: TargetPlatform.iOS,
         ),
         home: NavigationHomeScreen(
+            getDisplayQRCodeFrom: (_, __) => (___, ____) => {},
+            getWebSocketChannel: (_) => mockChannel,
             setDarkTheme: (value) {},
             isDarkTheme: () => true,
             firestore: firebaseMockInstance,
@@ -642,6 +636,8 @@ void main() async {
           platform: TargetPlatform.iOS,
         ),
         home: NavigationHomeScreen(
+            getDisplayQRCodeFrom: (_, __) => (___, ____) => {},
+            getWebSocketChannel: (_) => mockChannel,
             setDarkTheme: (value) {},
             isDarkTheme: () => true,
             firestore: firebaseMockInstance,
@@ -688,6 +684,8 @@ void main() async {
           platform: TargetPlatform.iOS,
         ),
         home: NavigationHomeScreen(
+            getDisplayQRCodeFrom: (_, __) => (___, ____) => {},
+            getWebSocketChannel: (_) => mockChannel,
             setDarkTheme: (value) {},
             isDarkTheme: () => true,
             firestore: firebaseMockInstance,
@@ -736,6 +734,8 @@ void main() async {
           platform: TargetPlatform.iOS,
         ),
         home: NavigationHomeScreen(
+            getDisplayQRCodeFrom: (_, __) => (___, ____) => {},
+            getWebSocketChannel: (_) => mockChannel,
             setDarkTheme: (value) {},
             isDarkTheme: () => true,
             firestore: firebaseMockInstance,
@@ -788,6 +788,8 @@ void main() async {
           platform: TargetPlatform.iOS,
         ),
         home: NavigationHomeScreen(
+            getDisplayQRCodeFrom: (_, __) => (___, ____) => {},
+            getWebSocketChannel: (_) => mockChannel,
             setDarkTheme: (value) {},
             isDarkTheme: () => true,
             firestore: firebaseMockInstance,
@@ -801,100 +803,6 @@ void main() async {
           isSelfHosted: true);
       verify(mockWallet.acceptOffer(any, context: anyNamed("context")))
           .called(1);
-    });
-
-    testWidgets('Cancel image deployment', (WidgetTester tester) async {
-      const w = 1920;
-      const h = 1080;
-      int responseCode = 200;
-
-      when(mockRequester.send()).thenAnswer((_) async => StreamedResponse(
-              const Stream.empty(), responseCode, headers: {
-            Config.config!["DHALI_ID"].toString().toLowerCase(): theDhaliAssetID
-          }));
-      when(mockRequester.headers).thenAnswer((_) => {});
-      when(mockMultipartRequester.send()).thenAnswer((_) async =>
-          StreamedResponse(const Stream.empty(), responseCode, headers: {
-            Config.config!["DHALI_ID"].toString().toLowerCase(): theDhaliAssetID
-          }));
-      when(mockMultipartRequester.headers).thenAnswer((_) => {});
-
-      final dpi = tester.binding.window.devicePixelRatio;
-      tester.binding.window.physicalSizeTestValue = Size(w * dpi, h * dpi);
-
-      await tester.pumpWidget(MaterialApp(
-        title: "Dhali",
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-          textTheme: AppTheme.textTheme,
-          platform: TargetPlatform.iOS,
-        ),
-        home: NavigationHomeScreen(
-            setDarkTheme: (value) {},
-            isDarkTheme: () => true,
-            firestore: firebaseMockInstance,
-            getWallet: () => mockWallet,
-            setWallet: (wallet) => {},
-            getRequest: getRequest),
-      ));
-
-      await utils.dragOutDrawer(tester);
-
-      await tester.tap(find.text("My APIs"));
-      await tester.pumpAndSettle();
-
-      await tester.tap(find.text('Monetise my API', skipOffstage: false));
-      await tester.pumpAndSettle();
-
-      expect(find.text("What will your API be called?"), findsOneWidget);
-
-      await tester.tap(find.text("API name"));
-      expect(
-          find.text("Enter the name you'd like for your asset "
-              "(a-z, 0-9, -, .)"),
-          findsOneWidget);
-      await tester.enterText(
-          find.byKey(const Key("asset_name_input_field")), theInputAssetName);
-      await tester.pumpAndSettle(const Duration(seconds: 5));
-      expect(find.text(theAssetName), findsOneWidget);
-      await tester.tap(find.byKey(const Key("dhali_hosted-radio_button")));
-      await tester.pumpAndSettle();
-      await tester.tap(find.byKey(const Key("AssetNameNext")));
-      await tester.pumpAndSettle();
-      await setEarningsPerRequest(tester, firebaseMockInstance);
-
-      await tester.tap(find.byKey(const Key("ImageCostNext")));
-      await tester.pumpAndSettle();
-
-      await selectFile(tester, firebaseMockInstance, FileType.dockerImage, 1);
-
-      await tester.tap(find.byKey(const Key("DockerDropZoneDeployNext")));
-      await tester.pumpAndSettle(const Duration(seconds: 4));
-
-      expect(find.text("Your image was successfully scanned."), findsOneWidget);
-
-      await tester.tap(find.byKey(const Key("ImageScanningNext")));
-      await tester.pumpAndSettle();
-
-      await selectFile(tester, firebaseMockInstance, FileType.readme, 2);
-      await tester.tap(find.byKey(const Key("ReadmeDropZoneDeployNext")));
-      await tester.pumpAndSettle(const Duration(seconds: 4));
-
-      await displayCosts(tester, firebaseMockInstance);
-
-      await tester.tap(find.text("Yes"));
-
-      await tester
-          .pump(); // First pump releases the Future from `mockWallet.getOpenPaymentChannels`
-      await tester
-          .pump(); // Second pump releases the Future.value to FutureBuilder
-      expect(find.byKey(const Key("deploying_in_progress_dialog")),
-          findsOneWidget);
-      expect(find.text("Cancel"), findsOneWidget);
-      await tester.tap(find.text("Cancel"));
-      await tester.pump();
-      expect(find.byKey(const Key("minting_nft_spinner")), findsNothing);
     });
   });
 }

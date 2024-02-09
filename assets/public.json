@@ -38,6 +38,7 @@
     "ROOT_DEPLOY_URL": "https://staging-3mmgxhct.uc.gateway.dev",
     "ROOT_CONSUMER_URL": "https://kernml-consumer-3mmgxhct.uc.gateway.dev",
     "ROOT_RUN_URL": "https://dhali-staging-run-3mmgxhct.uc.gateway.dev",
+    "ROOT_API_ADMIN_URL": "wss://api-admin-gateway-l4g5ea3neq-uc.a.run.app",
     "DHALI_PUBLIC_ADDRESS": "rhtfMhppuk5siMi8jvkencnCTyjciArCh7",
     "DHALI_MINTER_PUBLIC_ADDRESS": "rDpxccfcSsaEvaZFMnGh4nBBJ2FQYW98KW",
     "DHALI_DEPLOYMENT_COST_PER_CHUNK_DROPS": 2000,

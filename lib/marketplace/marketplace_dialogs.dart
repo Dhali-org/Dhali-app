@@ -272,13 +272,15 @@ class AssetNameWidget extends StatefulWidget {
   final Function(String, HostingChoice) onNextClicked;
   final int step;
   final int steps;
+  final String? defaultName;
 
   const AssetNameWidget(
       {super.key,
       required this.onDroppedFile,
       required this.onNextClicked,
       required this.step,
-      required this.steps});
+      required this.steps,
+      this.defaultName});
   @override
   _AssetNameWidgetState createState() => _AssetNameWidgetState();
 }
@@ -287,6 +289,13 @@ class _AssetNameWidgetState extends State<AssetNameWidget> {
   final textController = TextEditingController();
 
   HostingChoice _choice = HostingChoice.selfHosted;
+  @override
+  void initState() {
+    if (widget.defaultName != null) {
+      textController.text = widget.defaultName!;
+    }
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -330,9 +339,6 @@ class _AssetNameWidgetState extends State<AssetNameWidget> {
             const SizedBox(
               height: 25,
             ),
-            const Text("How will your API be hosted?",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                textAlign: TextAlign.start),
             HostingRadio(
               onChoiceSelected: (choice) {
                 _choice = choice;
@@ -497,31 +503,6 @@ class _HostingRadioState extends State<HostingRadio> {
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        SizedBox(
-            width: 250,
-            child: RadioListTile<HostingChoice>(
-              key: const Key("self_hosted-radio_button"),
-              title: const Text('Self hosted'),
-              value: HostingChoice.selfHosted,
-              groupValue: _choice,
-              onChanged: (HostingChoice? value) {
-                setChoice(value);
-              },
-            )),
-        SizedBox(
-            width: 250,
-            child: RadioListTile<HostingChoice>(
-              key: const Key("dhali_hosted-radio_button"),
-              title: const Text('Hosted by Dhali'),
-              value: HostingChoice.hostedByDhali,
-              groupValue: _choice,
-              onChanged: (HostingChoice? value) {
-                setChoice(value);
-              },
-            )),
-        const SizedBox(
-          height: 20,
-        ),
         Row(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
@@ -542,31 +523,18 @@ class _HostingRadioState extends State<HostingRadio> {
                           style: TextStyle(
                               fontSize: isDesktopResolution(context) ? 18 : 14),
                           textAlign: TextAlign.start),
-                      _choice == HostingChoice.hostedByDhali
-                          ? Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                bulletPointItem(
-                                    context, 'To know what you\'ll charge'),
-                                bulletPointItem(context,
-                                    'A docker image (please see docs)'),
-                                bulletPointItem(context,
-                                    'A README or an OpenAPI json specification'),
-                              ],
-                            )
-                          : Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                bulletPointItem(
-                                    context, 'To know what you\'ll charge'),
-                                bulletPointItem(context, 'API base URL'),
-                                bulletPointItem(context, 'API key'),
-                                bulletPointItem(context,
-                                    'A README or an OpenAPI json specification'),
-                              ],
-                            )
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          bulletPointItem(
+                              context, 'To know what you\'ll charge'),
+                          bulletPointItem(context, 'API base URL'),
+                          bulletPointItem(context, 'API key'),
+                          bulletPointItem(context,
+                              'A README or an OpenAPI json specification'),
+                        ],
+                      )
                     ],
                   )),
             ]),
@@ -1499,12 +1467,16 @@ class LinkedAPIDetailsWidget extends StatefulWidget {
   final Function(String, Map<String, String>) onNextClicked;
   final int step;
   final int steps;
+  final Map<String, String>? defaultHeaders;
+  final String? defaultUrl;
 
   const LinkedAPIDetailsWidget(
       {super.key,
       required this.onNextClicked,
       required this.step,
-      required this.steps});
+      required this.steps,
+      this.defaultHeaders,
+      this.defaultUrl});
   @override
   _LinkedAPIDetailsWidgetState createState() => _LinkedAPIDetailsWidgetState();
 }
@@ -1519,6 +1491,18 @@ class _LinkedAPIDetailsWidgetState extends State<LinkedAPIDetailsWidget> {
 
   @override
   void initState() {
+    if (widget.defaultUrl != null) {
+      apiBaseUrlController.text = widget.defaultUrl!;
+    }
+    if (widget.defaultHeaders != null) {
+      apiKeyKeyControllers = [];
+      apiKeyValueControllers = [];
+      for (var header in widget.defaultHeaders!.keys) {
+        apiKeyKeyControllers.add(TextEditingController(text: header));
+        apiKeyValueControllers
+            .add(TextEditingController(text: widget.defaultHeaders![header]));
+      }
+    }
     super.initState();
   }
 

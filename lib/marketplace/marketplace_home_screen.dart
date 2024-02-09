@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:dhali/marketplace/api_admin_journey.dart';
 import 'package:http/http.dart' as http;
 import 'dart:math';
 
@@ -20,6 +21,7 @@ import 'package:dhali/marketplace/asset_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dhali/config.dart' show Config;
 import 'package:uuid/uuid.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 
 class MarketplaceHomeScreen extends StatefulWidget {
   const MarketplaceHomeScreen(
@@ -28,11 +30,18 @@ class MarketplaceHomeScreen extends StatefulWidget {
       required this.getRequest,
       required this.getWallet,
       required this.setWallet,
-      required this.getFirestore});
+      required this.getFirestore,
+      required this.getWebSocketChannel,
+      required this.getDisplayQRCodeFrom,
+      this.getReadme});
 
   final void Function(XRPLWallet) setWallet;
   final DhaliWallet? Function() getWallet;
+  final Function(String, String) Function(BuildContext, DhaliWallet)
+      getDisplayQRCodeFrom;
   final FirebaseFirestore? Function() getFirestore;
+  final Future<Response> Function(Uri path)? getReadme;
+  final WebSocketChannel Function(String) getWebSocketChannel;
 
   final BaseRequest Function<T extends BaseRequest>(String method, String path)
       getRequest;
@@ -59,7 +68,7 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
   AssetModel? readme;
   ChargingChoice? chargingChoice;
   HostingChoice? hostingChoice;
-  double? earningsRate;
+  double? earningsRate; // Measured in XRP, not drops
 
   void setStream() {
     if (widget.assetScreenType == AssetScreenType.MyAssets) {
@@ -328,8 +337,8 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
             docs[index].data() as Map<String, dynamic>;
         double paidOut = elementData.containsKey(
                 Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]["TOTAL_PAID_OUT"])
-            ? elementData[Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]
-                ["TOTAL_PAID_OUT"]]
+            ? double.parse(elementData[
+                Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]["TOTAL_PAID_OUT"]])
             : 0;
         double earnings = elementData.containsKey(
                 Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]["TOTAL_PAID_OUT"])
@@ -414,7 +423,33 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
   void displayAsset(MarketplaceListData asset) {
     Navigator.pushNamed(context, '/assets/${asset.assetID}',
         arguments: AssetPage(
-          getFirestore: widget.getFirestore,
+          getReadme: widget.getReadme,
+          administrateEntireAPI:
+              widget.assetScreenType == AssetScreenType.MyAssets
+                  ? () async {
+                      administrateEntireAPI(
+                          displayQrAuth: widget.getDisplayQRCodeFrom(
+                              context, widget.getWallet()!),
+                          getWebSocketChannel: widget.getWebSocketChannel,
+                          getApiUuid: () => asset.assetID,
+                          getDb: widget.getFirestore,
+                          context: context,
+                          getApiHeaders: () => apiKeys,
+                          getBaseUrl: () => apiUrl,
+                          getApiName: () => assetName,
+                          getEarningRate: () => earningsRate,
+                          getEarningType: () => chargingChoice,
+                          getDocs: () => readme,
+                          setApiHeaders: (headers) => apiKeys = headers,
+                          setBaseUrl: (url) => apiUrl = url,
+                          setApiName: (name) => assetName = name,
+                          setEarningRate: (earningRate) =>
+                              earningsRate = earningRate,
+                          setEarningType: (earningType) =>
+                              chargingChoice = earningType,
+                          setDocs: (doc) => readme = doc);
+                    }
+                  : null,
           asset: asset,
           getRequest: widget.getRequest,
           getWallet: widget.getWallet,
@@ -672,6 +707,41 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
     );
   }
 
+  void showLinkingDialogJourney() {
+    showDialog(
+        context: context,
+        builder: (BuildContext _) {
+          if (widget.getWallet() == null) {
+            return const AlertDialog(
+              title: Text("Unable to proceed"),
+              content: Text("Please link a wallet using the Wallet page"),
+            );
+          }
+          return getDialog(
+            context,
+            child: AssetNameWidget(
+                defaultName: assetName,
+                step: 1,
+                steps: 5,
+                onDroppedFile: ((file) {}),
+                onNextClicked: (name, choice) {
+                  assetName = name;
+                  hostingChoice = choice;
+                  var uuid = const Uuid();
+                  widget
+                      .getFirestore()!
+                      .collection("auth-by-pay")
+                      .doc("selected-choice-${uuid.v4()}")
+                      .set({
+                    "selected-choice": choice.toString(),
+                    "time": DateTime.now()
+                  });
+                  showEarningsSelectionDialog();
+                }),
+          );
+        });
+  }
+
   FloatingActionButton? getFloatingActionButton(assetScreenType) {
     FloatingActionButton? actionButton;
     switch (assetScreenType) {
@@ -682,38 +752,7 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
         actionButton = FloatingActionButton.extended(
           onPressed: () {
             gtag(command: "event", target: "AddNewAssetClicked");
-            showDialog(
-                context: context,
-                builder: (BuildContext _) {
-                  if (widget.getWallet() == null) {
-                    return const AlertDialog(
-                      title: Text("Unable to proceed"),
-                      content:
-                          Text("Please link a wallet using the Wallet page"),
-                    );
-                  }
-                  return getDialog(
-                    context,
-                    child: AssetNameWidget(
-                        step: 1,
-                        steps: 5,
-                        onDroppedFile: ((file) {}),
-                        onNextClicked: (name, choice) {
-                          assetName = name;
-                          hostingChoice = choice;
-                          var uuid = const Uuid();
-                          widget
-                              .getFirestore()!
-                              .collection("auth-by-pay")
-                              .doc("selected-choice-${uuid.v4()}")
-                              .set({
-                            "selected-choice": choice.toString(),
-                            "time": DateTime.now()
-                          });
-                          showEarningsSelectionDialog();
-                        }),
-                  );
-                });
+            showLinkingDialogJourney();
           },
           label: const Text('Monetise my API'),
           icon: const Icon(Icons.add),
@@ -733,8 +772,11 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
               child: ChargeWidget(
                 step: 2,
                 steps: 5,
-                defaultChargingRate: 0.001,
-                defaultChargingChoice: ChargingChoice.perSecond,
+                defaultChargingRate:
+                    earningsRate == null ? 0.001 : earningsRate!,
+                defaultChargingChoice: chargingChoice == null
+                    ? ChargingChoice.perSecond
+                    : chargingChoice!,
                 onNextClicked: (assetEarnings, earningChoice) {
                   earningsRate = assetEarnings * 1000000; // Expressed in drops
                   chargingChoice = earningChoice;
@@ -774,6 +816,8 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
               child: LinkedAPIDetailsWidget(
                 step: 3,
                 steps: 5,
+                defaultHeaders: apiKeys,
+                defaultUrl: apiUrl,
                 onNextClicked: (apiUrl, apiKeys) {
                   this.apiKeys = apiKeys;
                   this.apiUrl = apiUrl;
