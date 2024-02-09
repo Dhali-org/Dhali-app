@@ -31,6 +31,7 @@ jobs:
       id: dart_fix
       run: |
         OUTPUT=$(dart fix --dry-run)
+        echo $OUTPUT
         if [[ ! "$OUTPUT" == *"Nothing to fix!"* ]]; then
           exit 1
         fi
