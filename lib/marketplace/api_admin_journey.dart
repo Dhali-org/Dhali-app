@@ -77,8 +77,16 @@ Future<void> administrateEntireAPI(
       var prefilledFuture =
           Future.wait([prefilledPublicFuture, prefilledPrivateFuture]);
 
-      await showWaitingOnFutureDialog(
-          context: context, future: prefilledFuture);
+      bool? retrySelected = await showWaitingOnFutureDialog(
+          context: context, future: prefilledFuture, isRetryable: true);
+
+      if (retrySelected == true) {
+        retry = true;
+        continue;
+      } else if (retrySelected == false) {
+        retry = false;
+        break;
+      }
 
       Future<bool> updateRequestedFuture = displayAdminJourney(
           context: context,
@@ -328,32 +336,66 @@ Future<void> showOnUpdatedDialog({
   );
 }
 
-Future<void> showWaitingOnFutureDialog({
-  required BuildContext context,
-  required Future<dynamic> future,
-}) async {
+enum RetrySelected { yes, no }
+
+Future<bool?> showWaitingOnFutureDialog(
+    {required BuildContext context,
+    required Future<dynamic> future,
+    bool isRetryable = false}) async {
+  // If isRetryable is set to true, the returned future<bool?> indicates whether
+  // the user wanted to retry the operation or not. In all scenarios, if the
+  // returned value is null, the argument "future" resolved before the user
+  // clicked "yes" or "no" to retry.
+
   // Show the dialog first
-  showDialog(
+  Future<RetrySelected?> retrySelectedFuture = showDialog<RetrySelected?>(
     context: context,
     barrierDismissible:
         true, // Prevents closing the dialog by tapping outside of it
     builder: (BuildContext context) {
-      return const AlertDialog(
+      return AlertDialog(
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            CircularProgressIndicator(
+            const CircularProgressIndicator(
                 key: Key("showWaitingOnFutureDialogSpinner")),
-            SizedBox(height: 20),
-            Text("Please wait..."),
+            const SizedBox(height: 20),
+            const Text("Please wait..."),
+            if (isRetryable) const SizedBox(height: 20),
+            if (isRetryable)
+              FutureBuilder<bool>(
+                  future:
+                      Future.delayed(const Duration(seconds: 10), () => true),
+                  builder:
+                      (BuildContext context, AsyncSnapshot<bool> snapshot) {
+                    if (!snapshot.hasData) {
+                      return Container();
+                    }
+                    return Column(mainAxisSize: MainAxisSize.min, children: [
+                      const Text(
+                          "This is taking a while.\nWould you like to retry?"),
+                      Row(mainAxisSize: MainAxisSize.min, children: [
+                        TextButton(
+                            onPressed: () =>
+                                Navigator.pop(context, RetrySelected.no),
+                            child: const Text("No")),
+                        TextButton(
+                            onPressed: () =>
+                                Navigator.pop(context, RetrySelected.yes),
+                            child: const Text("Yes"))
+                      ])
+                    ]);
+                  })
           ],
         ),
       );
     },
   );
 
+  var anyFuture = Future.any([future, retrySelectedFuture]);
+
   // Await the future
-  await future.catchError((error) {
+  var anyResult = await anyFuture.catchError((error) {
     // Handle any errors if necessary
     print("Future completed with error: $error");
   }).whenComplete(() {
@@ -365,6 +407,13 @@ Future<void> showWaitingOnFutureDialog({
       return route.settings.name != null;
     });
   });
+  if (anyResult == RetrySelected.yes) {
+    return true;
+  } else if (anyResult == RetrySelected.no) {
+    return false;
+  } else {
+    return null;
+  }
 }
 
 Future<DialogDirection?> areYouSureAdminDialog({
