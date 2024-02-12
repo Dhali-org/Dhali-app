@@ -226,7 +226,7 @@ class DeployUploader extends BaseUploader {
           "chainID": "xrpl", // TODO : Add user input for this
           "walletID": getWallet()!.address,
           "labels": "",
-          "assetEarningRate": "$assetEarningRate",
+          "assetEarningRate": "${assetEarningRate * 1000000}",
           "assetEarningType": assetEarningType == ChargingChoice.perRequest
               ? "per_request"
               : "per_second"

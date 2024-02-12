@@ -65,6 +65,7 @@ void main() async {
     firebaseMockInstance = FakeFirebaseFirestore();
 
     when(mockWallet.balance).thenReturn(ValueNotifier("1000000"));
+    when(mockWallet.amount).thenReturn(ValueNotifier("10000000"));
     when(mockWallet.address).thenReturn("a-random-address");
     when(mockWallet.sendDrops("9000000", "CHANNEL_ID_STRING"))
         .thenReturn("a-random-signature");

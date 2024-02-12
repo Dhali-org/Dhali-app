@@ -778,7 +778,7 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                     ? ChargingChoice.perSecond
                     : chargingChoice!,
                 onNextClicked: (assetEarnings, earningChoice) {
-                  earningsRate = assetEarnings * 1000000; // Expressed in drops
+                  earningsRate = assetEarnings; // Expressed in XRP
                   chargingChoice = earningChoice;
                   if (hostingChoice == HostingChoice.hostedByDhali) {
                     showImageSelectionDialog();
@@ -892,7 +892,7 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                 step: 5,
                 steps: 5,
                 deploymentCost: deploymentCost,
-                assetEarnings: earningsRate! / 1000000,
+                assetEarnings: earningsRate!,
                 dhaliEarnings: dhaliEarnings,
                 assetEarningsType: chargingChoice!,
                 hostingType: hostingChoice!,
@@ -1157,7 +1157,7 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
           "chainID": "xrpl", // TODO: Add user input for this
           "walletID": widget.getWallet()!.address,
           "labels": "",
-          "apiEarningRate": "${earningsRate!}",
+          "apiEarningRate": "${earningsRate! * 1000000}",
           "apiEarningType": chargingChoice == ChargingChoice.perRequest
               ? "per_request"
               : "per_second",
