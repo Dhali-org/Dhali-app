@@ -601,6 +601,21 @@ void main() async {
 
       verify(mockWallet.acceptOffer(any, context: anyNamed("context")))
           .called(1);
+
+      Map<String, String> expectedBody = {
+        "assetName": theAssetName,
+        "chainID": "xrpl", // TODO: Add user input for this
+        "walletID": "a-random-address",
+        "labels": "",
+        "apiEarningRate": "302000000",
+        "apiEarningType": "per_second",
+        "apiCredentials": jsonEncode({
+          ...{"url": theAPIURL.replaceAll(" ", "")},
+          ...{theAPIKeyKey: theAPIKeyValue}
+        }),
+      };
+
+      verify(mockRequester.bodyFields = expectedBody).called(1);
     });
 
     testWidgets('Image deployment, incorrect offer amount',
