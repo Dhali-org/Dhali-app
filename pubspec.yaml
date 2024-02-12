@@ -55,7 +55,7 @@ dependencies:
     dhali_wallet:
       git:
         url: "https://github.com/Dhali-org/Dhali-wallet.git"
-        ref: 0.0.34
+        ref: 0.0.36
     markdown_widget: ^2.3.1
     swagger_documentation_widget: ^0.0.1
     web_socket_channel: ^2.4.0
