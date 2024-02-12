@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:dhali/marketplace/api_admin_journey.dart';
+import "package:universal_html/html.dart" as html;
 import 'package:dhali/marketplace/marketplace_dialogs.dart';
 import 'package:dhali/marketplace/model/asset_model.dart';
 import 'package:dhali_wallet/wallet_types.dart';
@@ -140,7 +141,19 @@ void main() async {
       ChargingChoice? chargingChoice;
       String? baseUrl;
       Map<String, String>? currentHeaders;
-      AssetModel? readme;
+      var file = html.File([1, 2, 3, 4, 5, 6, 7], "test.tar");
+      final fileName = file.name;
+
+      String mime = file.type;
+      int bytes = file.size;
+      // This readme should be set to null lower down because
+      // we skip administrating readme in this test
+      AssetModel? readme = AssetModel(
+          imageFile: file,
+          fileName: fileName,
+          modelName: "random-string",
+          mime: mime,
+          size: bytes);
 
       await tester.pumpWidget(MaterialApp(
           title: "Dhali",
