@@ -83,6 +83,7 @@ void main() async {
     });
 
     when(mockWallet.balance).thenReturn(ValueNotifier("1000000"));
+    when(mockWallet.amount).thenReturn(ValueNotifier("10000000"));
     when(mockWallet.mnemonic).thenReturn("memorable words");
     when(mockWallet.getAvailableNFTs()).thenAnswer((_) async {
       return Future.value({
