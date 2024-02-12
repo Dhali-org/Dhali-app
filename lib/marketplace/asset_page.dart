@@ -31,11 +31,15 @@ class AssetPage extends StatefulWidget {
   State<AssetPage> createState() => _AssetPageState();
 }
 
-bool _isJsonParsable(String s) {
-  // I couldn't find a "better" way of doing this...
+bool _isSwaggerParsable(String s) {
   try {
-    json.decode(s); // Try parsing it as JSON
-    return true; // If no error, it's parsable
+    var parsed = json.decode(s); // Try parsing it as JSON
+    if (parsed is Map &&
+        (parsed.containsKey("swagger") || parsed.containsKey("openapi"))) {
+      return true;
+    } else {
+      return false;
+    }
   } catch (e) {
     // If JSON parsing throws an error, it's not a valid JSON
     return false;
@@ -112,12 +116,11 @@ class _AssetPageState extends State<AssetPage> {
                     (BuildContext context, AsyncSnapshot<Response> snapshot) {
                   if (snapshot.hasData) {
                     final body = snapshot.data!.body;
-                    if (_isJsonParsable(body)) {
+                    if (_isSwaggerParsable(body)) {
                       return Container(
                           margin: const EdgeInsets.all(5),
                           child: SwaggerDocumentationWidget(
-                              jsonContent: snapshot.data!.body,
-                              title: "API Documentation"));
+                              jsonContent: body, title: "API Documentation"));
                     }
                     return Container(
                         margin: const EdgeInsets.all(5),
