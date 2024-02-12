@@ -34,7 +34,7 @@ Future<void> administrateEntireAPI(
     required void Function(ChargingChoice) setEarningType,
     required WebSocketChannel Function(String) getWebSocketChannel,
     required void Function(String, String) displayQrAuth,
-    required void Function(AssetModel) setDocs}) async {
+    required void Function(AssetModel?) setDocs}) async {
   bool? retry = true;
   while (retry == true) {
     retry = false; // Set to false to avoid infinite looping
@@ -199,7 +199,7 @@ Future<bool> displayAdminJourney(
     required void Function(String) setApiName,
     required void Function(double) setEarningRate,
     required void Function(ChargingChoice) setEarningType,
-    required void Function(AssetModel) setDocs}) async {
+    required void Function(AssetModel?) setDocs}) async {
   final journey = [
     (step, steps) async => await showAssetNameAdminDialog(
         context: context,
@@ -662,7 +662,7 @@ Future<DialogDirection?> showReadmeAdminDialog(
     {required BuildContext context,
     required int step,
     required int steps,
-    required void Function(AssetModel docs) setNewDocs}) async {
+    required void Function(AssetModel? docs) setNewDocs}) async {
   return await showDialog<DialogDirection>(
       context: context,
       builder: (BuildContext context) {
@@ -676,6 +676,7 @@ Future<DialogDirection?> showReadmeAdminDialog(
                   Navigator.pop(context, DialogDirection.next);
                 },
                 onSkipClicked: () {
+                  setNewDocs(null);
                   Navigator.pop(context, DialogDirection.next);
                 }));
       });
