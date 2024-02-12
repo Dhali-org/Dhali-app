@@ -425,6 +425,7 @@ void main() async {
 
     const String theAssetName = "abadl3ynmed-asset";
     when(mockWallet.balance).thenReturn(ValueNotifier("1000000"));
+    when(mockWallet.amount).thenReturn(ValueNotifier("10000000"));
     when(mockWallet.address).thenReturn("a-random-address");
     when(mockWallet.mnemonic).thenReturn("memorable words");
     when(mockWallet.sendDrops("9000000", "CHANNEL_ID_STRING"))
