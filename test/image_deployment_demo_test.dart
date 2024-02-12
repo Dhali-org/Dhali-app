@@ -511,51 +511,6 @@ void main() async {
       await deploymentDemo(tester, FakeFirebaseFirestore(), responseCode,
           isSelfHosted: true);
     });
-    testWidgets('Successful image deployment', (WidgetTester tester) async {
-      const w = 1920;
-      const h = 1080;
-      int responseCode = 200;
-
-      when(mockRequester.send()).thenAnswer((_) async => StreamedResponse(
-              const Stream.empty(), responseCode, headers: {
-            Config.config!["DHALI_ID"].toString().toLowerCase(): theDhaliAssetID
-          }));
-      when(mockRequester.headers).thenAnswer((_) => {});
-      when(mockMultipartRequester.send()).thenAnswer((_) async =>
-          StreamedResponse(const Stream.empty(), responseCode, headers: {
-            Config.config!["DHALI_ID"].toString().toLowerCase(): theDhaliAssetID
-          }));
-      when(mockMultipartRequester.headers).thenAnswer((_) => {});
-      final dpi = tester.binding.window.devicePixelRatio;
-      tester.binding.window.physicalSizeTestValue = Size(w * dpi, h * dpi);
-
-      await tester.pumpWidget(MaterialApp(
-        title: "Dhali",
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-          textTheme: AppTheme.textTheme,
-          platform: TargetPlatform.iOS,
-        ),
-        home: NavigationHomeScreen(
-            getDisplayQRCodeFrom: (_, __) => (___, ____) => {},
-            getWebSocketChannel: (_) => mockChannel,
-            setDarkTheme: (value) {},
-            isDarkTheme: () => true,
-            firestore: firebaseMockInstance,
-            getWallet: () => mockWallet,
-            setWallet: (wallet) => {},
-            getRequest: getRequest),
-      ));
-
-      await tester.pumpAndSettle();
-
-      await deploymentDemo(tester, firebaseMockInstance, responseCode,
-          isSelfHosted: true);
-
-      verify(mockWallet.acceptOffer(any, context: anyNamed("context")))
-          .called(1);
-    });
 
     testWidgets('Successful self hosted journey deployment',
         (WidgetTester tester) async {
@@ -601,6 +556,21 @@ void main() async {
 
       verify(mockWallet.acceptOffer(any, context: anyNamed("context")))
           .called(1);
+
+      Map<String, String> expectedBody = {
+        "assetName": theAssetName,
+        "chainID": "xrpl", // TODO: Add user input for this
+        "walletID": "a-random-address",
+        "labels": "",
+        "apiEarningRate": "302000000",
+        "apiEarningType": "per_second",
+        "apiCredentials": jsonEncode({
+          ...{"url": theAPIURL.replaceAll(" ", "")},
+          ...{theAPIKeyKey: theAPIKeyValue}
+        }),
+      };
+
+      verify(mockRequester.bodyFields = expectedBody).called(1);
     });
 
     testWidgets('Image deployment, incorrect offer amount',
