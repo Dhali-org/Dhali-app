@@ -67,7 +67,6 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
   Map<String, String>? apiKeys;
   AssetModel? readme;
   ChargingChoice? chargingChoice;
-  HostingChoice? hostingChoice;
   double? earningsRate; // Measured in XRP, not drops
 
   void setStream() {
@@ -726,7 +725,6 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                 onDroppedFile: ((file) {}),
                 onNextClicked: (name, choice) {
                   assetName = name;
-                  hostingChoice = choice;
                   var uuid = const Uuid();
                   widget
                       .getFirestore()!
@@ -780,35 +778,14 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                 onNextClicked: (assetEarnings, earningChoice) {
                   earningsRate = assetEarnings; // Expressed in XRP
                   chargingChoice = earningChoice;
-                  if (hostingChoice == HostingChoice.hostedByDhali) {
-                    showImageSelectionDialog();
-                  } else {
-                    showImageLinkingDialog();
-                  }
+
+                  showAPILinkingDialog();
                 },
               ));
         });
   }
 
-  showImageSelectionDialog() {
-    showDialog(
-        context: context,
-        builder: (BuildContext _) {
-          return getDialog(context,
-              child: DropzoneDeployWidget(
-                  deploymentFile: DeploymentFile.image,
-                  step: 3,
-                  steps: 5,
-                  onDroppedFile: ((file) {}),
-                  onNextClicked: (asset) {
-                    image = asset;
-                    image!.modelName = assetName!;
-                    showScannngImageDialog();
-                  }));
-        });
-  }
-
-  showImageLinkingDialog() {
+  showAPILinkingDialog() {
     showDialog(
         context: context,
         builder: (BuildContext _) {
@@ -845,38 +822,14 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
         });
   }
 
-  showScannngImageDialog() {
-    showDialog(
-        context: context,
-        builder: (BuildContext _) {
-          return getDialog(context,
-              child: ImageScanningWidget(
-                  step: 3,
-                  steps: 5,
-                  file: image!,
-                  onNextClicked: (asset) {
-                    showReadmeSelectionDialog();
-                  }));
-        });
-  }
-
   showDeployAssetDialog() {
     showDialog(
         context: context,
         builder: (BuildContext _) {
           double assetDeploymentCost;
-          if (hostingChoice == HostingChoice.hostedByDhali) {
-            assetDeploymentCost = Config
-                    .config!["DHALI_DEPLOYMENT_COST_PER_CHUNK_DROPS"] *
-                ((image!.size /
-                            Config.config![
-                                "MAX_NUMBER_OF_BYTES_PER_DEPLOY_CHUNK"])
-                        .floor() +
-                    3); // TODO: Why? We add a buffer of 3 to guarantee success
-          } else {
-            assetDeploymentCost = Config.config![
-                "DHALI_DEPLOYMENT_COST_PER_CHUNK_DROPS"]; // Linking costs a single chunk
-          }
+          assetDeploymentCost = Config.config![
+              "DHALI_DEPLOYMENT_COST_PER_CHUNK_DROPS"]; // Linking costs a single chunk
+
           final readmeDeploymentCost = Config
                   .config!["DHALI_DEPLOYMENT_COST_PER_CHUNK_DROPS"] *
               ((readme!.size /
@@ -895,7 +848,7 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                 assetEarnings: earningsRate!,
                 dhaliEarnings: dhaliEarnings,
                 assetEarningsType: chargingChoice!,
-                hostingType: hostingChoice!,
+                hostingType: HostingChoice.selfHosted,
                 yesClicked: (() {
                   DhaliWallet? wallet = widget.getWallet()!;
 
@@ -999,22 +952,11 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                                         Config.config!["ROOT_DEPLOY_URL"];
                                   }
                                   Map<String, String> payment = snapshot.data!;
-                                  if (hostingChoice ==
-                                      HostingChoice.hostedByDhali) {
-                                    return getDeployAssetWidget(
-                                        payment,
-                                        entryPointUrlRoot,
-                                        exceptionString,
-                                        onNFTOfferPoll);
-                                  } else if (hostingChoice ==
-                                      HostingChoice.selfHosted) {
-                                    // TODO: Ensure this is called once only
-                                    return getLinkAssetWidget(
-                                        payment,
-                                        entryPointUrlRoot,
-                                        exceptionString,
-                                        onNFTOfferPoll);
-                                  }
+                                  return getLinkAssetWidget(
+                                      payment,
+                                      entryPointUrlRoot,
+                                      exceptionString,
+                                      onNFTOfferPoll);
                                 }
                                 return Container();
                               },
