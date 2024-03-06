@@ -58,6 +58,7 @@ dependencies:
         ref: 0.0.39
     markdown_widget: ^2.3.1
     swagger_documentation_widget: ^0.0.1
+    pointer_interceptor: ^0.10.1
     web_socket_channel: ^2.4.0
 
 dev_dependencies:

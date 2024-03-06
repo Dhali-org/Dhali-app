@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'dart:math';
+import 'package:pointer_interceptor/pointer_interceptor.dart';
 import "package:universal_html/html.dart" as html;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dhali/utils/show_popup_text_with_link.dart';
@@ -2565,7 +2566,9 @@ class InferenceCostWidget extends StatelessWidget {
 Widget getDialog(BuildContext context, {required Widget child}) {
   return Dialog(
       insetPadding: EdgeInsets.all(isDesktopResolution(context) ? 50 : 10),
-      child: child);
+      child: // This is required because the Swagger widget uses an HtmlElementView
+          // that captures click events when attempting to edit an API
+          PointerInterceptor(child: child));
 }
 
 Widget getDialogTemplate(
