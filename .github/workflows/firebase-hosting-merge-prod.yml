@@ -11,6 +11,7 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
+          flutter-version: '3.16.8'
       - name: Configure the app for production
         run: |
           mv firebase{.prod,}.json
