@@ -427,7 +427,7 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
           administrateEntireAPI:
               widget.assetScreenType == AssetScreenType.MyAssets
                   ? () async {
-                      administrateEntireAPI(
+                      return await administrateEntireAPI(
                           displayQrAuth: widget.getDisplayQRCodeFrom(
                               context, widget.getWallet()!),
                           getWebSocketChannel: widget.getWebSocketChannel,

@@ -25,7 +25,7 @@ class AssetPage extends StatefulWidget {
   final FirebaseFirestore? Function() getFirestore;
   final String uuid;
   final DhaliWallet? Function() getWallet;
-  final void Function()? administrateEntireAPI;
+  final Future<void> Function()? administrateEntireAPI;
   final BaseRequest Function<T extends BaseRequest>(String method, String path)
       getRequest;
   final Future<Response> Function(Uri path)? getReadme;
@@ -50,8 +50,38 @@ bool _isSwaggerParsable(String s) {
 }
 
 class _AssetPageState extends State<AssetPage> {
+  void _setReadmeFuture() {
+    var uri = Uri.parse(
+        "${Config.config!["ROOT_CONSUMER_URL"]}/${widget.uuid}/${Config.config!['GET_READMES_ROUTE']}");
+    if (widget.getReadme == null) {
+      Future<Response> timeoutFuture;
+      // This will make two requests at most. If the second fails, the user will
+      // be shown a 404 error.
+      timeoutFuture = get(
+        uri,
+      ).timeout(
+        const Duration(seconds: 10),
+        onTimeout: () => Response("Page not found.", 404),
+      );
+      future = get(
+        uri,
+      ).timeout(
+        const Duration(seconds: 10),
+        onTimeout: () => get(uri).timeout(
+          const Duration(seconds: 10),
+          onTimeout: () => timeoutFuture,
+        ),
+      );
+    } else {
+      // typically executed when mocking
+      future = widget.getReadme!(uri);
+    }
+  }
+
+  late Future<Response> future;
   @override
   Widget build(BuildContext context) {
+    _setReadmeFuture();
     final collection = widget
         .getFirestore()!
         .collection(Config.config!["MINTED_NFTS_COLLECTION_NAME"]);
@@ -67,33 +97,6 @@ class _AssetPageState extends State<AssetPage> {
                 child: CircularProgressIndicator(
               key: Key("asset_circular_spinner"),
             ));
-          }
-
-          Future<Response> future;
-          var uri = Uri.parse(
-              "${Config.config!["ROOT_CONSUMER_URL"]}/${widget.uuid}/${Config.config!['GET_READMES_ROUTE']}");
-          if (widget.getReadme == null) {
-            Future<Response> timeoutFuture;
-            // This will make two requests at most. If the second fails, the user will
-            // be shown a 404 error.
-            timeoutFuture = get(
-              uri,
-            ).timeout(
-              const Duration(seconds: 10),
-              onTimeout: () => Response("Page not found.", 404),
-            );
-            future = get(
-              uri,
-            ).timeout(
-              const Duration(seconds: 10),
-              onTimeout: () => get(uri).timeout(
-                const Duration(seconds: 10),
-                onTimeout: () => timeoutFuture,
-              ),
-            );
-          } else {
-            // typically executed when mocking
-            future = widget.getReadme!(uri);
           }
 
           gtag(
@@ -132,12 +135,11 @@ class _AssetPageState extends State<AssetPage> {
                   Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]
                       ["EXPECTED_INFERENCE_COST"]]);
 
-          return _getAssetPageScaffold(future, apiMetadata);
+          return _getAssetPageScaffold(apiMetadata);
         });
   }
 
-  Widget _getAssetPageScaffold(
-      Future<Response> future, MarketplaceListData apiMetadata) {
+  Widget _getAssetPageScaffold(MarketplaceListData apiMetadata) {
     return Scaffold(
         appBar: AppBar(
           centerTitle: false,
@@ -157,7 +159,14 @@ class _AssetPageState extends State<AssetPage> {
               ),
               if (widget.administrateEntireAPI != null)
                 buttons.getTextButton("Edit",
-                    onPressed: () => widget.administrateEntireAPI!())
+                    onPressed: () =>
+                        widget.administrateEntireAPI!().then((value) {
+                          setState(() {
+                            // Update the displayed readme after admin has
+                            // complete
+                            _setReadmeFuture();
+                          });
+                        }))
             ],
           ),
         ),

@@ -104,7 +104,7 @@ Future<void> administrateEntireAPI(
           setEarningType: setEarningType,
           setDocs: setDocs);
 
-      await updateRequestedFuture.then((updateRequested) async {
+      return await updateRequestedFuture.then((updateRequested) async {
         if (updateRequested) {
           Future<void> submitUpdates({String? docs}) async {
             final updatesSubmittedFuture = adminGatewayClient.submitUpdates(
@@ -119,11 +119,11 @@ Future<void> administrateEntireAPI(
             await showWaitingOnFutureDialog(
                 context: context, future: updatesSubmittedFuture);
 
-            await updatesSubmittedFuture.then((updates) async {
+            return await updatesSubmittedFuture.then((updates) async {
               if (updates == null) {
                 return;
               }
-              await showOnUpdatedDialog(
+              return await showOnUpdatedDialog(
                   context: context,
                   failedUpdateKeys: updates["failed_updates"]!,
                   successfulUpdateKeys: updates["successful_updates"]!);
