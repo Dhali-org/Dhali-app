@@ -12,7 +12,7 @@ class MarketplaceListView extends StatelessWidget {
     this.animation,
   });
 
-  final Function(MarketplaceListData) callback;
+  final Function(String) callback;
   final MarketplaceListData? marketplaceData;
   final AnimationController? animationController;
   final Animation<double>? animation;
@@ -32,7 +32,7 @@ class MarketplaceListView extends StatelessWidget {
                   left: 24, right: 24, top: 8, bottom: 16),
               child: InkWell(
                 key: Key(marketplaceData!.assetID),
-                onTap: () => callback(marketplaceData!),
+                onTap: () => callback(marketplaceData!.assetID),
                 child: Container(
                     decoration: BoxDecoration(
                       borderRadius:

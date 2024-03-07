@@ -419,18 +419,19 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
     );
   }
 
-  void displayAsset(MarketplaceListData asset) {
-    Navigator.pushNamed(context, '/assets/${asset.assetID}',
+  void displayAsset(String uuid) {
+    Navigator.pushNamed(context, '/assets/$uuid',
         arguments: AssetPage(
+          getFirestore: widget.getFirestore,
           getReadme: widget.getReadme,
           administrateEntireAPI:
               widget.assetScreenType == AssetScreenType.MyAssets
                   ? () async {
-                      administrateEntireAPI(
+                      return await administrateEntireAPI(
                           displayQrAuth: widget.getDisplayQRCodeFrom(
                               context, widget.getWallet()!),
                           getWebSocketChannel: widget.getWebSocketChannel,
-                          getApiUuid: () => asset.assetID,
+                          getApiUuid: () => uuid,
                           getDb: widget.getFirestore,
                           context: context,
                           getApiHeaders: () => apiKeys,
@@ -449,7 +450,7 @@ class _AssetScreenState extends State<MarketplaceHomeScreen>
                           setDocs: (doc) => readme = doc);
                     }
                   : null,
-          asset: asset,
+          uuid: uuid,
           getRequest: widget.getRequest,
           getWallet: widget.getWallet,
         ));

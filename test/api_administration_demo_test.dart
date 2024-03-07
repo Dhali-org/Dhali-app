@@ -143,7 +143,13 @@ void main() async {
       ChargingChoice? chargingChoice;
       String? baseUrl;
       Map<String, String>? currentHeaders;
-      var file = html.File([1, 2, 3, 4, 5, 6, 7], "test.tar");
+      Map<String, dynamic> swaggerJson = {
+        "swagger": "2.0",
+        "info": {"title": "Example API", "version": "1.0.0"},
+      };
+      String jsonString = json.encode(swaggerJson);
+      final blob = html.Blob([jsonString], 'application/json');
+      var file = html.File([blob], "test.tar");
       final fileName = file.name;
 
       String mime = file.type;
