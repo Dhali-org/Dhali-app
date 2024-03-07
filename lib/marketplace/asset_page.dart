@@ -50,7 +50,7 @@ bool _isSwaggerParsable(String s) {
 }
 
 class _AssetPageState extends State<AssetPage> {
-  void _setReadmeFuture() {
+  Future<Response> _setReadmeFuture() {
     var uri = Uri.parse(
         "${Config.config!["ROOT_CONSUMER_URL"]}/${widget.uuid}/${Config.config!['GET_READMES_ROUTE']}");
     if (widget.getReadme == null) {
@@ -63,7 +63,7 @@ class _AssetPageState extends State<AssetPage> {
         const Duration(seconds: 10),
         onTimeout: () => Response("Page not found.", 404),
       );
-      future = get(
+      return get(
         uri,
       ).timeout(
         const Duration(seconds: 10),
@@ -74,14 +74,15 @@ class _AssetPageState extends State<AssetPage> {
       );
     } else {
       // typically executed when mocking
-      future = widget.getReadme!(uri);
+      return widget.getReadme!(uri);
     }
   }
 
   late Future<Response> future;
+  bool displayReadme = true;
   @override
   Widget build(BuildContext context) {
-    _setReadmeFuture();
+    future = _setReadmeFuture();
     final collection = widget
         .getFirestore()!
         .collection(Config.config!["MINTED_NFTS_COLLECTION_NAME"]);
@@ -158,15 +159,19 @@ class _AssetPageState extends State<AssetPage> {
                 style: const TextStyle(fontSize: 20),
               ),
               if (widget.administrateEntireAPI != null)
-                buttons.getTextButton("Edit",
-                    onPressed: () =>
-                        widget.administrateEntireAPI!().then((value) {
-                          setState(() {
-                            // Update the displayed readme after admin has
-                            // complete
-                            _setReadmeFuture();
-                          });
-                        }))
+                buttons.getTextButton("Edit", onPressed: () {
+                  setState(() {
+                    displayReadme = false;
+                  });
+                  widget.administrateEntireAPI!().whenComplete(() {
+                    setState(() {
+                      displayReadme = true;
+                      // Update the displayed readme after admin has
+                      // complete
+                      future = _setReadmeFuture();
+                    });
+                  });
+                })
             ],
           ),
         ),
@@ -178,9 +183,10 @@ class _AssetPageState extends State<AssetPage> {
             margin: const EdgeInsets.all(5),
             alignment: Alignment.center,
             child: FutureBuilder(
+                key: UniqueKey(), // Change the key to force a rebuild
                 builder:
                     (BuildContext context, AsyncSnapshot<Response> snapshot) {
-                  if (snapshot.hasData) {
+                  if (displayReadme && snapshot.hasData) {
                     final body = snapshot.data!.body;
                     if (_isSwaggerParsable(body)) {
                       return Container(
