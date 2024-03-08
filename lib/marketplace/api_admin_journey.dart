@@ -12,6 +12,7 @@ import 'package:dhali/utils/row_else_column.dart';
 import 'package:dhali/utils/show_popup_text_with_link.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dropzone/flutter_dropzone.dart';
+import 'package:pointer_interceptor/pointer_interceptor.dart';
 import "package:universal_html/html.dart" as html;
 import 'package:web_socket_channel/web_socket_channel.dart';
 
@@ -103,7 +104,7 @@ Future<void> administrateEntireAPI(
           setEarningType: setEarningType,
           setDocs: setDocs);
 
-      await updateRequestedFuture.then((updateRequested) async {
+      return await updateRequestedFuture.then((updateRequested) async {
         if (updateRequested) {
           Future<void> submitUpdates({String? docs}) async {
             final updatesSubmittedFuture = adminGatewayClient.submitUpdates(
@@ -118,11 +119,11 @@ Future<void> administrateEntireAPI(
             await showWaitingOnFutureDialog(
                 context: context, future: updatesSubmittedFuture);
 
-            await updatesSubmittedFuture.then((updates) async {
+            return await updatesSubmittedFuture.then((updates) async {
               if (updates == null) {
                 return;
               }
-              await showOnUpdatedDialog(
+              return await showOnUpdatedDialog(
                   context: context,
                   failedUpdateKeys: updates["failed_updates"]!,
                   successfulUpdateKeys: updates["successful_updates"]!);
@@ -281,15 +282,16 @@ Future<void> showOnUpdatedDialog({
     builder: (BuildContext context) {
       return AlertDialog(
         actions: [
-          TextButton(
-              onPressed: () {
-                Navigator.of(context).popUntil((route) {
-                  // Here, we assume that a Dialog doesn't have a route name (which is true by default).
-                  // If you've given a custom name to your Dialog route, check against that name instead.
-                  return route.settings.name != null;
-                });
-              },
-              child: const Text("OK"))
+          PointerInterceptor(
+              child: TextButton(
+                  onPressed: () {
+                    Navigator.of(context).popUntil((route) {
+                      // Here, we assume that a Dialog doesn't have a route name (which is true by default).
+                      // If you've given a custom name to your Dialog route, check against that name instead.
+                      return route.settings.name != null;
+                    });
+                  },
+                  child: const Text("OK")))
         ],
         content: Column(
           mainAxisSize: MainAxisSize.min,
@@ -354,7 +356,8 @@ Future<bool?> showWaitingOnFutureDialog(
         true, // Prevents closing the dialog by tapping outside of it
     builder: (BuildContext context) {
       return AlertDialog(
-        content: Column(
+        content: PointerInterceptor(
+            child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             const CircularProgressIndicator(
@@ -387,7 +390,7 @@ Future<bool?> showWaitingOnFutureDialog(
                     ]);
                   })
           ],
-        ),
+        )),
       );
     },
   );

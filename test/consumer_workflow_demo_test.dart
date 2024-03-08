@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:dhali/marketplace/asset_page.dart';
-import 'package:dhali/marketplace/model/marketplace_list_data.dart';
 import 'package:dhali_wallet/wallet_types.dart';
 import 'package:dhali_wallet/xrpl_wallet.dart';
 import 'package:flutter/material.dart';
@@ -98,7 +97,15 @@ void main() async {
       await firebaseMockInstance
           .collection("public_minted_nfts")
           .doc(theAssetID)
-          .set({"average_inference_time_ms": 1000});
+          .set({
+        "average_inference_time_ms": 1000,
+        "name": theAssetName,
+        "category": [],
+        "total_earned": earnings,
+        "total_paid_out": paidOut,
+        "num_successful_requests": numSuccessfulRequests,
+        "average_cost": cost
+      });
       var docId = const Uuid().v5(Uuid.NAMESPACE_URL, "CHANNEL_ID_STRING");
       await firebaseMockInstance
           .collection("public_claim_info")
@@ -126,20 +133,15 @@ void main() async {
           platform: TargetPlatform.iOS,
         ),
         home: AssetPage(
+          getFirestore: () => firebaseMockInstance,
           getReadme: (path) => Future.value(Response("# A markdown", 200)),
-          asset: MarketplaceListData(
-              earnings: earnings,
-              paidOut: paidOut,
-              assetID: theAssetID,
-              assetName: theAssetName,
-              assetCategories: categories,
-              averageRuntime: inferenceTime,
-              numberOfSuccessfullRequests: numSuccessfulRequests,
-              pricePerRun: cost),
+          uuid: theAssetID,
           getRequest: getMockMultipartRequest,
           getWallet: () => mockWallet,
         ),
       ));
+
+      await tester.pump(); // Pump the stream so that it emits the data
 
       await imageConsumptionDemo(tester);
     });

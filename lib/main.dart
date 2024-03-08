@@ -13,7 +13,6 @@ import 'package:dhali/firebase_options.dart';
 import 'package:dhali/config.dart' show Config;
 
 import 'package:dhali/marketplace/asset_page.dart';
-import 'package:dhali/marketplace/model/marketplace_list_data.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
@@ -192,36 +191,9 @@ class _MyAppState extends State<MyApp> {
                     );
                   }
 
-                  double paidOut = snapshot.data!.data()!.containsKey(
-                          Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]
-                              ["TOTAL_PAID_OUT"])
-                      ? double.parse(snapshot.data![
-                          Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]
-                              ["TOTAL_PAID_OUT"]])
-                      : 0;
-                  double earnings = snapshot.data!.data()!.containsKey(
-                          Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]
-                              ["TOTAL_PAID_OUT"])
-                      ? snapshot.data![Config
-                          .config!["MINTED_NFTS_DOCUMENT_KEYS"]["TOTAL_EARNED"]]
-                      : 0;
-                  MarketplaceListData element = MarketplaceListData(
-                      paidOut: paidOut,
-                      earnings: earnings,
-                      assetID: pathList[2],
-                      assetName: snapshot.data![Config
-                          .config!["MINTED_NFTS_DOCUMENT_KEYS"]["ASSET_NAME"]],
-                      assetCategories: snapshot.data![Config
-                          .config!["MINTED_NFTS_DOCUMENT_KEYS"]["CATEGORY"]],
-                      averageRuntime: snapshot.data![
-                          Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]
-                              ["AVERAGE_INFERENCE_TIME_MS"]],
-                      numberOfSuccessfullRequests: snapshot.data![
-                          Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]
-                              ["NUMBER_OF_SUCCESSFUL_REQUESTS"]],
-                      pricePerRun: snapshot.data![Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]["EXPECTED_INFERENCE_COST"]]);
                   return AssetPage(
-                    asset: element,
+                    getFirestore: () => FirebaseFirestore.instance,
+                    uuid: snapshot.data!.id,
                     getRequest: widget.getRequest,
                     getWallet: getWallet,
                   );

@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dhali/analytics/analytics.dart';
 import 'package:dhali/config.dart' show Config;
 import 'package:dhali/marketplace/model/marketplace_list_data.dart';
@@ -15,14 +16,16 @@ import 'package:dhali_wallet/widgets/buttons.dart' as buttons;
 class AssetPage extends StatefulWidget {
   const AssetPage(
       {super.key,
-      required this.asset,
+      required this.uuid,
       required this.getWallet,
       required this.getRequest,
+      required this.getFirestore,
       this.administrateEntireAPI,
       this.getReadme});
-  final MarketplaceListData asset;
+  final FirebaseFirestore? Function() getFirestore;
+  final String uuid;
   final DhaliWallet? Function() getWallet;
-  final void Function()? administrateEntireAPI;
+  final Future<void> Function()? administrateEntireAPI;
   final BaseRequest Function<T extends BaseRequest>(String method, String path)
       getRequest;
   final Future<Response> Function(Uri path)? getReadme;
@@ -47,11 +50,9 @@ bool _isSwaggerParsable(String s) {
 }
 
 class _AssetPageState extends State<AssetPage> {
-  @override
-  Widget build(BuildContext context) {
-    Future<Response> future;
+  Future<Response> _setReadmeFuture() {
     var uri = Uri.parse(
-        "${Config.config!["ROOT_CONSUMER_URL"]}/${widget.asset.assetID}/${Config.config!['GET_READMES_ROUTE']}");
+        "${Config.config!["ROOT_CONSUMER_URL"]}/${widget.uuid}/${Config.config!['GET_READMES_ROUTE']}");
     if (widget.getReadme == null) {
       Future<Response> timeoutFuture;
       // This will make two requests at most. If the second fails, the user will
@@ -62,7 +63,7 @@ class _AssetPageState extends State<AssetPage> {
         const Duration(seconds: 10),
         onTimeout: () => Response("Page not found.", 404),
       );
-      future = get(
+      return get(
         uri,
       ).timeout(
         const Duration(seconds: 10),
@@ -73,14 +74,73 @@ class _AssetPageState extends State<AssetPage> {
       );
     } else {
       // typically executed when mocking
-      future = widget.getReadme!(uri);
+      return widget.getReadme!(uri);
     }
+  }
 
-    gtag(command: "event", target: "AssetSelected", parameters: {
-      "uuid": widget.asset.assetID,
-      "name": widget.asset.assetName
-    });
+  late Future<Response> future;
+  bool displayReadme = true;
+  @override
+  Widget build(BuildContext context) {
+    future = _setReadmeFuture();
+    final collection = widget
+        .getFirestore()!
+        .collection(Config.config!["MINTED_NFTS_COLLECTION_NAME"]);
 
+    var elementStream = collection.doc(widget.uuid).snapshots();
+
+    return StreamBuilder(
+        stream: elementStream,
+        builder: (BuildContext context,
+            AsyncSnapshot<DocumentSnapshot<Map<String, dynamic>>> snapshot) {
+          if (!snapshot.hasData) {
+            return const Center(
+                child: CircularProgressIndicator(
+              key: Key("asset_circular_spinner"),
+            ));
+          }
+
+          gtag(
+              command: "event",
+              target: "AssetSelected",
+              parameters: {"uuid": widget.uuid});
+
+          var elementData = snapshot.data!.data()!;
+
+          double paidOut = elementData.containsKey(
+                  Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]["TOTAL_PAID_OUT"])
+              ? double.parse(elementData[Config
+                  .config!["MINTED_NFTS_DOCUMENT_KEYS"]["TOTAL_PAID_OUT"]])
+              : 0;
+          double earnings = elementData.containsKey(
+                  Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]["TOTAL_PAID_OUT"])
+              ? elementData[Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]
+                  ["TOTAL_EARNED"]]
+              : 0;
+
+          MarketplaceListData apiMetadata = MarketplaceListData(
+              paidOut: paidOut,
+              earnings: earnings,
+              assetID: widget.uuid,
+              assetName: elementData[Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]
+                  ["ASSET_NAME"]],
+              assetCategories: elementData[
+                  Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]["CATEGORY"]],
+              averageRuntime: elementData[
+                  Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]
+                      ["AVERAGE_INFERENCE_TIME_MS"]],
+              numberOfSuccessfullRequests: elementData[
+                  Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]
+                      ["NUMBER_OF_SUCCESSFUL_REQUESTS"]],
+              pricePerRun: elementData[
+                  Config.config!["MINTED_NFTS_DOCUMENT_KEYS"]
+                      ["EXPECTED_INFERENCE_COST"]]);
+
+          return _getAssetPageScaffold(apiMetadata);
+        });
+  }
+
+  Widget _getAssetPageScaffold(MarketplaceListData apiMetadata) {
     return Scaffold(
         appBar: AppBar(
           centerTitle: false,
@@ -88,19 +148,30 @@ class _AssetPageState extends State<AssetPage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                widget.asset.assetName,
+                apiMetadata.assetName,
                 style: const TextStyle(fontSize: 18),
               ),
               Text(
-                widget.asset.assetCategories.isNotEmpty
-                    ? "Categories: ${widget.asset.assetCategories}"
+                apiMetadata.assetCategories.isNotEmpty
+                    ? "Categories: ${apiMetadata.assetCategories}"
                     : "",
                 key: const Key("categories_in_asset_page"),
                 style: const TextStyle(fontSize: 20),
               ),
               if (widget.administrateEntireAPI != null)
-                buttons.getTextButton("Edit",
-                    onPressed: () => widget.administrateEntireAPI!())
+                buttons.getTextButton("Edit", onPressed: () {
+                  setState(() {
+                    displayReadme = false;
+                  });
+                  widget.administrateEntireAPI!().whenComplete(() {
+                    setState(() {
+                      displayReadme = true;
+                      // Update the displayed readme after admin has
+                      // complete
+                      future = _setReadmeFuture();
+                    });
+                  });
+                })
             ],
           ),
         ),
@@ -112,9 +183,10 @@ class _AssetPageState extends State<AssetPage> {
             margin: const EdgeInsets.all(5),
             alignment: Alignment.center,
             child: FutureBuilder(
+                key: UniqueKey(), // Change the key to force a rebuild
                 builder:
                     (BuildContext context, AsyncSnapshot<Response> snapshot) {
-                  if (snapshot.hasData) {
+                  if (displayReadme && snapshot.hasData) {
                     final body = snapshot.data!.body;
                     if (_isSwaggerParsable(body)) {
                       return Container(
@@ -158,7 +230,7 @@ class _AssetPageState extends State<AssetPage> {
                                       TextStyle(fontWeight: FontWeight.bold)),
                               TextSpan(
                                   text:
-                                      '~${widget.asset.averageRuntime.ceil()}ms'),
+                                      '~${apiMetadata.averageRuntime.ceil()}ms'),
                             ],
                           ),
                         ),
@@ -172,7 +244,7 @@ class _AssetPageState extends State<AssetPage> {
                                       TextStyle(fontWeight: FontWeight.bold)),
                               TextSpan(
                                   text:
-                                      '~${(widget.asset.pricePerRun / 1000000).toStringAsFixed(4)} XRP/run'),
+                                      '~${(apiMetadata.pricePerRun / 1000000).toStringAsFixed(4)} XRP/run'),
                             ],
                           ),
                         ),
@@ -186,7 +258,7 @@ class _AssetPageState extends State<AssetPage> {
                                       TextStyle(fontWeight: FontWeight.bold)),
                               TextSpan(
                                   text:
-                                      '~${(widget.asset.earnings / 1000000).toStringAsFixed(4)} XRP'),
+                                      '~${(apiMetadata.earnings / 1000000).toStringAsFixed(4)} XRP'),
                             ],
                           ),
                         ),
@@ -200,7 +272,7 @@ class _AssetPageState extends State<AssetPage> {
                                       TextStyle(fontWeight: FontWeight.bold)),
                               TextSpan(
                                   text:
-                                      '~${(widget.asset.paidOut / 1000000).toStringAsFixed(4)} XRP'),
+                                      '~${(apiMetadata.paidOut / 1000000).toStringAsFixed(4)} XRP'),
                             ],
                           ),
                         ),
@@ -214,7 +286,7 @@ class _AssetPageState extends State<AssetPage> {
                                       TextStyle(fontWeight: FontWeight.bold)),
                               TextSpan(
                                   text:
-                                      '${widget.asset.numberOfSuccessfullRequests} times'),
+                                      '${apiMetadata.numberOfSuccessfullRequests} times'),
                             ],
                           ),
                         ),
@@ -228,7 +300,7 @@ class _AssetPageState extends State<AssetPage> {
                                       TextStyle(fontWeight: FontWeight.bold)),
                               TextSpan(
                                   text:
-                                      '${Config.config!["ROOT_RUN_URL"]}/${widget.asset.assetID}'),
+                                      '${Config.config!["ROOT_RUN_URL"]}/${apiMetadata.assetID}'),
                             ],
                           ),
                         )
